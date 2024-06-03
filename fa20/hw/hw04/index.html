@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link rel="stylesheet" type="text/css" href="/~cs61a/fa20/assets/css/hw.css">
+
+
+    <title>
+Homework 4 | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Homework 4: Nonlocal, Iterators
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hw04.zip" class="label label-outline">hw04.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><em>Due by 11:59pm on Thursday, October 15</em></p>
+
+
+
+
+
+<h2>Instructions</h2>
+
+<p>Download <a href="hw04.zip">hw04.zip</a>. Inside the archive, you will find a file called
+<a href="hw04.py">hw04.py</a>, along with a copy of the <code>ok</code> autograder.</p>
+
+<p><strong>Submission:</strong> When you are done, submit with <code>python3 ok
+  --submit</code>.  You may submit more than once before the deadline; only the
+final submission will be scored. Check that you have successfully submitted
+your code on <a href="https://okpy.org/">okpy.org</a>.  See <a
+  href="/~cs61a/fa20/lab/lab00#submitting-the-assignment">Lab 0</a> for more instructions on
+submitting assignments.</p>
+
+<p><strong>Using Ok:</strong> If you have any questions about using Ok, please
+refer to <a href="/~cs61a/fa20/articles/using-ok.html">this guide.</a>
+
+
+  <p><strong>Readings:</strong> You might find the following references
+  useful:</p>
+  <ul>
+  <li><a href="http://composingprograms.com/pages/24-mutable-data.html">Section 2.4</a></li>
+  <li><a href="http://composingprograms.com/pages/42-implicit-sequences.html">Section 4.2</a></li>
+</ul>
+  
+
+<p><strong>Grading:</strong> Homework is graded based on
+correctness. Each incorrect problem will decrease the total score by one point. There is a homework recovery policy as stated in the syllabus.
+<strong>This homework is out of 2 points.</strong>
+
+
+
+
+    
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h3 id="hint-video">Hint Video</h3>
+
+<p>Check out this video for some helpful hints on how to tackle the problems on this assignment.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/k3RY89WaBSM"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h2 id="nonlocal">Nonlocal</h2>
+
+
+<h3 class="question" id="q1">Q1: Make Bank</h3>
+
+<p>In lecture, we saw how to use functions to create mutable objects.
+Here, for example, is the function <code>make_withdraw</code> which produces a
+function that can withdraw money from an account:</p>
+
+<pre><code>def make_withdraw(balance):
+    &quot;&quot;&quot;Return a withdraw function with BALANCE as its starting balance.
+    &gt;&gt;&gt; withdraw = make_withdraw(1000)
+    &gt;&gt;&gt; withdraw(100)
+    900
+    &gt;&gt;&gt; withdraw(100)
+    800
+    &gt;&gt;&gt; withdraw(900)
+    &#x27;Insufficient funds&#x27;
+    &quot;&quot;&quot;
+    def withdraw(amount):
+        nonlocal balance
+        if amount &gt; balance:
+            return &#x27;Insufficient funds&#x27;
+        balance = balance &#x2d; amount
+        return balance
+    return withdraw</code></pre>
+
+<p>Write a new function <code>make_bank</code>, which should create a bank account
+with value <code>balance</code> and should also return another function. This
+new function should be able to withdraw and deposit money. The 
+second function will take in two arguments: <code>message</code> and
+<code>amount</code>. When the message passed in is <code>&#x27;deposit&#x27;</code>, the bank will
+deposit <code>amount</code> into the account. When the message passed in is
+<code>&#x27;withdraw&#x27;</code>, the bank will attempt to withdraw <code>amount</code> from the
+account. If the account does not have enough money for a withdrawal,
+the string <code>&#x27;Insufficient funds&#x27;</code> will be returned. If the <code>message</code> 
+passed in is neither of the two commands, the function should return 
+<code>&#x27;Invalid message&#x27;</code> Examples are shown in the doctests.</p>
+
+<solution>
+
+<pre><code>def make_bank(balance):
+    &quot;&quot;&quot;Returns a bank function with a starting balance. Supports
+    withdrawals and deposits.
+
+    &gt;&gt;&gt; bank = make_bank(100)
+    &gt;&gt;&gt; bank(&#x27;withdraw&#x27;, 40)    # 100 &#x2d; 40
+    60
+    &gt;&gt;&gt; bank(&#x27;hello&#x27;, 500)      # Invalid message passed in
+    &#x27;Invalid message&#x27;
+    &gt;&gt;&gt; bank(&#x27;deposit&#x27;, 20)     # 60 + 20
+    80
+    &gt;&gt;&gt; bank(&#x27;withdraw&#x27;, 90)    # 80 &#x2d; 90; not enough money
+    &#x27;Insufficient funds&#x27;
+    &gt;&gt;&gt; bank(&#x27;deposit&#x27;, 100)    # 80 + 100
+    180
+    &gt;&gt;&gt; bank(&#x27;goodbye&#x27;, 0)      # Invalid message passed in
+    &#x27;Invalid message&#x27;
+    &gt;&gt;&gt; bank(&#x27;withdraw&#x27;, 60)    # 180 &#x2d; 60
+    120
+    &quot;&quot;&quot;
+    def bank(message, amount):
+        "*** YOUR CODE HERE ***"
+    return bank</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_bank</code></pre>
+
+<h3 class="question" id="q2">Q2: Password Protected Account</h3>
+
+<p>Write a version of the <code>make_withdraw</code> function shown in the previous question
+that returns password-protected withdraw functions. That is, <code>make_withdraw</code> should
+take a password argument (a string) in addition to an initial balance.
+The returned function should take two arguments: an amount to withdraw
+and a password.</p>
+
+<p>A password-protected <code>withdraw</code> function should only process
+withdrawals that include a password that matches the original.  Upon
+receiving an incorrect password, the function should:</p>
+
+<ol>
+  <li>Store that incorrect password in a list, and</li>
+  <li>Return the string 'Incorrect password'.</li>
+</ol>
+
+<p>If a withdraw function has been called three times with incorrect
+passwords <code>&lt;p1&gt;</code>, <code>&lt;p2&gt;</code>, and <code>&lt;p3&gt;</code>, then it is frozen.  All subsequent
+calls to the function should return:</p>
+
+<pre><code>&quot;Frozen account. Attempts: [&lt;p1&gt;, &lt;p2&gt;, &lt;p3&gt;]&quot;</code></pre>
+
+<blockquote><p><em>Hint:</em> You can use the <code>str</code> function to turn a list into a string. For example, 
+for a list <code>s = [1, 2, 3]</code>, the expression <code>&quot;The list s is: &quot; + str(s)</code> simplifies to
+<code>&quot;The list s is: [1, 2, 3]&quot;</code>.</p></blockquote>
+
+<p>The incorrect passwords may be the same or different:</p>
+
+<solution>
+
+<pre><code>def make_withdraw(balance, password):
+    &quot;&quot;&quot;Return a password&#x2d;protected withdraw function.
+
+    &gt;&gt;&gt; w = make_withdraw(100, &#x27;hax0r&#x27;)
+    &gt;&gt;&gt; w(25, &#x27;hax0r&#x27;)
+    75
+    &gt;&gt;&gt; error = w(90, &#x27;hax0r&#x27;)
+    &gt;&gt;&gt; error
+    &#x27;Insufficient funds&#x27;
+    &gt;&gt;&gt; error = w(25, &#x27;hwat&#x27;)
+    &gt;&gt;&gt; error
+    &#x27;Incorrect password&#x27;
+    &gt;&gt;&gt; new_bal = w(25, &#x27;hax0r&#x27;)
+    &gt;&gt;&gt; new_bal
+    50
+    &gt;&gt;&gt; w(75, &#x27;a&#x27;)
+    &#x27;Incorrect password&#x27;
+    &gt;&gt;&gt; w(10, &#x27;hax0r&#x27;)
+    40
+    &gt;&gt;&gt; w(20, &#x27;n00b&#x27;)
+    &#x27;Incorrect password&#x27;
+    &gt;&gt;&gt; w(10, &#x27;hax0r&#x27;)
+    &quot;Frozen account. Attempts: [&#x27;hwat&#x27;, &#x27;a&#x27;, &#x27;n00b&#x27;]&quot;
+    &gt;&gt;&gt; w(10, &#x27;l33t&#x27;)
+    &quot;Frozen account. Attempts: [&#x27;hwat&#x27;, &#x27;a&#x27;, &#x27;n00b&#x27;]&quot;
+    &gt;&gt;&gt; type(w(10, &#x27;l33t&#x27;)) == str
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_withdraw</code></pre>
+
+
+
+
+<h2 id="iterators-and-generators">Iterators and Generators</h2>
+
+
+<h3 class="question" id="q3">Q3: Repeated</h3>
+
+<p>Implement a function (not a generator function) that returns the first value in
+the iterator <code>t</code> that appears <code>k</code> times in a row. As described in lecture, iterators
+can provide values using either the <code>next(t)</code> function or with a for-loop. Do not worry
+about cases where the function reaches the end of the iterator without finding a suitable
+value, all lists passed in for the tests will have a value that should be returned. If you
+are receiving an error where the iterator has completed then the program is not identifying
+the correct value. Iterate through the items such that if the same iterator is passed into
+<code>repeated</code> twice, it continues in the second call at the point it left off in the first. An
+example of this behavior is shown in the doctests.</p>
+
+<solution>
+
+<pre><code>def repeated(t, k):
+    &quot;&quot;&quot;Return the first value in iterator T that appears K times in a row. Iterate through the items such that
+    if the same iterator is passed into repeated twice, it continues in the second call at the point it left off
+    in the first.
+
+    &gt;&gt;&gt; s = iter([10, 9, 10, 9, 9, 10, 8, 8, 8, 7])
+    &gt;&gt;&gt; repeated(s, 2)
+    9
+    &gt;&gt;&gt; s2 = iter([10, 9, 10, 9, 9, 10, 8, 8, 8, 7])
+    &gt;&gt;&gt; repeated(s2, 3)
+    8
+    &gt;&gt;&gt; s = iter([3, 2, 2, 2, 1, 2, 1, 4, 4, 5, 5, 5])
+    &gt;&gt;&gt; repeated(s, 3)
+    2
+    &gt;&gt;&gt; repeated(s, 3)
+    5
+    &gt;&gt;&gt; s2 = iter([4, 1, 6, 6, 7, 7, 8, 8, 2, 2, 2, 5])
+    &gt;&gt;&gt; repeated(s2, 3)
+    2
+    &quot;&quot;&quot;
+    assert k &gt; 1
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q repeated</code></pre>
+
+<h3 class="question" id="q4">Q4: Generate Permutations</h3>
+
+<p>Given a sequence of unique elements, a <em>permutation</em> of the sequence is a list
+containing the elements of the sequence in some arbitrary order. For example,
+<code>[2, 1, 3]</code>, <code>[1, 3, 2]</code>, and <code>[3, 2, 1]</code> are some of the permutations of the
+sequence <code>[1, 2, 3]</code>.</p>
+
+<p>Implement <code>permutations</code>, a generator function that takes in a sequence <code>seq</code>
+and returns a generator that yields all permutations of <code>seq</code>.</p>
+
+<p>Permutations may be yielded in any order.  Note that the doctests test whether
+you are yielding all possible permutations, but not in any particular order.
+The built-in <code>sorted</code> function takes in an iterable object and returns a list
+containing the elements of the iterable in non-decreasing order.</p>
+
+<blockquote><p><em>Hint:</em> If you had the permutations of all the elements in <code>seq</code> not
+including the first element, how could you use that to generate the
+permutations of the full <code>seq</code>?</p>
+
+<p><em>Hint:</em> If you're having trouble getting started, see the hints video
+for this question for tips on how to approach this question.</p></blockquote>
+
+<solution>
+
+<pre><code>def permutations(seq):
+    &quot;&quot;&quot;Generates all permutations of the given sequence. Each permutation is a
+    list of the elements in SEQ in a different order. The permutations may be
+    yielded in any order.
+
+    &gt;&gt;&gt; perms = permutations([100])
+    &gt;&gt;&gt; type(perms)
+    &lt;class &#x27;generator&#x27;&gt;
+    &gt;&gt;&gt; next(perms)
+    [100]
+    &gt;&gt;&gt; try: #this piece of code prints &quot;No more permutations!&quot; if calling next would cause an error
+    ...     next(perms)
+    ... except StopIteration:
+    ...     print(&#x27;No more permutations!&#x27;)
+    No more permutations!
+    &gt;&gt;&gt; sorted(permutations([1, 2, 3])) # Returns a sorted list containing elements of the generator
+    [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
+    &gt;&gt;&gt; sorted(permutations((10, 20, 30)))
+    [[10, 20, 30], [10, 30, 20], [20, 10, 30], [20, 30, 10], [30, 10, 20], [30, 20, 10]]
+    &gt;&gt;&gt; sorted(permutations(&quot;ab&quot;))
+    [[&#x27;a&#x27;, &#x27;b&#x27;], [&#x27;b&#x27;, &#x27;a&#x27;]]
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q permutations</code></pre>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+
+<h1 id="extra-questions">Extra Questions</h1>
+
+
+<h3 class="question" id="q5">Q5: Joint Account</h3>
+
+<p>Suppose that our banking system requires the ability to make joint
+accounts.  Define a function <code>make_joint</code> that takes three arguments.</p>
+
+<ol>
+  <li>A password-protected <code>withdraw</code> function,</li>
+  <li>The password with which that <code>withdraw</code> function was defined, and</li>
+  <li>A new password that can also access the original account.</li>
+</ol>
+
+<p>If the password is incorrect or cannot be verified because the underlying
+account is locked, the <code>make_joint</code> should propagate the error.
+Otherwise, it returns a <code>withdraw</code> function that provides
+additional access to the original account using <em>either</em> the new or old
+password. Both functions draw from the same balance. Incorrect
+passwords provided to either function will be stored and cause the
+functions to be locked after three wrong attempts.</p>
+
+<p><em>Hint</em>: The solution is short (less than 10 lines) and contains no string
+literals!  The key is to call <code>withdraw</code> with the right password and amount,
+then interpret the result.  You may assume that all failed attempts to withdraw
+will return some string (for incorrect passwords, locked accounts, or
+insufficient funds), while successful withdrawals will return a number.</p>
+
+<p>Use <code>type(value) == str</code> to test if some <code>value</code> is a string:</p>
+
+<solution>
+
+<pre><code>def make_joint(withdraw, old_pass, new_pass):
+    &quot;&quot;&quot;Return a password&#x2d;protected withdraw function that has joint access to
+    the balance of withdraw.
+
+    &gt;&gt;&gt; w = make_withdraw(100, &#x27;hax0r&#x27;)
+    &gt;&gt;&gt; w(25, &#x27;hax0r&#x27;)
+    75
+    &gt;&gt;&gt; make_joint(w, &#x27;my&#x27;, &#x27;secret&#x27;)
+    &#x27;Incorrect password&#x27;
+    &gt;&gt;&gt; j = make_joint(w, &#x27;hax0r&#x27;, &#x27;secret&#x27;)
+    &gt;&gt;&gt; w(25, &#x27;secret&#x27;)
+    &#x27;Incorrect password&#x27;
+    &gt;&gt;&gt; j(25, &#x27;secret&#x27;)
+    50
+    &gt;&gt;&gt; j(25, &#x27;hax0r&#x27;)
+    25
+    &gt;&gt;&gt; j(100, &#x27;secret&#x27;)
+    &#x27;Insufficient funds&#x27;
+
+    &gt;&gt;&gt; j2 = make_joint(j, &#x27;secret&#x27;, &#x27;code&#x27;)
+    &gt;&gt;&gt; j2(5, &#x27;code&#x27;)
+    20
+    &gt;&gt;&gt; j2(5, &#x27;secret&#x27;)
+    15
+    &gt;&gt;&gt; j2(5, &#x27;hax0r&#x27;)
+    10
+
+    &gt;&gt;&gt; j2(25, &#x27;password&#x27;)
+    &#x27;Incorrect password&#x27;
+    &gt;&gt;&gt; j2(5, &#x27;secret&#x27;)
+    &quot;Frozen account. Attempts: [&#x27;my&#x27;, &#x27;secret&#x27;, &#x27;password&#x27;]&quot;
+    &gt;&gt;&gt; j(5, &#x27;secret&#x27;)
+    &quot;Frozen account. Attempts: [&#x27;my&#x27;, &#x27;secret&#x27;, &#x27;password&#x27;]&quot;
+    &gt;&gt;&gt; w(5, &#x27;hax0r&#x27;)
+    &quot;Frozen account. Attempts: [&#x27;my&#x27;, &#x27;secret&#x27;, &#x27;password&#x27;]&quot;
+    &gt;&gt;&gt; make_joint(w, &#x27;hax0r&#x27;, &#x27;hello&#x27;)
+    &quot;Frozen account. Attempts: [&#x27;my&#x27;, &#x27;secret&#x27;, &#x27;password&#x27;]&quot;
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_joint</code></pre>
+
+
+
+<h3 class="question" id="q6">Q6: Remainder Generator</h3>
+Like functions, generators can also be <em>higher-order</em>. For this problem, we
+will be writing <code>remainders_generator</code>, which yields a series of generator
+objects.
+
+<p><code>remainders_generator</code> takes in an integer <code>m</code>, and yields <code>m</code> different
+generators. The first generator is a generator of multiples of <code>m</code>, i.e.
+numbers where the remainder is 0. The second is a generator of natural numbers
+with remainder 1 when divided by <code>m</code>. The last generator yields natural numbers
+with remainder <code>m &#x2d; 1</code> when divided by <code>m</code>.</p>
+
+<blockquote><p><em>Hint</em>: You can call the <code>naturals</code> function to create a generator of
+infinite natural numbers.</p></blockquote>
+
+<!- ->
+
+<blockquote><p><em>Hint</em>: Consider defining an inner generator function. Each yielded generator
+varies only in that the elements of each generator have a particular
+remainder when divided by <code>m</code>. What does that tell you about the argument(s)
+that the inner function should take in?</p></blockquote>
+
+<solution>
+
+<pre><code>def remainders_generator(m):
+    &quot;&quot;&quot;
+    Yields m generators. The ith yielded generator yields natural numbers whose
+    remainder is i when divided by m.
+
+    &gt;&gt;&gt; import types
+    &gt;&gt;&gt; [isinstance(gen, types.GeneratorType) for gen in remainders_generator(5)]
+    [True, True, True, True, True]
+    &gt;&gt;&gt; remainders_four = remainders_generator(4)
+    &gt;&gt;&gt; for i in range(4):
+    ...     print(&quot;First 3 natural numbers with remainder {0} when divided by 4:&quot;.format(i))
+    ...     gen = next(remainders_four)
+    ...     for _ in range(3):
+    ...         print(next(gen))
+    First 3 natural numbers with remainder 0 when divided by 4:
+    4
+    8
+    12
+    First 3 natural numbers with remainder 1 when divided by 4:
+    1
+    5
+    9
+    First 3 natural numbers with remainder 2 when divided by 4:
+    2
+    6
+    10
+    First 3 natural numbers with remainder 3 when divided by 4:
+    3
+    7
+    11
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Note that if you have implemented this correctly, each of the
+generators yielded by <code>remainder_generator</code> will be <em>infinite</em> - you
+can keep calling <code>next</code> on them forever without running into a
+<code>StopIteration</code> exception.</p>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q remainders_generator</code></pre>
+
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#instructions">Instructions</a></li>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#hint-video">Hint Video</a></li>
+  </ul>
+  <ul>
+    <li><a href="#nonlocal">Nonlocal</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Make Bank</a></li>
+      <li><a href="#q2">Q2: Password Protected Account</a></li>
+    </ul>
+    <li><a href="#iterators-and-generators">Iterators and Generators</a></li>
+    <ul>
+      <li><a href="#q3">Q3: Repeated</a></li>
+      <li><a href="#q4">Q4: Generate Permutations</a></li>
+    </ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+  <li><a href="#extra-questions">Extra Questions</a></li>
+  <ul>
+    <li><a href="#q5">Q5: Joint Account</a></li>
+    <li><a href="#q6">Q6: Remainder Generator</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

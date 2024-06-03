@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 12: SQL | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 12: SQL
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab12.zip" class="label label-outline">lab12.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, November 17.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab12.zip">lab12.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h1 id="topics">Topics</h1>
+
+
+<p>Consult this section if you need a refresher on the material for this lab, or if you're having trouble running SQL or SQLite on your computer. It's
+okay to skip directly to <a href="#required-questions">the questions</a> and refer back
+here should you get stuck.</p>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        SQL Basics<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h2 id="sql-basics">SQL Basics</h2>
+
+
+
+<h3 id="creating-tables">Creating Tables</h3>
+
+
+<p>You can create SQL tables either from scratch or from existing tables.</p>
+
+<p>The following statement creates a table by specifying column names and values
+without referencing another table. Each <code>SELECT</code> clause specifies the values
+for one row, and <code>UNION</code> is used to join rows together. The <code>AS</code> clauses give a
+name to each column; it need not be repeated in subsequent rows after the
+first.</p>
+
+<pre><code>CREATE TABLE [table_name] AS
+  SELECT [val1] AS [column1], [val2] AS [column2], ... UNION
+  SELECT [val3]             , [val4]             , ... UNION
+  SELECT [val5]             , [val6]             , ...;</code></pre>
+
+<p>Let's say we want to make the following table called <code>big_game</code> which records
+the scores for the Big Game each year. This table has three columns:
+<code>berkeley</code>, <code>stanford</code>, and <code>year</code>.</p>
+
+<img class="img-responsive center-block" src="assets/big-game.png" width="300">
+
+<p>We could do so with the following <code>CREATE TABLE</code> statement:</p>
+
+<pre><code>CREATE TABLE big_game AS
+  SELECT 30 AS berkeley, 7 AS stanford, 2002 AS year UNION
+  SELECT 28,             16,            2003         UNION
+  SELECT 17,             38,            2014;</code></pre>
+
+
+<h3 id="selecting-from-tables">Selecting From Tables</h3>
+
+<p>More commonly, we will create new tables by selecting specific columns that we
+want from existing tables by using a <code>SELECT</code> statement as follows:</p>
+
+<pre><code>SELECT [columns] FROM [tables] WHERE [condition] ORDER BY [columns] LIMIT [limit];</code></pre>
+
+<p>Let's break down this statement:</p>
+
+<ul>
+  <li><code>SELECT [columns]</code> tells SQL that we want to include the given columns in our
+  output table; <code>[columns]</code> is a comma-separated list of column names, and <code>*</code>
+  can be used to select all columns</li>
+  <li><code>FROM [table]</code> tells SQL that the columns we want to select are from the
+  given table; see the <a href="">joins section</a> to see how to select
+  from multiple tables</li>
+  <li><code>WHERE [condition]</code> filters the output table by only including rows whose
+  values satisfy the given <code>[condition]</code>, a boolean expression</li>
+  <li><code>ORDER BY [columns]</code> orders the rows in the output table by the given
+  comma-separated list of columns</li>
+  <li><code>LIMIT [limit]</code> limits the number of rows in the output table by the integer
+  <code>[limit]</code></li>
+</ul>
+
+<blockquote><p><em>Note:</em> We capitalize SQL keywords purely because of style convention. It
+makes queries much easier to read, though they will still work if you don't
+capitalize keywords.</p></blockquote>
+
+<p>Here are some examples:</p>
+
+<p>Select all of Berkeley's scores from the <code>big_game</code> table, but only include
+scores from years past 2002:</p>
+
+<pre><code>sqlite&gt; SELECT berkeley FROM big_game WHERE year &gt; 2002;
+28
+17</code></pre>
+
+<p>Select the scores for both schools in years that Berkeley won:</p>
+
+<pre><code>sqlite&gt; SELECT berkeley, stanford FROM big_game WHERE berkeley &gt; stanford;
+30|7
+28|16</code></pre>
+
+<p>Select the years that Stanford scored more than 15 points:</p>
+
+<pre><code>sqlite&gt; SELECT year FROM big_game WHERE stanford &gt; 15;
+2003
+2014</code></pre>
+
+
+<h3 id="sql-operators">SQL operators</h3>
+
+
+<p>Expressions in the <code>SELECT</code>, <code>WHERE</code>, and <code>ORDER BY</code> clauses can contain
+one or more of the following operators:</p>
+
+<ul>
+  <li>comparison operators: <code>=</code>, <code>&gt;</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;=</code>, <code>&lt;&gt;</code> or <code>!=</code> ("not equal")</li>
+  <li>boolean operators: <code>AND</code>, <code>OR</code></li>
+  <li>arithmetic operators: <code>+</code>, <code>&#x2d;</code>, <code>*</code>, <code>/</code></li>
+  <li>concatenation operator: <code>||</code></li>
+</ul>
+
+<p>Here are some examples:</p>
+
+<p>Output the ratio of Berkeley's score to Stanford's score each year:</p>
+
+<pre><code>sqlite&gt; select berkeley * 1.0 / stanford from big_game;
+0.447368421052632
+1.75
+4.28571428571429</code></pre>
+
+<p>Output the sum of scores in years where both teams scored over 10 points:</p>
+
+<pre><code>sqlite&gt; select berkeley + stanford from big_game where berkeley &gt; 10 and stanford &gt; 10;
+55
+44</code></pre>
+
+<p>Output a table with a single column and single row containing the value "hello
+world":</p>
+
+<pre><code>sqlite&gt; SELECT &quot;hello&quot; || &quot; &quot; || &quot;world&quot;;
+hello world</code></pre>
+
+</div>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Joins<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+<h2 id="joins">Joins</h2>
+
+
+<p>To select data from multiple tables, we can use joins. There are many types
+of joins, but the only one we'll worry about is the inner join. To perform
+an inner join on two on more tables, simply list them all out in the <code>FROM</code>
+clause of a <code>SELECT</code> statement:</p>
+
+<pre><code>SELECT [columns] FROM [table1], [table2], ... WHERE [condition] ORDER BY [columns] LIMIT [limit];</code></pre>
+
+<p>We can select from multiple different tables or from the same table multiple
+times.</p>
+
+<p>Let's say we have the following table that contains the names head football
+coaches at Cal since 2002:</p>
+
+<pre><code>CREATE TABLE coaches AS
+  SELECT &quot;Jeff Tedford&quot; AS name, 2002 as start, 2012 as end UNION
+  SELECT &quot;Sonny Dykes&quot;         , 2013         , 2016        UNION
+  SELECT &quot;Justin Wilcox&quot;       , 2017         , null;</code></pre>
+
+<p>When we join two or more tables, the default output is a <a href="https://en.wikipedia.org/wiki/Cartesian_product">cartesian product</a>. For
+example, if we joined <code>big_game</code> with <code>coaches</code>, we'd get the following:</p>
+
+<img class="img-responsive center-block" src="assets/joins.png" width="400">
+
+<p>If we want to match up each game with the coach that season, we'd have to
+compare columns from the two tables in the <code>WHERE</code> clause:</p>
+
+<pre><code>sqlite&gt; SELECT * FROM big_game, coaches WHERE year &gt;= start AND year &lt;= end;
+17|38|2014|Sonny Dykes|2013|2016
+28|16|2003|Jeff Tedford|2002|2012
+30|7|2002|Jeff Tedford|2002|2012</code></pre>
+
+<p>The following query outputs the coach and year for each Big Game win recorded
+in <code>big_game</code>:</p>
+
+<pre><code>sqlite&gt; SELECT name, year FROM big_game, coaches
+...&gt;        WHERE berkeley &gt; stanford AND year &gt;= start AND year &lt;= end;
+Jeff Tedford|2003
+Jeff Tedford|2002</code></pre>
+
+<p>In the queries above, none of the column names are ambiguous. For example, it
+is clear that the <code>name</code> column comes from the <code>coaches</code> table because there
+isn't a column in the <code>big_game</code> table with that name.  However, if a column
+name exists in more than one of the tables being joined, or if we join a table
+with itself, we must disambiguate the column names using <em>aliases</em>.</p>
+
+<p>For examples, let's find out what the score difference is for each team between
+a game in <code>big_game</code> and any previous games. Since each row in this table represents
+one game, in order to compare two games we must join <code>big_game</code> with itself:</p>
+
+<pre><code>sqlite&gt; SELECT b.Berkeley &#x2d; a.Berkeley, b.Stanford &#x2d; a.Stanford, a.Year, b.Year
+...&gt;        FROM big_game AS a, big_game AS b WHERE a.Year &lt; b.Year;
+&#x2d;11|22|2003|2014
+&#x2d;13|21|2002|2014
+&#x2d;2|9|2002|2003</code></pre>
+
+<p>In the query above, we give the alias <code>a</code> to the first <code>big_game</code> table and the
+alias <code>b</code> to the second <code>big_game</code> table. We can then reference columns from
+each table using dot notation with the aliases, e.g. <code>a.Berkeley</code>,
+<code>a.Stanford</code>, and <code>a.Year</code> to select from the first table.
+</div></p>
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Troubleshooting<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+
+<p>Python already comes with a built-in SQLite database engine to process SQL.
+However, it doesn't come with a "shell" to let you interact with it from the terminal.
+Because of this, until now, you have been using a simplified SQLite shell written by us.
+However, you may find the shell is old, buggy, or lacking in features.
+In that case, you may want to download and use the official SQLite executable.</p>
+
+<p>If running <code>python3 sqlite_shell.py</code> didn't work, you can download a precompiled sqlite directly by following the following instructions and then use <code>sqlite3</code> and <code>./sqlite3</code> instead of <code>python3 sqlite_shell.py</code> based on which is specified for your platform.</p>
+
+<alwaystoggle prompt="Setup">
+Another way to start using SQLite is to download a precompiled
+binary from the <a href="http://www.sqlite.org/download.html">SQLite website</a>.
+The latest version of SQLite at the time of writing is 3.28.0, but you
+can check for additional updates on the website.
+
+<p>However, before proceeding, please remove (or rename) any SQLite executables
+(<code>sqlite3</code>, <code>sqlite_shell.py</code>, and the like)
+from the current folder, or they may conflict with the official one you download below.
+Similarly, if you wish to switch back later,
+please remove or rename the one you downloaded and restore the files you removed.</p>
+
+
+<h3 id="windows">Windows</h3>
+
+
+<ol>
+  <li>Visit the download page linked above and navigate to the section
+  Precompiled Binaries for Windows. Click on the link
+  <strong>sqlite-tools-win32-x86-*.zip</strong> to download the binary.</li>
+  <li>Unzip the file. There should be a <code>sqlite3.exe</code> file in the
+  directory after extraction.</li>
+  <li><p>Navigate to the folder containing the <code>sqlite3.exe</code> file and check
+  that the version is at least 3.8.3:</p>
+
+<pre><code>$ cd path/to/sqlite
+$ ./sqlite3 &#x2d;&#x2d;version
+3.12.1 2016&#x2d;04&#x2d;08 15:09:49 fe7d3b75fe1bde41511b323925af8ae1b910bc4d</code></pre></li>
+</ol>
+
+
+<h3 id="macos-yosemite-10-10-or-newer">macOS Yosemite (10.10) or newer</h3>
+
+
+<p>SQLite comes pre-installed. Check that you have a version that's greater than 3.8.3:</p>
+
+<pre><code>    $ sqlite3
+    SQLite version 3.8.10.2</code></pre>
+
+
+<h3 id="mac-os-x-mavericks-10-9-or-older">Mac OS X Mavericks (10.9) or older</h3>
+
+
+<p>SQLite comes pre-installed, but it is the wrong version.</p>
+
+<ol>
+  <li>Visit the download page linked above and navigate to the section
+  <strong>Precompiled Binaries for Mac OS X (x86)</strong>. Click on
+  the link <strong>sqlite-tools-osx-x86-*.zip</strong> to download the
+  binary.</li>
+  <li>Unzip the file. There should be a <code>sqlite3</code> file in the directory
+  after extraction.</li>
+  <li><p>Navigate to the folder containing the <code>sqlite3</code> file and check that
+  the version is at least 3.8.3:</p>
+
+<pre><code>$ cd path/to/sqlite
+$ ./sqlite3 &#x2d;&#x2d;version
+3.12.1 2016&#x2d;04&#x2d;08 15:09:49 fe7d3b75fe1bde41511b323925af8ae1b910bc4d</code></pre></li>
+</ol>
+
+
+<h3 id="ubuntu">Ubuntu</h3>
+
+
+<p>The easiest way to use SQLite on Ubuntu is to install it straight from
+the native repositories (the version will be slightly behind the most
+recent release):</p>
+
+<pre><code>$ sudo apt install sqlite3
+$ sqlite3 &#x2d;&#x2d;version
+3.8.6 2014&#x2d;08&#x2d;15 11:46:33 9491ba7d738528f168657adb43a198238abde19e</code></pre>
+
+</div>
+</alwaystoggle>
+
+
+        <button id='toggle-4' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        SQLite Usage<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-4">
+
+<h2 id="usage">Usage</h2>
+
+
+<p>First, check that a file named <code>sqlite_shell.py</code> exists alongside the assignment files.
+If you don't see it, or if you encounter problems with it, scroll down to the Troubleshooting
+section to see how to download an official precompiled SQLite binary before proceeding.</p>
+
+<p>You can start an interactive SQLite session in your Terminal or Git Bash with
+the following command:</p>
+
+<pre><code>python3 sqlite_shell.py</code></pre>
+
+<p>While the interpreter is running, you can type <code>.help</code> to see some of the
+commands you can run.</p>
+
+<p>To exit out of the SQLite interpreter, type <code>.exit</code> or <code>.quit</code> or press
+<code>Ctrl&#x2d;C</code>.  Remember that if you see <code>...&gt;</code> after pressing enter, you probably
+forgot a <code>;</code>.</p>
+
+<p>You can also run all the statements in a <code>.sql</code> file by doing the following:</p>
+
+<ol>
+  <li><p>Runs your code and then exits SQLite immediately afterwards.</p>
+
+<pre><code>python3 sqlite_shell.py &lt; lab12.sql</code></pre></li>
+  <li><p>Runs your code and then opens an interactive SQLite session, which is
+  similar to running Python code with the interactive <code>&#x2d;i</code> flag.</p>
+
+<pre><code>python3 sqlite_shell.py &#x2d;&#x2d;init lab12.sql</code></pre>
+
+  </div></li>
+</ol>
+
+
+<h1 id="the-survey-data">The Survey Data!</h1>
+
+
+<p>On Tuesday, we asked you and your fellow students to complete a brief
+online survey through Google Forms, which involved relatively random but fun
+questions. In this lab, we will interact with the results of the survey by
+using SQL queries to see if we can find interesting things in the data.</p>
+
+<p>First, take a look at <code>data.sql</code> and examine the table defined in it. Note
+its structure. You will be working with:</p>
+
+<ul>
+  <li><p><code>students</code>: The main results of the survey. Each column represents a different
+  question from the survey, except for the first column, which is the time
+  of when the result was submitted. This time is a unique identifier for
+  each of the rows in the table.</p>
+
+
+  
+        <div class="table-responsive">
+          <table class="table table-bordered">
+          
+    <tr>
+      <th>Column Name</th>
+      <th>Question</th>
+    </tr>
+    <tr>
+      <td><code>time</code></td>
+      <td>The unique timestamp that identifies the submission</td>
+    </tr>
+    <tr>
+      <td><code>number</code></td>
+      <td>What's your favorite number between 1 and 100?</td>
+    </tr>
+    <tr>
+      <td><code>color</code></td>
+      <td>What is your favorite color?</td>
+    </tr>
+    <tr>
+      <td><code>seven</code></td>
+      <td>Choose the number 7 below.<br>Options: <br><ul> <li>7</li> <li>Choose this option instead</li> <li>seven</li> <li>the number 7 below.</li> <li>I find this question condescending</li> </ul></td>
+    </tr>
+    <tr>
+      <td><code>song</code></td>
+      <td>If you could listen to only one of these songs for the rest of your life, which would it be? <br> Options: <br><ul><li>"Everytime we Touch" by Cascada</li><li>"The Middle" by Zedd</li><li>"Clair de Lune" by Claude Debussy</li><li>"Smells Like Teen Spirit" by Nirvana</li><li>"Dancing Queen" by ABBA</li><li>"All I Want for Christmas is you" by Mariah Carey</li><li>"Down With The Sickness" by Disturbed</li><li>"thank u, next" by Ariana Grande</li><</ul></td>
+    </tr>
+    <tr>
+      <td><code>date</code></td>
+      <td>Pick a day of the year!</td>
+    </tr>
+    <tr>
+      <td><code>pet</code></td>
+      <td>If you could have any animal in the world as a pet, what would it be?</td>
+    </tr>
+    <tr>
+      <td><code>instructor</code></td>
+      <td>Choose your favorite photo of John DeNero (Options shown under Question 3)</td>
+    </tr>
+    <tr>
+      <td><code>smallest</code></td>
+      <td>Try to guess the smallest unique positive INTEGER that anyone will put!</td>
+    </tr>
+  
+          </table>
+        </div>
+        </li>
+  <li><code>numbers</code>: The results from the survey in which students could select more
+  than one option from the numbers listed, which ranged from 0 to 10 and included
+  2018, 9000, and 9001. Each row has a time (which is again a unique
+  identifier) and has the value <code>&#x27;True&#x27;</code> if the student selected the column or <code>&#x27;False&#x27;</code>
+  if the student did not.
+  The column names in this table are the following strings, referring to each possible
+  number: <code>&#x27;0&#x27;</code>, <code>&#x27;1&#x27;</code>, <code>&#x27;2&#x27;</code>, <code>&#x27;4&#x27;</code>, <code>&#x27;5&#x27;</code>, <code>&#x27;6&#x27;</code>, <code>&#x27;7&#x27;</code>, <code>&#x27;8&#x27;</code>, <code>&#x27;9&#x27;</code>, <code>&#x27;10&#x27;</code>,
+  <code>&#x27;2018&#x27;</code>, <code>&#x27;9000&#x27;</code>, <code>&#x27;9001&#x27;</code>.</li>
+</ul>
+
+<p>Since the survey was anonymous, we used the timestamp that a survey was
+submitted as a unique identifier.  A time in <code>students</code> matches up with a time
+in <code>numbers</code>. For example, a row in <code>students</code> whose <code>time</code> value is
+<code>&quot;2019/08/06 4:19:18 PM CDT&quot;</code> matches up with the row in <code>numbers</code> whose <code>time</code>
+value is <code>&quot;2019/08/06 4:19:18 PM CDT&quot;</code>. These entries come from the same Google form
+submission and thus belong to the same student.</p>
+
+<br>
+
+<blockquote><p><em>Note</em>: If you are looking for your personal response within the data, you may
+have noticed that some of your answers are slightly different from what you
+had inputted. In order to make SQLite accept our data, and to optimize for as
+many matches as possible during our joins, we did the following things to
+clean up the data:</p>
+
+<ul>
+  <li><code>color</code> and <code>pet</code>: We converted all the strings to be completely lowercase.</li>
+  <li>For some of the more "free-spirited" responses, we escaped the special
+  characters so that they could be properly parsed.</li>
+</ul></blockquote>
+
+<p>You will write all of your solutions in the starter file <code>lab12.sql</code> provided. As with other
+labs, you can test your solutions with OK. In addition, you can use either of
+the following commands:</p>
+
+<pre><code>python3 sqlite_shell.py &lt; lab12.sql
+python3 sqlite_shell.py &#x2d;&#x2d;init lab12.sql</code></pre>
+
+
+<h1 id="questions">Questions</h1>
+
+
+<h3 class="question" id="q1">Q1: What Would SQL print?</h3>
+
+<blockquote><p>Note: there is no submission for this question</p></blockquote>
+
+<p>First, load the tables into sqlite3.</p>
+
+<pre><code>$ python3 sqlite_shell.py &#x2d;&#x2d;init lab12.sql</code></pre>
+
+<p>Before we start, inspect the schema of the tables that we've created for you:</p>
+
+<pre><code>sqlite&gt; .schema</code></pre>
+
+<p>This tells you the name of each of our tables and their attributes.</p>
+
+<p>Let's also take a look at some of the entries in our table. There are a lot of
+entries though, so let's just output the first 20:</p>
+
+<pre><code>sqlite&gt; SELECT * FROM students LIMIT 20;</code></pre>
+
+<p>If you're curious about some of the answers students put into the Google form,
+open up <code>data.sql</code> in your favorite text editor and take a look!</p>
+
+<p>For each of the SQL queries below, think about what the
+query is looking for, then try running the query yourself and see!</p>
+
+<pre><code>sqlite&gt; SELECT * FROM students LIMIT 30; &#x2d;&#x2d; This is a comment. * is shorthand for all columns!
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x73;&#x65;&#x6c;&#x65;&#x63;&#x74;&#x73;&#x20;&#x66;&#x69;&#x72;&#x73;&#x74;&#x20;&#x33;&#x30;&#x20;&#x72;&#x65;&#x63;&#x6f;&#x72;&#x64;&#x73;&#x20;&#x66;&#x72;&#x6f;&#x6d;&#x20;&#x73;&#x74;&#x75;&#x64;&#x65;&#x6e;&#x74;&#x73;&#x3b;</div>
+sqlite&gt; SELECT color FROM students WHERE number = 7;
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x73;&#x65;&#x6c;&#x65;&#x63;&#x74;&#x73;&#x20;&#x74;&#x68;&#x65;&#x20;&#x63;&#x6f;&#x6c;&#x6f;&#x72;&#x20;&#x66;&#x72;&#x6f;&#x6d;&#x20;&#x73;&#x74;&#x75;&#x64;&#x65;&#x6e;&#x74;&#x73;&#x20;&#x77;&#x68;&#x6f;&#x20;&#x73;&#x61;&#x69;&#x64;&#x20;&#x74;&#x68;&#x65;&#x69;&#x72;&#x20;&#x66;&#x61;&#x76;&#x6f;&#x72;&#x69;&#x74;&#x65;&#x20;&#x6e;&#x75;&#x6d;&#x62;&#x65;&#x72;&#x20;&#x77;&#x61;&#x73;&#x20;&#x37;&#x3b;</div>
+sqlite&gt; SELECT song, pet FROM students WHERE color = &quot;blue&quot; AND date = &quot;12&#x2d;25&quot;;
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x73;&#x65;&#x6c;&#x65;&#x63;&#x74;&#x73;&#x20;&#x74;&#x68;&#x65;&#x20;&#x73;&#x6f;&#x6e;&#x67;&#x20;&#x61;&#x6e;&#x64;&#x20;&#x70;&#x65;&#x74;&#x20;&#x66;&#x72;&#x6f;&#x6d;&#x20;&#x73;&#x74;&#x75;&#x64;&#x65;&#x6e;&#x74;&#x73;&#x20;&#x77;&#x68;&#x6f;&#x20;&#x73;&#x61;&#x69;&#x64;&#x20;&#x74;&#x68;&#x65;&#x69;&#x72;&#x20;&#x66;&#x61;&#x76;&#x6f;&#x72;&#x69;&#x74;&#x65;&#x20;&#x63;&#x6f;&#x6c;&#x6f;&#x72;&#x20;&#x77;&#x61;&#x73;&#x20;&#x62;&#x6c;&#x75;&#x65;&#x20;&#x61;&#x6e;&#x64;&#x20;&#x70;&#x69;&#x63;&#x6b;&#x65;&#x64;&#x20;&#x44;&#x65;&#x63;&#x65;&#x6d;&#x62;&#x65;&#x72;&#x20;&#x32;&#x35;&#x74;&#x68;&#x3b;</div></code></pre>
+        <button id='prompt-1' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<p>Remember to end each statement with a <code>;</code>! To exit out of SQLite, type <code>.exit</code>
+or <code>.quit</code> or hit <code>Ctrl&#x2d;C</code>.</p>
+
+<h3 class="question" id="q2">Q2: Go Bears! (And Dogs?)</h3>
+
+<p>Now that we have learned how to select columns from a SQL table, let's filter the
+results to see some more interesting results!</p>
+
+<p>It turns out that 61A students have a lot of school spirit: the most popular favorite
+color was <code>&#x27;blue&#x27;</code>. You would think that this school spirit would carry over to the
+pet answer, and everyone would want a pet bear! Unfortunately, this was not the case,
+and the majority of students opted to have a pet <code>&#x27;dog&#x27;</code> instead. That is the more
+sensible choice, I suppose...</p>
+
+<p>Write a SQL query to create a table that contains both the column <code>color</code> and the
+column <code>pet</code>, using the keyword <code>WHERE</code> to restrict the answers to the most popular
+results of color being <code>&#x27;blue&#x27;</code> and pet being <code>&#x27;dog&#x27;</code>.</p>
+
+<p>You should get the following output:</p>
+
+<pre><code>sqlite&gt; SELECT * FROM bluedog;
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog
+blue|dog</code></pre>
+
+<solution>
+
+<pre><code>CREATE TABLE bluedog AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+<p>This isn't a very exciting table, though. Each of these rows represents a different student, but all this table can really tell us is how many students both like the color blue and want a dog as a pet, because we didn't select for any other identifying characteristics. Let's create another table, <code>bluedog_songs</code>, that looks just like <code>bluedog</code> but also tells us how each student answered the <code>song</code> question.</p>
+
+<p>You should get the following output:</p>
+
+<pre><code>sqlite&gt; SELECT * FROM bluedog_songs;
+blue|dog|Smells like Teen Spirit
+blue|dog|The Middle
+blue|dog|Clair De Lune
+blue|dog|Smells like Teen Spirit
+blue|dog|Everytime We Touch
+blue|dog|Dancing Queen
+blue|dog|Clair De Lune
+blue|dog|Clair De Lune
+blue|dog|The Middle
+blue|dog|Down With The Sickness
+blue|dog|thank u, next
+blue|dog|All I want for Christmas is you
+blue|dog|Everytime We Touch
+blue|dog|Clair De Lune
+blue|dog|Everytime We Touch
+blue|dog|thank u, next
+blue|dog|All I want for Christmas is you
+blue|dog|Smells like Teen Spirit
+blue|dog|The Middle
+blue|dog|Clair De Lune
+blue|dog|Dancing Queen
+blue|dog|All I want for Christmas is you
+blue|dog|Dancing Queen
+blue|dog|Clair De Lune
+blue|dog|Dancing Queen
+blue|dog|Dancing Queen</code></pre>
+
+<solution>
+
+<pre><code>CREATE TABLE bluedog_songs AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+<p>This distribution of songs actually largely represents the distribution of song choices that the total group of students made, so perhaps all we've learned here is that there isn't a correlation between a student's favorite color and desired pet, and what song they could spend the rest of their life listening to. Even demonstrating that there is no correlation still reveals facts about our data though!</p>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q bluedog</code></pre>
+
+<h3 class="question" id="q3">Q3: The Smallest Unique Positive Integer</h3>
+
+<p>Who successfully managed to guess the smallest unique positive integer value?
+Let's find out!</p>
+
+<p>While we could find out the smallest unique integer using aggregation,
+for now let's just try hand-inspecting the data. An anonymous elf
+has informed us that the smallest unique positive value is greater than 2.</p>
+
+<p>Write an SQL query to create a table with the columns <code>time</code> and <code>smallest</code>
+that we can inspect to determine what the smallest integer value is. In order
+to make it easier for us to inspect these values, use <code>WHERE</code> to restrict the
+answers to numbers greater than 2, <code>ORDER BY</code> to sort the numerical values,
+and <code>LIMIT</code> your result to the first 20 values that are greater than the number
+2.</p>
+
+<p><strong>Note:</strong> Unfortunately, the smallest unique integer doesn't exist in the first 20 values greater than 2. For fun, you can try some new SQL queries (for example, looking at values larger than 10) to see if you can find the smallest unique integer!</p>
+
+<solution>
+
+<pre><code>CREATE TABLE smallest_int AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q smallest-int</code></pre>
+
+<p>After you've successfully passed the Ok test, take a look at the table
+<code>smallest_int</code> that you just created and manually find the smallest unique
+integer value!</p>
+
+<p>To do this, try the following:</p>
+
+<pre><code>$ python3 sqlite_shell.py &#x2d;&#x2d;init lab12.sql
+sqlite&gt; SELECT * FROM smallest_int; &#x2d;&#x2d; No LIMIT this time!</code></pre>
+
+
+
+<h3 class="question" id="q4">Q4: Matchmaker, Matchmaker</h3>
+
+<p>Did you take 61A with the hope of finding your quarantine romance? Well you're in luck!
+With all this data in hand, it's easy for us to find your perfect match. If two
+students want the same pet and have the same taste in music, they are clearly meant
+to be together! In order to provide some more information for the potential lovebirds
+to converse about, let's include the favorite colors of the two individuals as well!</p>
+
+<p>In order to match up students, you will have to do a join on the <code>students</code> table
+with itself. When you do a join, SQLite will match every single row with every single
+other row, so make sure you do not match anyone with themselves, or match any given pair
+twice!</p>
+
+<blockquote><p><strong>Important Note:</strong> When pairing the first and second person, make sure that
+the first person responded first (i.e. they have an earlier <code>time</code>). This is
+to ensure your output matches our tests.</p>
+
+<p><em>Hint:</em> When joining table names where column names are the same, use dot
+notation to distinguish which columns are from which table:
+<code>[table_name].[column name]</code>. This sometimes may get verbose, so it’s
+stylistically better to give tables an alias using the <code>AS</code> keyword.
+The syntax for this is as follows:</p>
+
+<pre><code>SELECT &lt;[alias1].[column name1], [alias2].[columnname2]...&gt;
+    FROM &lt;[table_name1] AS [alias1],[table_name2] AS [alias2]...&gt; ...</code></pre>
+
+<p>The query in the <a href="#joins">football example</a> from earlier uses this syntax.</p></blockquote>
+
+<p>Write a SQL query to create a table that has 4 columns:</p>
+
+<ul>
+  <li>The shared preferred <code>pet</code> of the couple</li>
+  <li>The shared favorite <code>song</code> of the couple</li>
+  <li>The favorite <code>color</code> of the first person</li>
+  <li>The favorite <code>color</code> of the second person</li>
+</ul>
+
+<solution>
+
+<pre><code>CREATE TABLE matchmaker AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q matchmaker</code></pre>
+
+
+
+<h3 class="question" id="q5">Q5: Sevens</h3>
+
+<p>Let's take a look at data from both of our tables, <code>students</code> and <code>numbers</code>,
+to find out if students that really like the number 7 also chose <code>&#x27;7&#x27;</code> for the
+obedience question. Specifically, we want to look at the students that fulfill
+the below conditions and see if they also chose <code>&#x27;7&#x27;</code> in the question that asked
+students to choose the number 7 (column <code>seven</code> in <code>students</code>).</p>
+
+<p>Conditions:</p>
+
+<ul>
+  <li>reported that their favorite number (column <code>number</code> in <code>students</code>) was 7</li>
+  <li>have <code>&#x27;True&#x27;</code> in column <code>&#x27;7&#x27;</code> in <code>numbers</code>, meaning they checked the number <code>7</code> during the survey</li>
+</ul>
+
+<p>In order to examine rows from both the <code>students</code> and the <code>numbers</code> table, we will
+need to perform a join.</p>
+
+<p>How would you specify the <code>WHERE</code> clause to make the <code>SELECT</code> statement only consider
+rows in the joined table whose values all correspond to the same student? If
+you find that your output is massive and overwhelming, then you are probably missing
+the necessary condition in your <code>WHERE</code> clause to ensure this.</p>
+
+<blockquote><p><em>Note:</em> The columns in the <code>numbers</code> table are strings with the associated number,
+so you must put quotes around the column name to refer to it. For example if you alias
+the table as <code>a</code>, to get the column to see if a student checked 9001, you must write
+<code>a.&#x27;9001&#x27;</code>.</p></blockquote>
+
+<p><strong>Write a SQL query to create a table with just the column <code>seven</code> from <code>students</code>, filtering
+first for students who said their favorite number (column <code>number</code>) was 7 in the <code>students</code>
+table and who checked the box for seven (column <code>&#x27;7&#x27;</code>) in the <code>numbers</code> table.</strong>
+<!-- Note: for summer 2018, there are only 4 lines, so this part was left out.
+The first 10 lines of this table should look like this:
+
+<pre><code>sqlite&gt; SELECT * FROM sevens LIMIT 10;
+7
+7
+7
+You&#x27;re not the boss of me!
+7
+seven
+the number 7 below.
+You&#x27;re not the boss of me!
+7
+7</code></pre>
+
+--></p>
+
+<solution>
+
+<pre><code>CREATE TABLE sevens AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q sevens</code></pre>
+
+
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#sql-basics">SQL Basics</a></li>
+    <ul>
+      <li><a href="#creating-tables">Creating Tables</a></li>
+      <li><a href="#selecting-from-tables">Selecting From Tables</a></li>
+      <li><a href="#sql-operators">SQL operators</a></li>
+    </ul>
+    <li><a href="#joins">Joins</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <ul>
+      <li><a href="#windows">Windows</a></li>
+      <li><a href="#macos-yosemite-10-10-or-newer">macOS Yosemite (10.10) or newer</a></li>
+      <li><a href="#mac-os-x-mavericks-10-9-or-older">Mac OS X Mavericks (10.9) or older</a></li>
+      <li><a href="#ubuntu">Ubuntu</a></li>
+    </ul>
+    <li><a href="#usage">Usage</a></li>
+  </ul>
+  <li><a href="#the-survey-data">The Survey Data!</a></li>
+  <li><a href="#questions">Questions</a></li>
+  <ul>
+    <li><a href="#q1">Q1: What Would SQL print?</a></li>
+    <li><a href="#q2">Q2: Go Bears! (And Dogs?)</a></li>
+    <li><a href="#q3">Q3: The Smallest Unique Positive Integer</a></li>
+    <li><a href="#q4">Q4: Matchmaker, Matchmaker</a></li>
+    <li><a href="#q5">Q5: Sevens</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

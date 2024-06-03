@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link href="/~cs61a/fa20/assets/css/project.css" rel="stylesheet" type="text/css">
+
+
+    <title>
+Project 4: Scheme Interpreter | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Project 4: Scheme Interpreter
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="scheme.zip" class="label label-outline">scheme.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+<div class="haiku">
+  <blockquote><p><img class="img-responsive center-block" src="images/money_tree.png" alt="Money Tree"></p>
+
+<cite>
+  Eval calls apply,<br />
+  which just calls eval again!<br />
+  When does it all end?
+</cite></blockquote>
+</div>
+
+    
+
+<h2 id="introduction">Introduction</h2>
+
+
+<blockquote><p><strong>Important Update:</strong> If you downloaded the project <strong>before 7PM PST on 11/9</strong>:</p>
+
+<ul>
+  <li>The scheme project has been updated to be scored out of <strong>30 points</strong>. You do not need to redownload the project to receive credit. If you would like to see your current score out of 30 points locally, please redownload the <code>scheme.zip</code> file and copy your solutions to the new folder</li>
+  <li>Please redownload the project and move the file <code>tests/05.py</code> into your existing <code>tests/</code> folder if you are having issues with the following <strong>test case in Problem 5</strong>: <code>(let ((x 2)) ((begin (define x (+ x 1)) +) 3 (begin (define x (+ x 1)) x)))</code>.</li>
+</ul>
+
+<p><strong>Important submission note:</strong> For full credit:</p>
+
+<ul>
+  <li>submit with Questions 1-6 done by <strong>Tuesday, 11/17</strong> (worth 1 pt), and</li>
+  <li>submit with Parts I and II complete by <strong>Friday, 11/20</strong> (worth 1 pt), and</li>
+  <li>submit the entire project by <strong>Tuesday, 11/24</strong>.
+  You will get an extra credit point for submitting the entire project by
+  Monday, 11/23.</li>
+</ul>
+
+<p>The Scheme project involves writing an interpreter for the Scheme language
+which is no small task! Start working on the project <em>now</em>! There are many
+parts and students often get stuck throughout the project so it's best to
+solve these problems early while there's still plenty of time. Remember that
+you can ask questions about the project in lab and office hours too!</p>
+
+<p>We've also written a <a href="/~cs61a/fa20/articles/scheme-spec.html">language specification</a> and <a href="/~cs61a/fa20/articles/scheme-builtins.html">built-in procedure
+reference</a> for the CS 61A subset of Scheme that you'll be building
+in this project. Reading the entirety of either of these documents should not
+be necessary, but we'll point out useful sections from the documentation in
+each part of the project.</p></blockquote>
+
+<p>In this project, you will develop an interpreter for a subset of the Scheme
+language. As you proceed, think about the issues that arise in the design of a
+programming language; many quirks of languages are byproducts of implementation
+decisions in interpreters and compilers. The subset of the language used in this
+project is described in the <a href="http://composingprograms.com/pages/32-functional-programming.html">functional programming</a> section of Composing
+Programs. Since we only include a subset of the language, your interpreter will
+not exactly match the behavior of other interpreters.</p>
+
+<p>You will also implement some small programs in Scheme. Scheme is a simple but
+powerful functional language. You should find that much of what you have learned
+about Python transfers cleanly to Scheme as well as to other programming
+languages.</p>
+
+<p>For this project, we are releasing an alternate challenge version of the project which
+provides much less guidance in the project specification as well as a minimal
+amount of starter code. It is appropriate for students with a substantial amount
+of coding experience who want a rather challenging project. It will be
+worth no more points than the standard version, but can be completed instead of
+the standard version for full credit.</p>
+
+<!--
+-->
+
+<p>Later, there will also be an open-ended graphics contest (released separately)
+that challenges you to produce recursive images in only a few lines of Scheme.
+As an example, the picture above abstractly depicts all the ways of making change
+for $0.50 using U.S. currency. All flowers appear at the end of a branch with
+length 50. Small angles in a branch indicate an additional coin, while large
+angles indicate a new currency denomination. In the contest, you too will have
+the chance to unleash your inner recursive artist.</p>
+
+
+<h2 id="download-starter-files">Download starter files</h2>
+
+
+<p>You can download all of the project code as a <a href="scheme.zip">zip archive</a>.  This
+project includes several files, but all of your changes will be made to only
+four: <code>scheme.py</code>, <code>scheme_reader.py</code>, <code>questions.scm</code>, and <code>tests.scm</code>. Here
+are all the files included in the archive:</p>
+
+<ul>
+  <li><code>scheme.py</code>: implements the REPL and a evaluator for Scheme expressions</li>
+  <li><code>scheme_reader.py</code>: implements the reader for Scheme input. The <code>Pair</code> class and <code>nil</code> definition can be found here.</li>
+  <li><code>scheme_tokens.py</code>: implements the tokenizer for Scheme input</li>
+  <li><code>scheme_builtins.py</code>: implements built-in Scheme procedures in Python</li>
+  <li><code>buffer.py</code>: implements the <code>Buffer</code> class, used in <code>scheme_reader.py</code></li>
+  <li><code>ucb.py</code>: utility functions for use in 61A projects</li>
+  <li><code>questions.scm</code>: contains skeleton code for Phase III</li>
+  <li><code>tests.scm</code>: a collection of test cases written in Scheme</li>
+  <li><code>ok</code>: the autograder</li>
+  <li><code>tests</code>: a directory of tests used by <code>ok</code></li>
+  <li><code>mytests.rst</code>: a file where you can add your own tests</li>
+</ul>
+
+
+<!-- This is a hack so this section shows up in the sidebar -->
+
+<h2 id="logistics">Logistics</h2>
+
+
+
+<p>This is a 15-day project. You may work with one other partner.
+You should not share your code with students who are not your partner or copy
+from anyone else's solutions. In the end, you will submit one project for both
+partners. <b>We strongly encourage you to work on all parts of the project together
+rather than splitting up the work.</b> Switch off who writes the code, but whoever
+is not coding should contribute by looking at the code and providing comments on
+a direction to go and catching bugs.</p>
+
+
+
+<!-- <p>Remember that you can earn an additional bonus point by submitting the
+  project at least 24 hours before the deadline.</p> -->
+
+
+
+<p>The project is worth 30 points. 28 points are assigned for correctness, including 1 point for passing <code>tests.scm</code>, 1 point for submitting Q1-6 by the first checkpoint, and 1 point for submitting Parts I and II by the second checkpoint.</p>
+
+
+<p>You will turn in the following files:</p>
+
+<ul>
+  <li><code>scheme_reader.py</code></li>
+  <li><code>scheme.py</code></li>
+  <li><code>questions.scm</code></li>
+  <li><code>tests.scm</code></li>
+</ul>
+
+<p>You do not need to modify or turn in any other files to complete the
+project. To submit the project, run the following command:</p>
+
+<pre><code>python3 ok --submit</code></pre>
+
+<p>You will be able to view your submissions on the <a
+  href="http://ok.cs61a.org">Ok dashboard</a>.</p>
+
+<p>For the functions that we ask you to complete, there may be some
+initial code that we provide. If you would rather not use that code,
+feel free to delete it and start from scratch. You may also add new
+function definitions as you see fit.</p>
+
+<p>However, please do <b>not</b> modify any other functions.  Doing so may
+result in your code failing our autograder tests. Also, please do not
+change any function signatures (names, argument order, or number of
+arguments).</p>
+
+
+
+<p>Throughout this project, you should be testing the correctness of your code.
+It is good practice to test often, so that it is easy to isolate any problems.
+However, you should not be testing <i>too</i> often, to allow yourself time to
+think through problems.</p>
+
+<p>We have provided an <b>autograder</b> called <code>ok</code> to help you
+with testing your code and tracking your progress. The first time you run the
+autograder, you will be asked to <b>log in with your Ok account using your web
+browser</b>. Please do so. Each time you run <code>ok</code>, it will back up
+your work and progress on our servers.</p>
+
+<p>The primary purpose of <code>ok</code> is to test your implementations.</p>
+
+<!-- <p>First, some of the test cases are <i>locked</i>. To unlock tests, run the
+following command from your terminal:</p>
+
+<pre><code>python3 ok -u</code></pre>
+
+<p>This command will start an interactive prompt that looks like:</p>
+
+<pre>
+=====================================================================
+Assignment: Scheme Interpreter
+Ok, version ...
+=====================================================================
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unlocking tests
+
+At each "? ", type what you would expect the output to be.
+Type exit() to quit
+
+---------------------------------------------------------------------
+Question 0 &gt; Suite 1 &gt; Case 1
+(cases remaining: 1)
+
+&gt;&gt;&gt; Code here
+?
+</pre>
+
+<p>At the <code>?</code>, you can type what you expect the output to be. If you
+are correct, then this test case will be available the next time you run the
+autograder.</p>
+
+<p>The idea is to understand <i>conceptually</i> what your program should do
+first, before you start writing any code.</p>
+
+<p>Once you have unlocked some tests and written some code, you can check the
+correctness of your program using the tests that you have unlocked:</p>
+
+<pre>python3 ok</pre>
+
+<p>Most of the time, you will want to focus on a particular question. Use the
+<code>-q</code> option as directed in the problems below.</p>  -->
+
+<!-- <p>Second, there may be some test cases that are <i>hidden</i>. These test cases are
+<b>not</b> run by the command:</p> -->
+
+<!--<pre>python3 ok</pre>-->
+
+<!-- <p>They are only run when you submit:</p> -->
+
+<!-- <pre>python3 ok --submit</pre> -->
+
+<!-- <p> We keep test cases hidden to ensure that you write your code with the intention
+of solving the question at hand, not purely to pass the given tests. The hidden
+tests will be run when you submit your project. You will receive an email with part of
+the autograder results after submitting. However, the autograder has a 15 minute
+cooldown period. If you submit before 15 minutes have passed, the autograder will
+not run.</p> -->
+
+<p>We recommend that you submit <b>after you finish each
+problem</b>. Only your last submission will be graded. It is also useful for us
+to have more backups of your code in case you run into a submission issue. <b>If you forget to submit, your last backup will be automatically converted to a submission. </b></p>
+
+<!--<p>After you run this command, you will receive an email (to the address-->
+<!--that you used to sign up for Ok) that has the output from all <i>failed</i>-->
+<!--unlocked tests, including hidden tests, along with your score at the bottom. You-->
+<!--can continue submitting until you pass all the tests. However, you will receive-->
+<!--<b>at most one email every half hour</b>.</p>-->
+
+<!--<p>This buffer period is meant for you and your partner to try and understand-->
+<!--where your error comes from, and take some time to think through your code. We-->
+<!--encourage you to do this for all projects.</p>-->
+
+<!---
+<p>If you are trying to debug a test failure, you can launch an interactive session
+after the test is run with:</p>
+
+<pre><code>python3 ok &#x2d;q 05 &#x2d;i</code></pre>
+
+<p>This will run the tests and launch an interactive session if a test does not
+pass.</p>
+
+<pre><code>=====================================================================
+Assignment: Project 1: Hog
+Ok, version ....
+=====================================================================
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Running tests
+
+&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;
+Question ... &gt; Suite ... &gt; Case ...
+
+&gt;&gt;&gt; the_test()
+"expected value"
+
+# Error: expected
+#     "expected value"
+# but got
+#     None
+
+# Interactive console. Type exit() to quit
+&gt;&gt;&gt;</code></pre>
+-->
+
+
+<!--- <p>The <code>tests</code> folder is used to store autograder tests, so
+<b>do not modify it</b>. You may lose all your unlocking progress if you
+do. If you need to get a fresh copy, you can download the
+<a href="scheme.zip">zip archive</a> and copy it over, but you
+will need to start unlocking from scratch.</p> -->
+
+<p>If you do not want us to record a backup of your work or information about
+your progress, you can run
+
+<pre>python3 ok --local</pre>
+
+
+With this option, no information will be sent to our course
+servers.
+
+If you want to test your code interactively, you can run
+
+<pre> python3 ok -q [question number] -i </pre>
+
+with the appropriate question number (e.g. <code>01</code>) inserted.
+This will run the tests for that question until the first one you failed,
+then give you a chance to test the functions you wrote interactively.</p>
+
+<p>You can also use the debug printing feature in OK by writing
+
+<pre> print("DEBUG:", x) </pre>
+
+which will produce an output in your terminal without causing OK tests to fail
+with extra output.
+
+<h2 id="interpreter-details">Interpreter details</h2>
+
+
+
+<h3 id="scheme-features">Scheme features</h3>
+
+
+<p><strong>Read-Eval-Print.</strong> The interpreter reads Scheme expressions, evaluates them,
+and displays the results.</p>
+
+<pre><code class="scheme">scm&gt; 2
+2
+scm&gt; (+ 2 3)
+5
+scm&gt; ((lambda (x) (* x x)) 5)
+25</code></pre>
+
+
+
+<p>The starter code for your Scheme interpreter in <code>scheme.py</code> can successfully
+evaluate the first expression above, since it consists of a single number. The
+second (a call to a built-in procedure) and the third (a computation of 5
+squared) will not work just yet.</p>
+
+<p><strong>Load.</strong> You can load a file by passing in a symbol for the file name.
+For example, to load <code>tests.scm</code>, evaluate the following call expression.</p>
+
+<pre><code class="scheme">scm&gt; (load &#x27;tests)</code></pre>
+
+
+
+<p><strong>Symbols.</strong> Various dialects of Scheme are more or less permissive
+about identifiers (which serve as symbols and variable names).</p>
+
+<p>Our rule is that:</p>
+
+<blockquote><p>An identifier is a sequence of letters (a-z and A-Z), digits, and characters
+in <code>!$%&amp;*/:&lt;=&gt;?@^_~&#x2d;+.</code> that do not form a valid integer or floating-point
+numeral and are not existing special form shorthands.</p></blockquote>
+
+<p>Our version of Scheme is case-insensitive: two identifiers are considered
+identical if they match except possibly in the capitalization of letters.
+They are internally represented and printed in lower case:</p>
+
+<pre><code class="scheme">scm&gt; &#x27;Hello
+hello</code></pre>
+
+
+
+<p><strong>Turtle Graphics.</strong> In addition to standard Scheme procedures, we include
+procedure calls to the Python <code>turtle</code> package. This will come in handy
+for the contest.</p>
+
+<p>You can read the <a href="http://docs.python.org/py3k/library/turtle.html">turtle module
+documentation</a> online.</p>
+
+<p><em>Note</em>: The <code>turtle</code> Python module may not be installed by default on your
+personal computer. However, the <code>turtle</code> module is installed on the
+instructional machines. So, if you wish to create turtle graphics for this
+project (i.e. for the contest), then you'll either need to setup <code>turtle</code> on
+your personal computer or use university computers.</p>
+
+
+<h3 id="implementation-overview">Implementation overview</h3>
+
+
+<p>Here is a brief overview of each of the Read-Eval-Print Loop components in our
+interpreter. Refer to this section as you work through the project as a reminder of how all the small pieces fit together!</p>
+
+<ul>
+  <li><p><strong>Read</strong>: This step parses user input (a string of Scheme code) into our
+  interpreter's internal Python representation of Scheme expressions (e.g. Pairs).</p>
+
+  <ul>
+    <li><em>Lexical analysis</em> has already been implemented for you in the
+    <code>tokenize_lines</code> function in <code>scheme_tokens.py</code>. This function returns a
+    <code>Buffer</code> (from <code>buffer.py</code>) of tokens. You do not need to read or
+    understand the code for this step.</li>
+    <li><em>Syntactic analysis</em> happens in <code>scheme_reader.py</code>, in the <code>scheme_read</code>
+    and <code>read_tail</code> functions. Together, these mutually recursive functions
+    parse Scheme tokens into our interpreter's internal Python representation
+    of Scheme expressions. You will complete both functions.</li>
+  </ul></li>
+  <li><p><strong>Eval</strong>: This step evaluates Scheme expressions (represented in Python) to
+  obtain values. Code for this step is in the main <code>scheme.py</code> file.</p>
+
+  <ul>
+    <li><em>Eval</em> happens in the <code>scheme_eval</code> function. If the expression is a call expression, it gets evaluated according to the rules for evaluating call expressions (you will implement this). If the expression being evaluated is a special form, the corresponding <code>do_?_form</code> function is
+    called. You will complete several of the <code>do_?_form</code> functions.</li>
+    <li><em>Apply</em> happens in the <code>scheme_apply</code> function. If the function is a built-in procedure, <code>scheme_apply</code> calls the <code>apply</code> method of that <code>BuiltInProcedure</code> instance. If the procedure is a user-defined procedure, <code>scheme_apply</code> creates a new call frame and calls <code>eval_all</code> on the body of the procedure, resulting in a
+    mutually recursive eval-apply loop.</li>
+  </ul></li>
+  <li><strong>Print</strong>: This step prints the <code>__str__</code> representation of the obtained
+  value.</li>
+  <li><strong>Loop</strong>: The logic for the loop is handled by the <code>read_eval_print_loop</code> function in <code>scheme.py</code>. You do not need to understand the entire implementation.</li>
+</ul>
+
+<p><strong>Exceptions.</strong> As you develop your Scheme interpreter, you may find that
+Python raises various uncaught exceptions when evaluating Scheme expressions.
+As a result, your Scheme interpreter will halt. Some of these may be the
+results of bugs in your program, but some might just be errors in user
+programs. The former should be fixed by debugging your interpreter
+and the latter should be handled by your code, usually by raising a <code>SchemeError</code>. All
+<code>SchemeError</code> exceptions are handled and printed as error messages by the
+<code>read_eval_print_loop</code> function in <code>scheme.py</code>. Ideally, there should <em>never</em>
+be unhandled Python exceptions for any input to your interpreter.</p>
+
+
+<h3 id="running-the-interpreter">Running the interpreter</h3>
+
+
+<p>To start an interactive Scheme interpreter session, type:</p>
+
+<pre><code>python3 scheme.py</code></pre>
+
+<p>You can use your Scheme interpreter to evaluate the expressions in an input file
+by passing the file name as a command-line argument to <code>scheme.py</code>:</p>
+
+<pre><code>python3 scheme.py tests.scm</code></pre>
+
+<p>Currently, your Scheme interpreter can handle a few simple expressions, such as:</p>
+
+<pre><code class="scheme">scm&gt; 1
+1
+scm&gt; 42
+42
+scm&gt; true
+#t</code></pre>
+
+
+
+<p>To exit the Scheme interpreter, press <code>Ctrl&#x2d;d</code> or evaluate the <code>exit</code> procedure
+(after completing problems 3 and 4):</p>
+
+<pre><code class="scheme">scm&gt; (exit)</code></pre>
+
+
+
+
+<h2 id="part-0-testing-your-interpreter">Part 0: Testing Your Interpreter</h2>
+
+
+<p>The <code>tests.scm</code> file contains a long list of sample Scheme expressions and
+their expected values. Many of these examples are from Chapters 1 and 2 of
+<a href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-4.html#%_toc_start">Structure and Interpretation of Computer Programs</a>, the textbook from
+which Composing Programs is adapted.</p>
+
+
+<h2 id="part-i-the-reader">Part I: The Reader</h2>
+
+
+<blockquote><p><strong>Important submission note:</strong> For full credit:</p>
+
+<ul>
+  <li>submit with Questions 1-6 complete by <strong>Tuesday, 11/17</strong> (worth 1 pt).</li>
+  <li>submit with Parts I and II complete by <strong>Friday, 11/20</strong> (worth 1pt).</li>
+  <li>submit the entire project by <strong>Tuesday, 11/24</strong>.
+  You will get an extra credit point for submitting the entire project by
+  Monday, 11/23.</li>
+</ul></blockquote>
+
+<!-- separate bq -->
+
+<blockquote><p>All changes in this part should be made in <code>scheme_reader.py</code>.</p></blockquote>
+
+<p>Check out this hint video for some guidance on how to get started on Questions 1 through 6.
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/8hUQxxdVHjw"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<p>In Parts I and II, you will develop the interpreter in several stages:</p>
+
+<ul>
+  <li>Reading Scheme expressions</li>
+  <li>Symbol evaluation</li>
+  <li>Calling built-in procedures</li>
+  <li>Definitions</li>
+  <li>Lambda expressions and procedure definition</li>
+  <li>Calling user-defined procedures</li>
+  <li>Evaluation of special forms</li>
+</ul>
+
+<p>The first part of this project deals with reading and parsing user input. Our
+reader will parse Scheme code into Python values with the following
+representations:</p>
+
+<table align="center" class="table table-bordered table-striped">
+  <tr>
+    <th>Input Example</th>
+    <th>Scheme Expression Type</th>
+    <th>Our Internal Representation</th>
+  </tr>
+
+  <tr>
+    <td><code>scm> 1</code>
+    <td>Numbers</td>
+    <td>Python's built-in <code>int</code> and <code>float</code> values</td>
+  </tr>
+
+  <tr>
+    <td><code>scm> x</code>
+    <td>Symbols</td>
+    <td>Python's built-in <code>string</code> values</td>
+  </tr>
+
+  <tr>
+     <td><code>scm> #t</code>
+     <td>Booleans (<code>#t</code>, <code>#f</code>)</td>
+     <td>Python's built-in <code>True</code>, <code>False</code> values</td>
+  </tr>
+
+  <tr>
+     <td><code>scm> (+ 2 3)</code>
+     <td>Combinations</td>
+     <td>Instances of the <code>Pair</code> class, defined in
+     <code>scheme_reader.py</code></td>
+  </tr>
+
+  <tr>
+     <td><code>scm> nil</code>
+     <td><code>nil</code></td>
+     <td>The <code>nil</code> object, defined in
+     <code>scheme_reader.py</code></td>
+  </tr>
+</table>
+
+<p>When we refer to combinations in this project, we are referring to both call expressions
+and special forms.</p>
+
+<p>If you haven't already, make sure to read the
+<a href="#implementation-overview">Implementation overview</a> section above to understand
+how the reader is broken up into parts.</p>
+
+<p>In our implementation, we store tokens ready to be parsed in <code>Buffer</code>
+instances.  For example, a buffer containing the input <code>(+ (2 3))</code> would have
+the tokens <code>&#x27;(&#x27;</code>, <code>&#x27;+&#x27;</code>, <code>&#x27;(&#x27;</code>, <code>2</code>, <code>3</code>, <code>&#x27;)&#x27;</code>, and <code>&#x27;)&#x27;</code>. See the
+doctests in <code>buffer.py</code> for more examples.  You do not have to understand the
+code in this file.</p>
+
+<p>You will write the parsing functionality, which consists of two mutually
+recursive functions <code>scheme_read</code> and <code>read_tail</code>.  These functions each take
+in a single parameter, <code>src</code>, which is an instance of <code>Buffer</code>.</p>
+
+<p>There are two methods defined in <code>buffer.py</code> that you'll use to interact with
+<code>src</code>:</p>
+
+<ul>
+  <li><code>src.pop_first()</code>: mutates <code>src</code> by removing the <strong>first</strong> token in <code>src</code>
+  and returns it. For the sake of simplicity, if we imagine <code>src</code> as a Buffer containing
+  <code>[4, 3, &#x27;)&#x27;]</code>, <code>src.pop_first()</code> will return <code>4</code>, and <code>src</code>
+  will be left with <code>[3, &#x27;)&#x27;]</code>.</li>
+  <li><code>src.current()</code>: returns the <strong>first</strong> token in <code>src</code> without removing it.
+  For example, if <code>src</code> currently contains the tokens <code>[4, 3, &#x27;)&#x27;]</code>, then
+  <code>src.current()</code> will return <code>4</code> but <code>src</code> will remain the same.</li>
+</ul>
+
+<p>Note that you cannot index into the Buffer object (i.e. <code>buffer[1]</code> is not valid).</p>
+
+
+<h3 id="problem-1-2-pt">Problem 1 (2 pt)</h3>
+
+
+<p>First, implement <code>scheme_read</code> and <code>read_tail</code> so that they can parse combinations and atomic expressions. The expected behavior is as follows:</p>
+
+<ul>
+  <li><code>scheme_read</code> removes enough tokens from <code>src</code> to form a single expression
+  and returns that expression in the correct internal representation (see above
+  table).</li>
+  <li><code>read_tail</code> expects to read the rest of a list or pair, assuming the
+  open parenthesis of that list or pair has already been removed by
+  <code>scheme_read</code>. It will read expressions (and thus remove tokens) until the
+  matching closing parenthesis <code>)</code> is seen. This list of expressions is
+  returned as a linked list of <code>Pair</code> instances.</li>
+</ul>
+
+<p>In short, <code>scheme_read</code> returns the next single complete expression in the
+buffer and <code>read_tail</code> returns the rest of a list or pair in the buffer. Both
+functions mutate the buffer, removing the tokens that have already been
+processed.</p>
+
+<p>The behavior of both functions depends on the first token currently in <code>src</code>.
+They should be implemented as follows:</p>
+
+<p><code>scheme_read</code>:</p>
+
+<ul>
+  <li>If the current token is the string <code>&quot;nil&quot;</code>, return the <code>nil</code> object.</li>
+  <li>If the current token is <code>(</code>, the expression is a pair or list. Call
+  <code>read_tail</code> on the rest of <code>src</code> and return its result.</li>
+  <li>If the current token is <code>&#x27;</code>,  the rest of the buffer should be
+  processed as a <code>quote</code> expression.
+  You don't have to worry about this until Problem 6.</li>
+  <li>If the next token is not a delimiter, then it must be a primitive expression (i.e. a number, boolean). Return
+  it. <strong>(provided)</strong></li>
+  <li>If none of the above cases apply, raise an error. <strong>(provided)</strong></li>
+</ul>
+
+<p><code>read_tail</code>:</p>
+
+<ul>
+  <li>If there are no more tokens, then the list is missing a close parenthesis and
+  we should raise an error. <strong>(provided)</strong></li>
+  <li>If the token is <code>)</code>, then we've reached the end of the list or pair. <strong>Remove
+  this token from the buffer</strong> and return the <code>nil</code> object.</li>
+  <li><p>If none of the above cases apply, the next token is the operator in a combination, e.g. src contains <code>+ 2 3)</code>. To parse this:</p>
+
+  <ol>
+    <li><code>scheme_read</code> the next complete expression in the buffer.</li>
+    <li>Call <code>read_tail</code> to read the rest of the combination until the matching closing
+    parenthesis.</li>
+    <li>Return the results as a <code>Pair</code> instance, where the first element is
+    the next complete expression from (1) and the second element is the rest of the combination from (2).</li>
+  </ol></li>
+</ul>
+
+<p>For more hints and a start on how to approach this problem, take a look at this portion of lecture for additional skeleton code.</p>
+
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/qNH7XZZklh0?t=464"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 01 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 01</code></pre>
+
+<p>Now that your parser is complete, you should test the read-eval-print loop by running <code>python3 scheme_reader.py &#x2d;&#x2d;repl</code>. Every time you type in a value into the prompt, both the <code>str</code> and <code>repr</code> values of the
+  parsed expression are printed. You can try the following inputs</p>
+
+<pre><code>    read&gt; 42
+    str : 42
+    repr: 42
+    read&gt; nil
+    str : ()
+    repr: nil
+    read&gt; (1 (2 3) (4 (5)))
+    str : (1 (2 3) (4 (5)))
+    repr: Pair(1, Pair(Pair(2, Pair(3, nil)), Pair(Pair(4, Pair(Pair(5, nil), nil)), nil)))</code></pre>
+
+<p>To exit the interpreter, you can type <code>exit</code>.</p>
+
+
+<h2 id="part-ii-the-evaluator">Part II: The Evaluator</h2>
+
+
+<blockquote><p><strong>Important submission note:</strong> For full credit:</p>
+
+<ul>
+  <li>submit with Parts I and II complete by <strong>Friday, 11/20</strong> (worth 1 pt), and</li>
+  <li>submit the entire project by <strong>Tuesday, 11/24</strong>.
+  You will get an extra credit point for submitting the entire project by
+  Monday, 11/23.
+  <!-- separate bq -->
+  All changes in this part should be made in <code>scheme.py</code>.</li>
+</ul></blockquote>
+
+<p>In the starter implementation given to you, the evaluator can only evaluate
+self-evaluating expressions: numbers, booleans, and <code>nil</code>.</p>
+
+<p>Read the first two sections of <code>scheme.py</code>, called Eval/Apply and Environments.</p>
+
+<ul>
+  <li><code>scheme_eval</code> evaluates a Scheme expression in the given environment. This function
+  is nearly complete but is missing the logic for call expressions.</li>
+  <li>When evaluating a special form, <code>scheme_eval</code> redirects evaluation to an
+  appropriate <code>do_?_form</code> function found in the Special Forms section in
+  <code>scheme.py</code>.</li>
+  <li><code>scheme_apply</code> applies a procedure to some arguments. This function is
+  complete.</li>
+  <li>The <code>.apply</code> methods in subclasses of <code>Procedure</code> and the <code>make_call_frame</code>
+  function assist in applying built-in and user-defined procedures.</li>
+  <li>The <code>Frame</code> class implements an environment frame.</li>
+  <li>The <code>LambdaProcedure</code> class (in the Procedures section) represents
+  user-defined procedures.</li>
+</ul>
+
+<p>These are all of the essential components of the interpreter; the rest of
+<code>scheme.py</code> defines special forms and input/output behavior.</p>
+
+<p>Test your understanding of how these components fit together by unlocking the
+tests for <code>eval_apply</code>.</p>
+
+<pre><code>python3 ok &#x2d;q eval_apply &#x2d;u</code></pre>
+
+
+<h3 id="some-core-functionality">Some Core Functionality</h3>
+
+
+
+<h3 id="problem-2-1-pt">Problem 2 (1 pt)</h3>
+
+
+<p>Implement the <code>define</code> and <code>lookup</code> methods of the <code>Frame</code> class.
+Each <code>Frame</code> object has the following instance attributes:</p>
+
+<ul>
+  <li><code>bindings</code> is a dictionary representing the bindings in the frame. It maps
+  Scheme symbols (represented as Python strings) to Scheme values.</li>
+  <li><code>parent</code> is the parent <code>Frame</code> instance. The parent of the Global Frame is
+  <code>None</code>.</li>
+</ul>
+
+<p>1) <code>define</code> takes a symbol (represented by a Python string) and a value and binds the
+value to that symbol in the frame.</p>
+
+<p>2) <code>lookup</code> takes a symbol and returns the value bound to that name in the
+first <code>Frame</code> that the name is found in the current environment. Recall that an
+<em>environment</em> is defined as a frame, its parent frame, and all its ancestor
+frames, including the Global Frame. Therefore,</p>
+
+<ul>
+  <li>If the name is found in the current frame, return its value.</li>
+  <li>If the name is not found in the current frame and the frame has a parent
+  frame, continue lookup in the parent frame.</li>
+  <li>If the name is not found in the current frame and there is no parent frame,
+  raise a <code>SchemeError</code> <strong>(provided)</strong>.</li>
+</ul>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 02 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 02</code></pre>
+
+<p>After you complete this problem, you can open your Scheme interpreter
+(with <code>python3 scheme.py</code>). You should be able to look up built-in
+procedure names:</p>
+
+<pre><code class="scheme">scm&gt; +
+#[+]
+scm&gt; odd?
+#[odd?]
+scm&gt; display
+#[display]</code></pre>
+
+
+
+<p>However, your Scheme interpreter will still not be able to call these
+procedures. Let's fix that.</p>
+
+<p>Remember, at this point you can only exit the interpreter by pressing <code>Ctrl&#x2d;d</code>.</p>
+
+
+<h3 id="problem-3-2-pt">Problem 3 (2 pt)</h3>
+
+
+<p>To be able to call built-in procedures, such as <code>+</code>, you need to complete the
+<code>apply</code> method in the class <code>BuiltinProcedure</code>.  Built-in procedures are
+applied by calling a corresponding Python function that implements the
+procedure. For example, the <code>+</code> procedure in Scheme is implemented as the <code>add</code>
+function in Python.</p>
+
+<blockquote><p>To see a list of all Scheme built-in procedures used in the project, look in
+the <code>scheme_builtins.py</code> file. Any function decorated with <code>@builtin</code>
+will be added to the globally-defined <code>BUILTINS</code> list.</p></blockquote>
+
+<p>A <code>BuiltinProcedure</code> has two instance attributes:</p>
+
+<ul>
+  <li><code>fn</code> is the <em>Python</em> function that implements the built-in Scheme
+  procedure.</li>
+  <li><code>use_env</code> is a Boolean flag that indicates whether or not this built-in
+  procedure will expect the current environment to be passed in as the last
+  argument. The environment is required, for instance, to implement the built-in
+  <code>eval</code> procedure.</li>
+</ul>
+
+<p>The <code>apply</code> method of <code>BuiltinProcedure</code> takes a list of argument values and
+the current environment. Note that <code>args</code> is a Scheme list represented as a
+<code>Pair</code> object. Your implementation should do the following:</p>
+
+<ul>
+  <li>Convert the Scheme list to a Python list of arguments. <em>Hint:</em> <code>args</code> is a Pair, which has a <code>.first</code> and <code>.rest</code> similar to a Linked List. Think about how you would put the values of a Linked List into a list.</li>
+  <li>If <code>self.use_env</code> is <code>True</code>, then add the current environment <code>env</code>
+  as the last argument to this Python list.</li>
+  <li>Call <code>self.fn</code> on all of those arguments using <code>*args</code> notation (<code>f(1, 2, 3)</code> is equivalent to <code>f(*[1, 2, 3]</code>)) <strong>Provided</strong></li>
+  <li>If calling the function results in a <code>TypeError</code> exception being raised, then
+  the wrong number of arguments were passed. Use a <code>try</code>/<code>except</code> block to
+  intercept the exception and raise an appropriate <code>SchemeError</code> in its place. <strong>Provided</strong></li>
+</ul>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 03 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 03</code></pre>
+
+
+<h3 id="problem-4-1-pt">Problem 4 (1 pt)</h3>
+
+
+<p><code>scheme_eval</code> evaluates a Scheme expression, represented as a sequence of <code>Pair</code> objects, in a given environment. Most of
+<code>scheme_eval</code> has already been implemented for you. It currently looks up names
+in the current environment, returns self-evaluating expressions (like numbers)
+and evaluates special forms.</p>
+
+<p>Implement the missing part of <code>scheme_eval</code>, which evaluates a call expression.
+To evaluate a call expression, we do the following:</p>
+
+<ol>
+  <li>Evaluate the operator (which should evaluate to an instance of <code>Procedure</code>)</li>
+  <li>Evaluate all of the operands</li>
+  <li>Apply the procedure on the evaluated operands, and return the result</li>
+</ol>
+
+<p>You'll have to recursively call <code>scheme_eval</code> in the first two steps. Here are
+some other functions/methods you should use:</p>
+
+<ul>
+  <li>The <code>validate_procedure</code> function raises an error if the provided argument
+  is not a Scheme procedure. You can use this to validate that your operator
+  indeed evaluates to a procedure.</li>
+  <li>The <code>map</code> method of <code>Pair</code> returns a new Scheme list constructed by applying a <em>one-argument function</em> to every item in
+  a Scheme list.</li>
+  <li>The <code>scheme_apply</code> function applies a Scheme procedure to a Scheme list of arguments.</li>
+</ul>
+
+<p>Note: Please do not mutate the passed in <code>expr</code>.</p>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 04 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 04</code></pre>
+
+<blockquote><p>Note: some of these tests call a primitive (built-in) procedure called <code>print&#x2d;then&#x2d;return</code>.
+This is a "dummy" procedure used only in this project, so you will not need to use
+it elsewhere. You will only ever come across it if you are failing those tests.</p>
+
+<p><code>print&#x2d;then&#x2d;return</code> takes in two arguments. It prints out its first argument and then
+returns its second.</p></blockquote>
+
+<p>Your interpreter should now be able to evaluate built-in procedure calls,
+giving you the functionality of the Calculator language and more.</p>
+
+<pre><code class="scheme">scm&gt; (+ 1 2)
+3
+scm&gt; (* 3 4 (&#x2d; 5 2) 1)
+36
+scm&gt; (odd? 31)
+#t</code></pre>
+
+
+
+
+<h3 id="problem-5-1-pt">Problem 5 (1 pt)</h3>
+
+
+<blockquote><p><strong>Important Update:</strong> If you downloaded the project <strong>before 7PM PST on 11/9</strong>:</p>
+
+<ul>
+  <li>Please redownload the project and move the file <code>tests/05.py</code> into your existing <code>tests/</code> folder if you are having issues with the following <strong>test case in Problem 5</strong>: <code>(let ((x 2)) ((begin (define x (+ x 1)) +) 3 (begin (define x (+ x 1)) x)))</code>.</li>
+</ul></blockquote>
+
+<p>Next, we'll implement defining names. Recall that the <code>define</code> special form
+in Scheme can be used to either assign a name to the value of a given
+expression or to create a procedure and bind it to a name:</p>
+
+<pre><code class="scheme">scm&gt; (define a (+ 2 3))  ; Binds the name a to the value of (+ 2 3)
+a
+scm&gt; (define (foo x) x)  ; Creates a procedure and binds it to the name foo
+foo</code></pre>
+
+
+
+<p>The type of the first operand tells us what is being defined:</p>
+
+<ul>
+  <li>If it is a symbol, e.g. <code>a</code>, then the expression is defining a name</li>
+  <li>If it is a list, e.g. <code>(foo x)</code>, then the expression is defining a procedure.</li>
+</ul>
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#define">Scheme Specifications</a> to understand the behavior of
+the <code>define</code> special form! This problem only provides the behavior for binding
+expressions, not procedures, to names.</p></blockquote>
+
+<p>There are two missing parts in the <code>do_define_form</code> function, which handles the
+<code>(define ...)</code> special forms. For this problem, implement <strong>just the first
+part</strong>, which evaluates the second operand to obtain a value and binds the
+first operand, a symbol, to that value.  <code>do_define_form</code> should return the
+name after performing the binding.</p>
+
+<pre><code class="scheme">scm&gt; (define tau (* 2 3.1415926))
+tau</code></pre>
+
+
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 05 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 05</code></pre>
+
+<p>You should now be able to give names to values and evaluate the resulting
+symbols. Note that <code>eval</code> takes an expression represented as a list and
+evaluates it.</p>
+
+<pre><code class="scheme">scm&gt; (eval (define tau 6.28))
+6.28
+scm&gt; (eval &#x27;tau)
+6.28
+scm&gt; tau
+6.28
+scm&gt; (define x 15)
+x
+scm&gt; (define y (* 2 x))
+y
+scm&gt; y
+30
+scm&gt; (+ y (* y 2) 1)
+91
+scm&gt; (define x 20)
+x
+scm&gt; x
+20</code></pre>
+
+
+
+<p>Consider the following test:</p>
+
+<pre><code class="scheme">(define x 0)
+; expect x
+((define x (+ x 1)) 2)
+; expect Error
+x
+; expect 1</code></pre>
+
+
+
+<p>Here, an Error is raised because the operator does not evaluate to a procedure.
+However, if the operator is evaluated multiple times before raising an error, <code>x</code> will
+be bound to 2 instead of 1, causing the test to fail. Therefore, if your interpreter
+fails this test, you'll want to make sure you only evaluate the operator once in <code>scheme_eval</code>.</p>
+
+
+<h3 id="problem-6-1-pt">Problem 6 (1 pt)</h3>
+
+
+<p>To complete the core functionality, let's implement quoting in our interpreter.
+In Scheme, you can quote expressions in two ways: with the <code>quote</code> special form
+or with the symbol <code>&#x27;</code>.  Recall that the <code>quote</code> special form returns its
+operand expression without evaluating it:</p>
+
+<pre><code class="scheme">scm&gt; (quote hello)
+hello
+scm&gt; &#x27;(cons 1 2)  ; Equivalent to (quote (cons 1 2))
+(cons 1 2)</code></pre>
+
+
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#quote">Scheme Specifications</a> to understand the behavior of
+the <code>quote</code> special form.</p></blockquote>
+
+<p>Let's take care of the <code>quote</code> special form first. Implement the
+<code>do_quote_form</code> function so that it simply returns the unevaluated operand to
+the special form.</p>
+
+<p>After completing this function, you should be able to evaluate quoted
+expressions. Try out some of the following in your interpreter!</p>
+
+<pre><code class="scheme">scm&gt; (quote a)
+a
+scm&gt; (quote (1 2))
+(1 2)
+scm&gt; (quote (1 (2 three (4 5))))
+(1 (2 three (4 5)))
+scm&gt; (car (quote (a b)))
+a</code></pre>
+
+
+<p>Next, complete your implementation of <code>scheme_read</code> in <code>scheme_reader.py</code> by
+handling the case for <code>&#x27;</code>. First, notice that <code>&#x27;&lt;expr&gt;</code>
+translates to <code>(quote &lt;expr&gt;)</code>. That means that we need to wrap
+the expression following <code>&#x27;</code> (which you can get by
+recursively calling <code>scheme_read</code>) into the quote special form, which,
+like all special forms, is really just a list.</p>
+
+<p>For example, <code>&#x27;bagel</code> should be represented as <code>Pair(&#x27;quote&#x27;, Pair(&#x27;bagel&#x27;,
+nil))</code></p>
+
+<p>For another example, <code>&#x27;(1 2)</code> should be represented as <code>Pair(&#x27;quote&#x27;, Pair(Pair(1, Pair(2, nil)), nil))</code>.</p>
+
+<p>After completing your <code>scheme_read</code> implementation, the following quoted expressions should now work as well.</p>
+
+<pre><code class="scheme">scm&gt; &#x27;hello
+hello
+scm&gt; &#x27;(1 2)
+(1 2)
+scm&gt; &#x27;(1 (2 three (4 5)))
+(1 (2 three (4 5)))
+scm&gt; (car &#x27;(a b))
+a
+scm&gt; (eval (cons &#x27;car &#x27;(&#x27;(1 2))))
+1</code></pre>
+
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 06 &#x2d;u</code></pre>
+
+<p><strong>Note</strong>: When you are completing the unlocking tests, make sure to write your answers using <code>Pair</code> representation when necessary.</p>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 06</code></pre>
+
+<p>At this point in the project, your Scheme interpreter should support the
+following features:</p>
+
+<ul>
+  <li>Evaluate atoms, which include numbers, booleans, nil, and symbols,</li>
+  <li>Evaluate the <code>quote</code> special form,</li>
+  <li>Define symbols, and</li>
+  <li>Call built-in procedures, for example evaluating <code>(+ (&#x2d; 4 2) 5)</code>.</li>
+</ul>
+
+<blockquote><p>Once you have completed Problem 6, make sure you submit using OK to receive full
+credit for the first checkpoint.</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p>If you'd like to check your score so far, use the following command:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;score</code></pre></blockquote>
+
+
+<h3 id="user-defined-procedures">User-Defined Procedures</h3>
+
+
+<p>User-defined procedures are represented as instances of the <code>LambdaProcedure</code>
+class. A <code>LambdaProcedure</code> instance has three instance attributes:</p>
+
+<ul>
+  <li><code>formals</code> is a Scheme list of the formal parameters (symbols) that name the
+  arguments of the procedure.</li>
+  <li><code>body</code> is a Scheme list of expressions; the body of the procedure.</li>
+  <li><code>env</code> is the environment in which the procedure was <strong>defined</strong>.</li>
+</ul>
+
+
+<h3 id="problem-7-1-pt">Problem 7 (1 pt)</h3>
+
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#begin">Scheme Specifications</a> to understand the behavior of
+the <code>begin</code> special form!</p></blockquote>
+
+<p>Change the <code>eval_all</code> function in <code>scheme.py</code> (which is called from <code>do_begin_form</code>) to
+complete the implementation of the <code>begin</code> special form. A <code>begin</code>
+expression is evaluated by evaluating all sub-expressions in order. The value
+of the <code>begin</code> expression is the value of the final sub-expression.</p>
+
+<pre><code class="scheme">scm&gt; (begin (+ 2 3) (+ 5 6))
+11
+scm&gt; (define x (begin (display 3) (newline) (+ 2 3)))
+3
+x
+scm&gt; (+ x 3)
+8
+scm&gt; (begin (print 3) &#x27;(+ 2 3))
+3
+(+ 2 3)</code></pre>
+
+
+
+<p>If <code>eval_all</code> is passed an empty list of expressions (<code>nil</code>), then it should
+return the Python value <code>None</code>, which represents the Scheme value <code>undefined</code>.</p>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 07 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 07</code></pre>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/JX-kQqOXXYo"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div>
+
+
+<h3 id="problem-8-1-pt">Problem 8 (1 pt)</h3>
+
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#lambda">Scheme Specifications</a> to understand the behavior of
+the <code>lambda</code> special form!</p></blockquote>
+
+<p>A <code>LambdaProcedure</code> represents a user-defined procedure. It has a list of <code>formals</code> (parameter names), a <code>body</code> of expressions to evaluate, and a parent frame <code>env</code>.</p>
+
+<p>Implement the <code>do_lambda_form</code> function, which creates and returns a <code>LambdaProcedure</code>
+instance. While you cannot call a user-defined procedure yet, you can verify
+that you have created the procedure correctly by typing a lambda expression into
+the interpreter prompt:</p>
+
+<pre><code class="scheme">scm&gt; (lambda (x y) (+ x y))
+(lambda (x y) (+ x y))</code></pre>
+
+
+
+<p>In Scheme, it is legal to place more than one expression in the body of a
+procedure (there must be at least one expression). The <code>body</code> attribute
+of a <code>LambdaProcedure</code> instance is a Scheme list of body expressions.</p>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 08 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 08</code></pre>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/zDqwG6AZ3NQ"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div>
+
+
+<h3 id="problem-9-2-pt">Problem 9 (2 pt)</h3>
+
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#define">Scheme Specifications</a> to understand the behavior of
+the <code>define</code> special form! In this problem, we'll finish defining the <code>define</code>
+form for procedures.</p></blockquote>
+
+<p>Currently, your Scheme interpreter is able to bind symbols to user-defined
+procedures in the following manner:</p>
+
+<pre><code class="scheme">scm&gt; (define f (lambda (x) (* x 2)))
+f</code></pre>
+
+
+
+<p>However, we'd like to be able to use the shorthand form of defining named
+procedures:</p>
+
+<pre><code class="scheme">scm&gt; (define (f x) (* x 2))</code></pre>
+
+
+
+<p>Modify the <code>do_define_form</code> function so that it correctly handles the shorthand
+procedure definition form above. Make sure that it can handle multi-expression
+bodies.</p>
+
+<p>Your implementation should do the following:</p>
+
+<ul>
+  <li>Using the given variables <code>target</code> and <code>expressions</code>, find the defined function's name, formals, and body.</li>
+  <li>Create a <code>LambdaProcedure</code> instance using the formals and body. <em>Hint:</em> You can use what you've done in Problem 8 and call <code>do_lambda_form</code> on the appropriate arguments</li>
+  <li>Bind the name to the <code>LambdaProcedure</code> instance</li>
+</ul>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 09 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 09</code></pre>
+
+<p>You should now find that defined procedures evaluate to <code>LambdaProcedure</code>
+instances. However, you can't call them yet - we'll implement that in the next two problems.</p>
+
+<pre><code class="scheme">scm&gt; (define (square x) (* x x))
+square
+scm&gt; square
+(lambda (x) (* x x))</code></pre>
+
+
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/zkXY8kliOeQ"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div>
+
+
+<h3 id="problem-10-2-pt">Problem 10 (2 pt)</h3>
+
+
+<p>Implement the <code>make_child_frame</code> method of the <code>Frame</code> class which will be used
+to create new call frames for user-defined procedures. This method takes in two
+arguments: <code>formals</code>, which is a Scheme list of symbols, and <code>vals</code>, which is a
+Scheme list of values. It should return a new child frame, binding the formal
+parameters to the values.</p>
+
+<p>To do this:</p>
+
+<ul>
+  <li>If the number of argument values does not match with the number of formal parameters, raise a <code>SchemeError</code>. <strong>Provided</strong></li>
+  <li>Create a new <code>Frame</code> instance, the parent of which is <code>self</code>.</li>
+  <li>Bind each formal parameter to its corresponding argument value in the newly
+  created frame. The first symbol in <code>formals</code> should be bound to the first
+  value in <code>vals</code>, and so on.</li>
+  <li>Return the new frame.</li>
+</ul>
+
+<blockquote><p><em>Hint:</em> The <code>define</code> method of a <code>Frame</code> instance creates a binding in that
+frame.</p></blockquote>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 10 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 10</code></pre>
+
+
+        <button id='toggle-4' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-4">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/gLPMuGZK0Jc"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div>
+
+
+<h3 id="problem-11-1-pt">Problem 11 (1 pt)</h3>
+
+
+<p>Implement the <code>make_call_frame</code> method in <code>LambdaProcedure</code>, which is needed by
+<code>scheme_apply</code>. It should create and return a new <code>Frame</code> instance using the
+<code>make_child_frame</code> method of the appropriate parent frame, binding formal
+parameters to argument values.</p>
+
+<p>Since lambdas are lexically scoped, your new frame should be a child
+of the frame in which the lambda is defined. The <code>env</code> provided as an argument
+to <code>make_call_frame</code> is instead the frame in which the procedure is called,
+which will be useful if you implement dynamically scoped procedures in  problem 18 (Optional).</p>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 11 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 11</code></pre>
+
+<p>At this point in the project, your Scheme interpreter should support the
+following features:</p>
+
+<ul>
+  <li>Create procedures using <code>lambda</code> expressions,</li>
+  <li>Define named procedures using <code>define</code> expressions, and</li>
+  <li>Call user-defined procedures.</li>
+</ul>
+
+
+<h3 id="special-forms">Special Forms</h3>
+
+
+<p>Logical special forms include <code>if</code>, <code>and</code>, <code>or</code>, and <code>cond</code>. These expressions
+are special because not all of their sub-expressions may be evaluated.</p>
+
+<p>In Scheme, only <code>False</code> is a false value. All other values (including <code>0</code> and
+<code>nil</code>) are true values. You can test whether a value is a true or false value
+using the provided Python functions <code>is_true_primitive</code> and <code>is_false_primitive</code>, defined
+in <code>scheme_builtins.py</code>.</p>
+
+<blockquote><p>Note: Scheme traditionally uses <code>#f</code> to indicate the false Boolean value. In
+our interpreter, that is equivalent to <code>false</code> or <code>False</code>. Similarly, <code>true</code>,
+<code>True</code>, and <code>#t</code> are all equivalent. However when unlocking tests, use <code>#t</code> and <code>#f</code>.</p></blockquote>
+
+<p>To get you started, we've provided an implementation of the <code>if</code> special form in
+the <code>do_if_form</code> function. Make sure you understand that implementation before
+starting the following questions.</p>
+
+
+        <button id='toggle-5' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-5">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/3NzdKpMxSUs"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div>
+
+
+<h3 id="problem-12-2-pt">Problem 12 (2 pt)</h3>
+
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#and">Scheme Specifications</a> to understand the behavior of
+the <code>and</code> and <code>or</code> special forms!</p></blockquote>
+
+<p>Implement <code>do_and_form</code> and <code>do_or_form</code> so that <code>and</code> and <code>or</code> expressions are
+evaluated correctly.</p>
+
+<p>The logical forms <code>and</code> and <code>or</code> are <em>short-circuiting</em>. For <code>and</code>, your
+interpreter should evaluate each sub-expression from left to right, and if any
+of these evaluates to a false value, then <code>#f</code> is returned. Otherwise,
+it should return the value of the last sub-expression. If there are no
+sub-expressions in an <code>and</code> expression, it evaluates to <code>#t</code>.</p>
+
+<pre><code class="scheme">scm&gt; (and)
+#t
+scm&gt; (and 4 5 6)  ; all operands are true values
+6
+scm&gt; (and 4 5 (+ 3 3))
+6
+scm&gt; (and #t #f 42 (/ 1 0))  ; short&#x2d;circuiting behavior of and
+#f</code></pre>
+
+
+
+<p>For <code>or</code>, evaluate each sub-expression from left to right. If any
+sub-expression evaluates to a true value, return that value. Otherwise, return
+<code>#f</code>. If there are no sub-expressions in an <code>or</code> expression, it evaluates to
+<code>#f</code>.</p>
+
+<pre><code class="scheme">scm&gt; (or)
+#f
+scm&gt; (or 5 2 1)  ; 5 is a true value
+5
+scm&gt; (or #f (&#x2d; 1 1) 1)  ; 0 is a true value in Scheme
+0
+scm&gt; (or 4 #t (/ 1 0))  ; short&#x2d;circuiting behavior of or
+4</code></pre>
+
+
+
+<p>Remember that you can use the provided Python functions <code>is_true_primitive</code> and <code>is_false_primitive</code> to test boolean values.</p>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 12 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 12</code></pre>
+
+
+<h3 id="problem-13-2-pt">Problem 13 (2 pt)</h3>
+
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#cond">Scheme Specifications</a> to understand the behavior of
+the <code>cond</code> special form!</p></blockquote>
+
+<p>Fill in the missing parts of <code>do_cond_form</code> so that it returns the value of the
+first result sub-expression corresponding to a true predicate, or the result
+sub-expression corresponding to <code>else</code>. Some special cases:</p>
+
+<ul>
+  <li>When the true predicate does not have a corresponding result sub-expression,
+  return the predicate value.</li>
+  <li>When a result sub-expression of a <code>cond</code> case has multiple expressions,
+  evaluate them all and return the value of the last expression. (<em>Hint</em>: Use
+  <code>eval_all</code>.)</li>
+</ul>
+
+<p>Your implementation should match the following examples and the additional tests
+in <code>tests.scm</code>.</p>
+
+<pre><code class="scheme">scm&gt; (cond ((= 4 3) &#x27;nope)
+           ((= 4 4) &#x27;hi)
+           (else &#x27;wait))
+hi
+scm&gt; (cond ((= 4 3) &#x27;wat)
+           ((= 4 4))
+           (else &#x27;hm))
+#t
+scm&gt; (cond ((= 4 4) &#x27;here (+ 40 2))
+           (else &#x27;wat 0))
+42</code></pre>
+
+
+
+<p>The value of a <code>cond</code> is <code>undefined</code> if there are no true predicates and no
+<code>else</code>. In such a case, <code>do_cond_form</code> should return <code>None</code>. If there is only an <code>else</code>, return its sub-expression. If it doesn't have one, return <code>#t</code>.</p>
+
+<pre><code class="scheme">scm&gt; (cond (False 1) (False 2))
+scm&gt; (cond (else))
+#t</code></pre>
+
+
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 13 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 13</code></pre>
+
+
+<h3 id="problem-14-2-pt">Problem 14 (2 pt)</h3>
+
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#let">Scheme Specifications</a> to understand the behavior of
+the <code>let</code> special form!</p></blockquote>
+
+<p>The <code>let</code> special form binds symbols to values locally, giving them their
+initial values. For example:</p>
+
+<pre><code class="scheme">scm&gt; (define x 5)
+x
+scm&gt; (define y &#x27;bye)
+y
+scm&gt; (let ((x 42)
+           (y (* x 10)))  ; x refers to the global value of x, not 42
+       (list x y))
+(42 50)
+scm&gt; (list x y)
+(5 bye)</code></pre>
+
+
+
+<p>Implement <code>make_let_frame</code>, which returns a child frame of <code>env</code> that binds the
+symbol in each element of <code>bindings</code> to the value of its corresponding
+expression. The <code>bindings</code> scheme list contains pairs that each contain a
+symbol and a corresponding expression.</p>
+
+<p>You may find the following functions and methods useful:</p>
+
+<ul>
+  <li><code>validate_form</code>: this function can be used to validate the structure of each
+  binding. It takes in a list <code>expr</code> of expressions and a <code>min</code> and <code>max</code> length. If <code>expr</code> is not a proper list or does not have between <code>min</code> and <code>max</code> items inclusive, it raises an error. If no <code>max</code> is passed in, the default is infinity.</li>
+  <li><code>validate_formals</code>: this function validates that formal parameters are a Scheme list
+  of symbols for which each symbol is distinct.</li>
+  <li><code>make_child_frame</code>: this method of the <code>Frame</code> class (which you implemented in
+  <a href="#problem-11">Problem 11</a>) takes a <code>Pair</code> of formal parameters (symbols) and
+  a <code>Pair</code> of values, and returns a new frame with all the symbols bound to the
+  corresponding values.</li>
+</ul>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 14 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 14</code></pre>
+
+<blockquote><p>To run the additional scheme tests (worth 1 point), run the command:</p>
+
+<pre><code>  python3 ok &#x2d;q tests.scm</code></pre>
+
+<p>Make sure to remove all of the <code>(exit)</code> commands not in the optional section, so that all the tests are
+run! <strong>The best way to check that you've passed all of the required tests and removed the correct <code>(exit)</code>
+commands is to use the score command in ok.</strong>  If you have passed all of the required cases,
+you should see 1/1 points
+received for <code>tests.scm</code> if you run <code>python ok &#x2d;&#x2d;score</code>.</p>
+
+<p>One you have completed Part II, make sure you submit using OK to receive full
+credit for the checkpoint.</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p>If you'd like to check your score so far, use the following command:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;score</code></pre></blockquote>
+
+<p>Congratulations! Your Scheme interpreter implementation is now complete!</p>
+
+<blockquote><p><em>Note:</em> During regular Office Hours and Project Parties, the staff will
+prioritize helping students with required questions. We will not be offering
+help with either extra credit problems unless the <a href="https://oh.cs61a.org/">queue</a> is empty.</p></blockquote>
+
+
+<h2 id="part-iii-write-some-scheme">Part III: Write Some Scheme</h2>
+
+
+<p>Check out this video for some hints and guidance on questions 15 through 17:
+
+        <button id='toggle-6' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-6">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/BA_IQ9dEXz8"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+<blockquote><p><strong>Important submission note:</strong> For full credit:</p>
+
+<ul>
+  <li>submit with Questions 1-6 done by <strong>Tuesday, 11/17</strong> (worth 1 pt), and</li>
+  <li>submit with Parts I and II complete by <strong>Friday, 11/20</strong> (worth 1 pt), and</li>
+  <li>submit the entire project by <strong>Tuesday, 11/24</strong>.
+  You will get an extra credit point for submitting the entire project by
+  Monday, 11/23.</li>
+</ul>
+
+<p>Not only is your Scheme interpreter itself a tree-recursive program, but it is
+flexible enough to evaluate <em>other</em> recursive programs. Implement the
+following procedures in Scheme in the <code>questions.scm</code> file.</p>
+
+<p>In addition, for this part of the project, you may find the <a href="">built-in
+procedure reference</a> very helpful if you ever have a question
+about the behavior of a built-in Scheme procedure, like the difference between
+<code>pair?</code> and <code>list?</code>.</p></blockquote>
+
+<p>The autograder tests for the interpreter are <em>not</em> comprehensive, so you may
+have uncaught bugs in your implementation. Therefore, you may find it useful to
+test your code for these questions in the staff interpreter or the
+<a href="https://code.cs61a.org/scheme">web editor</a> and then try it in your own interpreter once you are
+confident your Scheme code is working.</p>
+
+
+<h3 id="scheme-editor">Scheme Editor</h3>
+
+
+<p>As you're writing your code, you can debug using the Scheme Editor. In your <code>scheme</code> folder you will find a new editor. To run this editor, run <code>python3 editor</code>. This should pop up a window in your browser; if it does not, please navigate to <a href="localhost:31415">localhost:31415</a> and you should see it.</p>
+
+<p>Make sure to run <code>python3 ok</code> in a separate tab or window so that the editor keeps running.</p>
+
+
+<h3 id="problem-15-2-pt">Problem 15 (2 pt)</h3>
+
+
+<p>Implement the <code>enumerate</code> procedure, which takes in a list of values and returns
+a list of two-element lists, where the first element is the index of the value,
+and the second element is the value itself.</p>
+
+<pre><code class="scheme">scm&gt; (enumerate &#x27;(3 4 5 6))
+((0 3) (1 4) (2 5) (3 6))
+scm&gt; (enumerate &#x27;())
+()</code></pre>
+
+
+
+<p>Test your implementation before moving on:</p>
+
+<pre><code>python3 ok &#x2d;q 15</code></pre>
+
+
+<h3 id="problem-16-2-pt">Problem 16 (2 pt)</h3>
+
+
+<p>Implement the <code>merge</code> procedure, which takes in a comparator and two sorted list arguments and combines them into one sorted list. A comparator is a function that compares two values. Here, sorted means sorted according to the comparator. For example:</p>
+
+<pre><code>scm&gt; (merge &lt; &#x27;(1 4 6) &#x27;(2 5 8))
+(1 2 4 5 6 8)
+scm&gt; (merge &gt; &#x27;(6 4 1) &#x27;(8 5 2))
+(8 6 5 4 2 1)</code></pre>
+
+<p>In case of a tie, you can choose to break the tie arbitrarily.</p>
+
+<p>Test your implementation before moving on:</p>
+
+<pre><code>python3 ok &#x2d;q 16</code></pre>
+
+
+<h3 id="problem-17-2-pt">Problem 17 (2 pt)</h3>
+
+
+<p>Define a function <code>nondecreaselist</code>, which takes in a scheme list of numbers and outputs
+  a list of lists, which overall has the same numbers in the same order, but grouped
+  into lists that are non-decreasing.</p>
+
+<p>For example, if the input is a list containing elements</p>
+
+<pre><code>(1 2 3 4 1 2 3 4 1 1 1 2 1 1 0 4 3 2 1)</code></pre>
+
+<p>the output should contain elements</p>
+
+<pre><code>((1 2 3 4) (1 2 3 4) (1 1 1 2) (1 1) (0 4) (3) (2) (1))</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 17</code></pre>
+
+
+<h3 id="extra-credit-2-pt">Extra Credit (2 pt)</h3>
+
+<p>In Scheme, source code is data. Every non-atomic expression is written as a
+Scheme list, so we can write procedures that manipulate other programs just as
+we write procedures that manipulate lists.</p>
+
+<p>Rewriting programs can be useful: we can write an interpreter that only
+handles a small core of the language, and then write a procedure that
+converts other special forms into the core language before a program is passed
+to the interpreter.</p>
+
+<p>For example, the <code>let</code> special form is equivalent to a call expression that
+begins with a <code>lambda</code> expression. Both create a new frame extending the
+current environment and evaluate a body within that new environment.</p>
+
+<pre><code class="scheme">(let ((a 1) (b 2)) (+ a b))
+;; Is equivalent to:
+((lambda (a b) (+ a b)) 1 2)</code></pre>
+
+
+
+<p>These expressions can be represented by the following diagrams:</p>
+
+
+
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+          
+  <tr>
+    <th>Let</th>
+    <th>Lambda</th>
+  </tr>
+  <tr>
+    <td><img class="img-responsive center-block" src="images/let.png" alt="let"></td>
+    <td><img class="img-responsive center-block" src="images/lambda.png" alt="lambda"></td>
+  </tr>
+
+          </table>
+        </div>
+        
+
+
+
+<p>Use this rule to implement a procedure called <code>let&#x2d;to&#x2d;lambda</code> that rewrites all
+<code>let</code> special forms into <code>lambda</code> expressions. If we quote a <code>let</code> expression
+and pass it into this procedure, an equivalent <code>lambda</code> expression should be
+returned: pass it into this procedure:</p>
+
+<pre><code class="scheme">scm&gt; (let&#x2d;to&#x2d;lambda &#x27;(let ((a 1) (b 2)) (+ a b)))
+((lambda (a b) (+ a b)) 1 2)
+scm&gt; (let&#x2d;to&#x2d;lambda &#x27;(let ((a 1)) (let ((b a)) b)))
+((lambda (a) ((lambda (b) b) a)) 1)</code></pre>
+
+
+
+<p>In order to handle all programs, <code>let&#x2d;to&#x2d;lambda</code> must be aware of Scheme
+syntax. Since Scheme expressions are recursively nested, <code>let&#x2d;to&#x2d;lambda</code> must
+also be recursive. In fact, the structure of <code>let&#x2d;to&#x2d;lambda</code> is somewhat
+similar to that of <code>scheme_eval</code>--but in Scheme!  As a reminder, atoms include
+numbers, booleans, nil, and symbols. You do not need to consider code that
+contains quasiquotation for this problem.</p>
+
+<pre><code class="scheme">(define (let&#x2d;to&#x2d;lambda expr)
+  (cond ((atom?   expr) &lt;rewrite atoms&gt;)
+        ((quoted? expr) &lt;rewrite quoted expressions&gt;)
+        ((lambda? expr) &lt;rewrite lambda expressions&gt;)
+        ((define? expr) &lt;rewrite define expressions&gt;)
+        ((let?    expr) &lt;rewrite let expressions&gt;)
+        (else           &lt;rewrite other expressions&gt;)))</code></pre>
+
+
+
+<blockquote><p><em>Hint</em>: You may want to implement <code>zip</code> at the top of <code>questions.scm</code> and also
+use the built-in <code>map</code> procedure.</p>
+
+<pre><code>scm&gt; (zip &#x27;((1 2) (3 4) (5 6)))
+((1 3 5) (2 4 6))
+scm&gt; (zip &#x27;((1 2)))
+((1) (2))
+scm&gt; (zip &#x27;())
+(() ())</code></pre></blockquote>
+
+<p>Test your implementation by running</p>
+
+<pre><code>python3 ok &#x2d;q EC</code></pre>
+
+<blockquote><p><em>Note</em>: We used <code>let</code> while defining <code>let&#x2d;to&#x2d;lambda</code>. What if we want to run
+<code>let&#x2d;to&#x2d;lambda</code> on an interpreter that does not recognize <code>let</code>? We can pass
+<code>let&#x2d;to&#x2d;lambda</code> to itself to rewrite itself into an <em>equivalent program
+without</em> <code>let</code>:</p>
+
+<pre><code>;; The let&#x2d;to&#x2d;lambda procedure
+(define (let&#x2d;to&#x2d;lambda expr)
+  ...)
+
+;; A list representing the let&#x2d;to&#x2d;lambda procedure
+(define let&#x2d;to&#x2d;lambda&#x2d;code
+  &#x27;(define (let&#x2d;to&#x2d;lambda expr)
+     ...))
+
+;; A let&#x2d;to&#x2d;lambda procedure that does not use &#x27;let&#x27;!
+(define let&#x2d;to&#x2d;lambda&#x2d;without&#x2d;let
+  (let&#x2d;to&#x2d;lambda let&#x2d;to&#x2d;lambda&#x2d;code))</code></pre></blockquote>
+
+
+<h2 id="part-iv-optional">Part IV: Optional</h2>
+
+
+
+<h3 id="problem-18">Problem 18</h3>
+
+
+<blockquote><p>Read the <a href="/~cs61a/fa20/articles/scheme-spec.html#mu">Scheme Specifications</a> to understand the behavior of
+the <code>mu</code> special form!</p></blockquote>
+
+<p>All of the Scheme procedures we've seen so far use <em>lexical scoping:</em> the parent of
+the new call frame is the environment in which
+the procedure was <strong>defined</strong>. Another type of scoping, which is not standard in Scheme,
+is called <em>dynamic scoping:</em> the parent of the new call frame is the environment in which
+the procedure was <strong>evaluated</strong>. With dynamic scoping, calling the same procedure
+in different parts of your code can lead to different results (because of varying parent frames).</p>
+
+<p>In this problem, we will implement the <code>mu</code> special form, a non-standard Scheme
+expression type representing a procedure that is dynamically scoped.</p>
+
+<p>In the example below, we use the <code>mu</code> keyword instead of <code>lambda</code> to define a
+dynamically scoped procedure <code>f</code>:</p>
+
+<pre><code class="scheme">scm&gt; (define f (mu () (* a b)))
+f
+scm&gt; (define g (lambda () (define a 4) (define b 5) (f)))
+g
+scm&gt; (g)
+20</code></pre>
+
+
+
+<p>The procedure <code>f</code> does not have an <code>a</code> or <code>b</code> defined; however,
+because <code>f</code> gets called within the procedure <code>g</code>, it has access to the <code>a</code> and <code>b</code>
+defined in <code>g</code>'s frame.</p>
+
+<p>Implement <code>do_mu_form</code> to evaluate the <code>mu</code> special form. A <code>mu</code> expression is
+similar to a <code>lambda</code> expression, but evaluates to a <code>MuProcedure</code> instance
+that is <strong>dynamically scoped</strong>. Most of the <code>MuProcedure</code> class has been provided for you.</p>
+
+<p>In addition to filling out the body of <code>do_mu_form</code>, you'll need to complete the <code>MuProcedure</code>
+class so that when a call on such a procedure is executed, it is dynamically scoped.
+This means that when a <code>MuProcedure</code> created by a <code>mu</code> expression is called, the parent of the
+new call frame is the environment in which the call expression was <strong>evaluated</strong>. As a result, a
+<code>MuProcedure</code> does not need to store an environment as an instance attribute.
+It can refer to names in the environment from which it was called.</p>
+
+<p>Looking at <code>LambdaProcedure</code> should give you a clue about what needs to be done
+to <code>MuProcedure</code> to complete it. You will not need to modify any existing methods, but may wish
+to implement new ones.</p>
+
+<p>Before writing any code, test your understanding of the problem:</p>
+
+<pre><code>python3 ok &#x2d;q 18 &#x2d;u</code></pre>
+
+<p>After writing code, test your implementation:</p>
+
+<pre><code>python3 ok &#x2d;q 18</code></pre>
+
+
+<h3 id="problem-19">Problem 19</h3>
+
+
+<p>Complete the function <code>optimize_tail_calls</code> in <code>scheme.py</code>. It returns an
+alternative to <code>scheme_eval</code> that is properly tail recursive. That is, the
+interpreter will allow an unbounded number of active <a href="http://en.wikipedia.org/wiki/Tail_call">tail calls</a> in constant
+space.</p>
+
+<p>The <code>Thunk</code> class represents a <a href="http://en.wikipedia.org/wiki/Thunk">thunk</a>, an expression that needs to be
+evaluated in an environment. When <code>scheme_optimized_eval</code> receives a non-atomic
+expression in a <code>tail</code> context, then it returns an <code>Thunk</code> instance. Otherwise,
+it should repeatedly call <code>prior_eval_function</code> until the result is a value,
+rather than a <code>Thunk</code>.</p>
+
+<p><strong>A successful implementation will require changes to several other functions,
+including some functions that we provided for you.</strong> All expressions throughout
+your interpreter that are in a tail context should be evaluated by calling
+<code>scheme_eval</code> with <code>True</code> as a third argument. Your goal is to determine which
+expressions are in a tail context throughout your code.</p>
+
+<p>Once you finish, uncomment the following line in <code>scheme.py</code> to use your
+implementation:</p>
+
+<pre><code>scheme_eval = optimize_tail_calls(scheme_eval)</code></pre>
+
+<p>Test your implementation before moving on:</p>
+
+<pre><code>python3 ok &#x2d;q 19</code></pre>
+
+
+<h3 id="problem-20">Problem 20</h3>
+
+
+<p>Macros allow the language itself to be extended by the user. Simple macros can
+be provided with the <code>define&#x2d;macro</code> special form. This must be used like a
+procedure definition, and it creates a procedure just like <code>define</code>. However,
+this procedure has a special evaluation rule: it is applied to its arguments
+without first evaluating them. Then the result of this application is
+evaluated.</p>
+
+<p>This final evaluation step takes place in the caller's frame, as if the return
+value from the macro was literally pasted into the code in place of the macro.</p>
+
+<p>Here is a simple example:</p>
+
+<pre><code class="scheme">scm&gt; (define (map f lst) (if (null? lst) nil (cons (f (car lst)) (map f (cdr lst)))))
+scm&gt; (define&#x2d;macro (for formal iterable body)
+....     (list &#x27;map (list &#x27;lambda (list formal) body) iterable))
+scm&gt; (for i &#x27;(1 2 3)
+....     (print (* i i)))
+1
+4
+9
+(None None None)</code></pre>
+
+
+
+<p>The code above defines a macro <code>for</code> that acts as a <code>map</code> except that it doesn't
+need a lambda around the body.</p>
+
+<p>In order to implement <code>define&#x2d;macro</code>, implement complete the implementation for
+<code>do_define_macro</code>, which should create a <code>MacroProcedure</code> and bind it to the
+given name as in <code>do_define_form</code>. Then, update <code>scheme_eval</code> so that calls to
+macro procedures are evaluated correctly.</p>
+
+<blockquote><p><em>Hint</em> : Use the <code>apply_macro</code> method in the <code>MacroProcedure</code> class to apply a
+macro to the operands in its call expression. This procedure is written to
+interact well with tail call optimization.</p></blockquote>
+
+<p>Test your implementation before moving on:</p>
+
+<pre><code>python3 ok &#x2d;q 20</code></pre>
+
+
+<h3 id="conclusion">Conclusion</h3>
+
+
+<p><strong>Congratulations!</strong> You have just implemented an interpreter for an entire
+language! If you enjoyed this project and want to extend it further, you may be
+interested in looking at more advanced features, like <a href="http://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.2">let* and letrec</a>,
+<a href="http://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_sec_4.2.6">unquote splicing</a>, <a href="https://en.wikipedia.org/wiki/Stack_trace">error tracing</a>, and <a href="https://en.wikipedia.org/wiki/Call-with-current-continuation">continuations</a>.</p>
+
+<p>Submit to Ok to complete the project.</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p>If you have a partner, make sure to add them to the submission on okpy.org.</p>
+
+<script>
+/*
+This code is duplicated in lab-check-in.html. Doesn't work if we move it to a separate
+file because of JQuery document ready concurrency issues.
+*/
+$(function() {
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+});
+</script>
+
+<script>
+$("#cats_typing").hover(
+  function() {
+    $("#cats_typing").attr("src", "images/cats_typing.gif");
+  },
+  function() {
+    $("#cats_typing").attr("src", "images/cats_typing_still.gif");
+  }
+);
+</script>
+
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#download-starter-files">Download starter files</a></li>
+  <li><a href="#logistics">Logistics</a></li>
+  <li><a href="#interpreter-details">Interpreter details</a></li>
+  <ul>
+    <li><a href="#scheme-features">Scheme features</a></li>
+    <li><a href="#implementation-overview">Implementation overview</a></li>
+    <li><a href="#running-the-interpreter">Running the interpreter</a></li>
+  </ul>
+  <li><a href="#part-0-testing-your-interpreter">Part 0: Testing Your Interpreter</a></li>
+  <li><a href="#part-i-the-reader">Part I: The Reader</a></li>
+  <ul>
+    <li><a href="#problem-1-2-pt">Problem 1 (2 pt)</a></li>
+  </ul>
+  <li><a href="#part-ii-the-evaluator">Part II: The Evaluator</a></li>
+  <ul>
+    <li><a href="#some-core-functionality">Some Core Functionality</a></li>
+    <li><a href="#problem-2-1-pt">Problem 2 (1 pt)</a></li>
+    <li><a href="#problem-3-2-pt">Problem 3 (2 pt)</a></li>
+    <li><a href="#problem-4-1-pt">Problem 4 (1 pt)</a></li>
+    <li><a href="#problem-5-1-pt">Problem 5 (1 pt)</a></li>
+    <li><a href="#problem-6-1-pt">Problem 6 (1 pt)</a></li>
+    <li><a href="#user-defined-procedures">User-Defined Procedures</a></li>
+    <li><a href="#problem-7-1-pt">Problem 7 (1 pt)</a></li>
+    <li><a href="#problem-8-1-pt">Problem 8 (1 pt)</a></li>
+    <li><a href="#problem-9-2-pt">Problem 9 (2 pt)</a></li>
+    <li><a href="#problem-10-2-pt">Problem 10 (2 pt)</a></li>
+    <li><a href="#problem-11-1-pt">Problem 11 (1 pt)</a></li>
+    <li><a href="#special-forms">Special Forms</a></li>
+    <li><a href="#problem-12-2-pt">Problem 12 (2 pt)</a></li>
+    <li><a href="#problem-13-2-pt">Problem 13 (2 pt)</a></li>
+    <li><a href="#problem-14-2-pt">Problem 14 (2 pt)</a></li>
+  </ul>
+  <li><a href="#part-iii-write-some-scheme">Part III: Write Some Scheme</a></li>
+  <ul>
+    <li><a href="#scheme-editor">Scheme Editor</a></li>
+    <li><a href="#problem-15-2-pt">Problem 15 (2 pt)</a></li>
+    <li><a href="#problem-16-2-pt">Problem 16 (2 pt)</a></li>
+    <li><a href="#problem-17-2-pt">Problem 17 (2 pt)</a></li>
+    <li><a href="#extra-credit-2-pt">Extra Credit (2 pt)</a></li>
+  </ul>
+  <li><a href="#part-iv-optional">Part IV: Optional</a></li>
+  <ul>
+    <li><a href="#problem-18">Problem 18</a></li>
+    <li><a href="#problem-19">Problem 19</a></li>
+    <li><a href="#problem-20">Problem 20</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

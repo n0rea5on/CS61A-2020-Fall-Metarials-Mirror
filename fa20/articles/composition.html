@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Composition | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>Composition</h1>
+    </header>
+     <h2 id="overview">Overview</h2>
+
+
+<p>The ease by which other <em>people</em> can read and understand a program (often
+called "readability" in software engineering) is perhaps the most important
+quality of a program. Readable programs are used and extended by others,
+sometimes for decades. For this reason, we often repeat in CS 61A that programs
+are written to be read by humans, and only incidentally to be interpreted by
+computers.</p>
+
+<p>In CS 61A, each project has a composition score that is graded on the <em>style</em>
+of your code. This document provides some guidelines.  A program is composed
+well if it is concise, well-named, understandable, and easy to follow.</p>
+
+<p>Excellent composition does not mean adhering strictly to prescribed style
+conventions. There are many ways to program well, just as there are many styles
+of effective communication. However, the following guiding principles
+universally lead to better composition of programs:</p>
+
+<ul>
+  <li><strong>Names</strong>. To a computer, names are arbitrary symbols: "xegyawebpi" and "foo"
+  are just as meaningful as "tally" and "denominator".  To humans,
+  comprehensible names aid immensely in comprehending programs.  Choose names
+  for your functions and values that indicate their use, purpose, and meaning.
+  See the lecture notes section on <a href="http://www.composingprograms.com/pages/13-defining-new-functions.html#choosing-names">choosing names</a> for more suggestions.</li>
+  <li><strong>Functions</strong>. Functions are our primary mechanism for abstraction, and so
+  each function should ideally have a single job that can be used throughout a
+  program.  When given the choice between calling a function or copying and
+  pasting its body, strive to call the function and maintain abstraction in
+  your program. See the lecture notes section on <a href="http://www.composingprograms.com/pages/14-designing-functions.html#designing-functions">composing functions</a> for
+  more suggestions.</li>
+  <li><strong>Purpose</strong>. Each line of code in a program should have a purpose. Statements
+  should be removed if they no longer have any effect (perhaps because they
+  were useful for a previous version of the program, but are no longer needed).
+  Large blocks of unused code, even when turned into comments, are confusing to
+  readers.  Feel free to keep your old implementations in a separate file for
+  your own use, but don't turn them in as your finished product.</li>
+  <li><strong>Brevity</strong>. An idea expressed in four lines of code is often clearer than
+  the same idea expressed in forty. You do not need to try to minimize the
+  length of your program, but look for opportunities to reduce the size of your
+  program substantially by reusing functions you have already defined.</li>
+</ul>
+
+
+<h2 id="names-and-variables">Names and variables</h2>
+
+
+<p>Variable and function names should be <em>self-descriptive</em>:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>goal, score, opp_score = 100, 0, 0
+greeting = &#x27;hello world&#x27;
+is_even = lambda x: x % 2</code></pre>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>a, b, m = 100, 0, 0
+thing = &#x27;hello world&#x27;
+stuff = lambda x: x % 2</code></pre>
+
+
+<h3 id="indices-and-mathematical-symbols">Indices and mathematical symbols</h3>
+
+
+<p>Using one-letter names and abbreviations is okay for indices, mathematical
+symbols, or if it is obvious what the variables are referring to.</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>i = 0         # a counter for a loop
+x, y = 0, 0   # x and y coordinates
+p, q = 5, 17  # mathematical names in the context of the question</code></pre>
+
+<p>In general, <code>i</code>, <code>j</code>, and <code>k</code> are the most common indices used.</p>
+
+
+<h3 id="o-and-l">'o' and 'l'</h3>
+
+
+<p>Do not use the letters 'o' and 'l' by themselves as names:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>o = O + 4     # letter &#x27;O&#x27; or number 0?
+l = l + 5     # letter &#x27;l&#x27; or number 1?</code></pre>
+
+
+<h3 id="unnecessary-variables">Unnecessary variables</h3>
+
+
+<p>Don't create unnecessary variables. For example,</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>return answer(argument)</code></pre>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>result = answer(argument)
+return result</code></pre>
+
+<p>However, if it is unclear what your code is referring to, or if the
+expression is too long, you <em>should</em> create a variable:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>divisible_49 = lambda x: x % 49 == 0
+score = (total + 1) // 7
+do_something(divisible_49, score)</code></pre>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>do_something(lambda x: x % 49 == 0, (total + 1) // 7)</code></pre>
+
+
+<h3 id="profanity">Profanity</h3>
+
+
+<p>Don't leave profanity in your code. Even if you're really frustrated.</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>eff_this_class = 666</code></pre>
+
+
+<h3 id="naming-convention">Naming convention</h3>
+
+
+<p>Use <code>lower_case_and_underscores</code> for variables and functions:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>total_score = 0
+final_score = 1
+
+def mean_strategy(score, opp):
+    ...</code></pre>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>TotalScore = 0
+finalScore = 1
+
+def Mean_Strategy(score, opp):
+    ...</code></pre>
+
+<p>On the other hand, use <code>CamelCase</code> for classes:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>class ExampleClass:
+    ...</code></pre>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>class example_class:
+    ...</code></pre>
+
+
+<h2 id="spacing-and-indentation">Spacing and Indentation</h2>
+
+
+<p>Whitespace style might seem superfluous, but using whitespace in certain places
+(and omitting it in others) will often make it easier to read code. In
+addition, since Python code depends on whitespace (e.g. indentation), it
+requires some extra attention.</p>
+
+
+<h3 id="spaces-vs-tabs">Spaces vs. tabs</h3>
+
+
+<p>Use spaces, not tabs for indentation. Our starter code always uses 4 spaces
+instead of tabs. If you use both spaces and tabs, Python will raise an
+<code>IndentationError</code>.</p>
+
+<p>Many text editors, including Sublime and Atom, offer a setting to automatically
+use spaces instead of tabs.</p>
+
+
+<h3 id="indent-size">Indent size</h3>
+
+
+<p>Use 4 spaces to denote an indent. Technically, Python allows you to use any
+number of spaces as long as you are consistent across an indentation level. The
+conventional style is to use 4 spaces.</p>
+
+
+<h3 id="line-length">Line Length</h3>
+
+
+<p>Keep lines under 80 characters long. Other conventions use 70 or 72 characters,
+but 80 is usually the upper limit. 80 characters is not a hard limit, but
+exercise good judgement! Long lines might be a sign that the logic is too much
+to fit on one line!</p>
+
+
+<h3 id="double-spacing">Double-spacing</h3>
+
+
+<p>Don't double-space code. That is, do <em>not</em> insert a blank line in between lines
+of code. It increases the amount of scrolling needed and goes against the style
+of the rest of the code we provide.</p>
+
+<p>One exception to this rule is that there should be space between two functions
+or classes.</p>
+
+
+<h3 id="spaces-with-operators">Spaces with operators</h3>
+
+
+<p>Use spaces between <code>+</code> and <code>&#x2d;</code>. Depending on how illegible expressions get, you
+can use your own judgement for <code>*</code>, <code>/</code>, and <code>**</code> (as long as it's easy to read
+at a glance, it's fine).</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>x = a + b*c*(a**2) / c &#x2d; 4</code></pre>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>x=a+b*c*(a**2)/c&#x2d;4</code></pre>
+
+
+<h3 id="spacing-lists">Spacing lists</h3>
+
+
+<p>When using tuples, lists, or function operands, leave one space after each
+comma <code>,</code>:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>tup = (x, x/2, x/3, x/4)</code></pre>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>tup = (x,x/2,x/3,x/4)</code></pre>
+
+
+<h3 id="line-wrapping">Line wrapping</h3>
+
+
+<p>If a line gets too long, use parentheses to continue onto the next line:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>def func(a, b, c, d, e, f,
+         g, h, i):
+    # body
+
+tup = (1, 2, 3, 4, 5,
+       6, 7, 8)
+names = (&#x27;alice&#x27;,
+         &#x27;bob&#x27;,
+         &#x27;eve&#x27;)</code></pre>
+
+<p>Notice that the subsequent lines line up with the <em>start</em> of the sequence. It
+can also be good practice to add an indent to imply expression continuation;
+use whichever format expresses the line continuation most clearly.</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>total = (this_is(a, very, lengthy) + line + of_code
+            + so_it &#x2d; should(be, separated)
+            + onto(multiple, lines))</code></pre>
+
+
+<h3 id="blank-lines">Blank lines</h3>
+
+
+<p>Leave a blank line between the end of a function or class and the next line:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>def example():
+    return &#x27;stuff&#x27;
+
+x = example() # notice the space above</code></pre>
+
+
+<h3 id="trailing-whitespace">Trailing whitespace</h3>
+
+
+<p>Don't leave whitespace at the end of a line.</p>
+
+
+<h2 id="control-structures">Control Structures</h2>
+
+
+
+<h3 id="boolean-comparisons">Boolean comparisons</h3>
+
+
+<p>Don't compare a boolean variable to <code>True</code> or <code>False</code>:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>if pred == True:   # bad!
+    ...
+if pred == False:  # bad!
+    ...</code></pre>
+
+<p>Instead, do this:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>if pred:           # good!
+    ...
+if not pred:       # good!
+    ...</code></pre>
+
+<p>Use the "implicit" <code>False</code> value when possible. Examples include empty
+containers like <code>[]</code>, <code>()</code>, <code>{}</code>, <code>set()</code>.</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>if lst:       # if lst is not empty
+    ...
+if not tup:   # if tup is empty
+    ...</code></pre>
+
+
+<h3 id="checking-none">Checking <code>None</code></h3>
+
+
+<p>Use <code>is</code> and <code>is not</code> for <code>None</code>, not <code>==</code> and <code>!=</code>.</p>
+
+
+<h3 id="redundant-if-else">Redundant if/else</h3>
+
+
+<p>Don't do this:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>if pred:            # bad!
+    return True
+else:
+    return False</code></pre>
+
+<p>Instead, do this:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>return pred         # good!</code></pre>
+
+<p>Likewise:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>if num != 49:
+    total += example(4, 5, True)
+else:
+    total += example(4, 5, False)</code></pre>
+
+<p>In the example above, the only thing that changes between the
+conditionals is the boolean at the end. Instead, do this:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>total += example(4, 5, num != 49)</code></pre>
+
+<p>In addition, don't include the same code in both the <code>if</code> and the <code>else</code> clause
+of a conditional:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>if pred:            # bad!
+    print(&#x27;stuff&#x27;)
+    x += 1
+    return x
+else:
+    x += 1
+    return x</code></pre>
+
+<p>Instead, pull the line(s) out of the conditional:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>if pred:            # good!
+    print(&#x27;stuff&#x27;)
+x += 1
+return x</code></pre>
+
+
+<h3 id="while-vs-if">while vs. if</h3>
+
+
+<p>Don't use a <code>while</code> loop when you should use an <code>if</code>:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>while pred:
+    x += 1
+    return x</code></pre>
+
+<p>Instead, use an <code>if</code>:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>if pred:
+    x += 1
+    return x</code></pre>
+
+
+<h3 id="parentheses">Parentheses</h3>
+
+
+<p>Don't use parentheses with conditional statements:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>if (x == 4):
+    ...
+elif (x == 5):
+    ...
+while (x &lt; 10):
+    ...</code></pre>
+
+<p>Parentheses are not necessary in Python conditionals (they are in other
+languages though).</p>
+
+
+<h2 id="comments">Comments</h2>
+
+
+<p>Recall that Python comments begin with the <code>#</code> sign. Keep in mind that the
+triple-quotes are technically strings, not comments. Comments can be helpful
+for explaining ambiguous code, but there are some guidelines for when to use
+them.</p>
+
+
+<h3 id="docstrings">Docstrings</h3>
+
+
+<p>Put docstrings only at the top of functions. Docstrings are denoted by
+triple-quotes at the beginning of a function or class:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>def average(fn, samples):
+    &quot;&quot;&quot;Calls a 0&#x2d;argument function SAMPLES times, and takes
+    the average of the outcome.
+    &quot;&quot;&quot;</code></pre>
+
+<p>You should not put docstrings in the middle of the function -- only put them at
+the beginning.</p>
+
+
+<h3 id="remove-commented-out-code">Remove commented-out code</h3>
+
+
+<p>Remove commented-out code from final version. You can comment lines out when
+you are debugging but make sure your final submission is free of commented-out
+code. This makes it easier for readers to identify relevant portions of code.</p>
+
+
+<h3 id="unnecessary-comments">Unnecessary comments</h3>
+
+
+<p>Don't write unnecessary comments. For example, the following is bad:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>def example(y):
+    x += 1            # increments x by 1
+    return square(x)  # returns the square of x</code></pre>
+
+<p>Your actual code should be <em>self-documenting</em> -- try to make it as
+obvious as possible what you are doing without resorting to
+comments. Only use comments if something is not obvious or needs to
+be explicitly emphasized.</p>
+
+
+<h2 id="repetition">Repetition</h2>
+
+
+<p>In general, <strong>don't repeat yourself</strong> (DRY). It wastes space and can be
+computationally inefficient. It can also make the code less readable.</p>
+
+<p>Do not repeat complex expressions:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>if a + b &#x2d; 3 * h / 2 % 47 == 4:
+    total += a + b &#x2d; 3 * h / 2 % 47
+    return total</code></pre>
+
+<p>Instead, store the expression in a variable:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>turn_score = a + b &#x2d; 3 * h / 2 % 47
+if turn_score == 4:
+    total += turn_score
+    return total</code></pre>
+
+<p>Don't repeat computationally-heavy function calls either:</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>if takes_one_minute_to_run(x) != ():
+    first = takes_one_minute_to_run(x)[0]
+    second = takes_one_minute_to_run(x)[1]
+    third = takes_one_minute_to_run(x)[2]</code></pre>
+
+<p>Instead, store the expression in a variable:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>result = takes_one_minute_to_run(x)
+if result != ():
+    first = result[0]
+    second = result[1]
+    third = result[2]</code></pre>
+
+
+<h2 id="semicolons">Semicolons</h2>
+
+
+<p>Do not use semicolons. Python statements don't need to end with semicolons.</p>
+
+
+<h2 id="generator-expressions">Generator expressions</h2>
+
+
+<p>Generator expressions are okay for simple expressions. This includes list
+comprehensions, dictionary comprehensions, set comprehensions, etc.  Generator
+expressions are neat ways to concisely create lists. Simple ones are fine:</p>
+
+<blockquote><p>Good</p></blockquote>
+
+<pre><code>ex = [x*x for x in range(10)]
+L = [pair[0] + pair[1]
+     for pair in pairs
+     if len(pair) == 2]</code></pre>
+
+<p>However, complex generator expressions are very hard to read, even
+illegible. As such, do not use generator expressions for complex
+expressions.</p>
+
+<blockquote><p>Bad</p></blockquote>
+
+<pre><code>L = [x + y + z for x in nums if x &gt; 10 for y in nums2 for z in nums3 if y &gt; z]</code></pre>
+
+<p>Use your best judgement.</p>
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#overview">Overview</a></li>
+  <li><a href="#names-and-variables">Names and variables</a></li>
+  <ul>
+    <li><a href="#indices-and-mathematical-symbols">Indices and mathematical symbols</a></li>
+    <li><a href="#o-and-l">'o' and 'l'</a></li>
+    <li><a href="#unnecessary-variables">Unnecessary variables</a></li>
+    <li><a href="#profanity">Profanity</a></li>
+    <li><a href="#naming-convention">Naming convention</a></li>
+  </ul>
+  <li><a href="#spacing-and-indentation">Spacing and Indentation</a></li>
+  <ul>
+    <li><a href="#spaces-vs-tabs">Spaces vs. tabs</a></li>
+    <li><a href="#indent-size">Indent size</a></li>
+    <li><a href="#line-length">Line Length</a></li>
+    <li><a href="#double-spacing">Double-spacing</a></li>
+    <li><a href="#spaces-with-operators">Spaces with operators</a></li>
+    <li><a href="#spacing-lists">Spacing lists</a></li>
+    <li><a href="#line-wrapping">Line wrapping</a></li>
+    <li><a href="#blank-lines">Blank lines</a></li>
+    <li><a href="#trailing-whitespace">Trailing whitespace</a></li>
+  </ul>
+  <li><a href="#control-structures">Control Structures</a></li>
+  <ul>
+    <li><a href="#boolean-comparisons">Boolean comparisons</a></li>
+    <li><a href="#checking-none">Checking <code>None</code></a></li>
+    <li><a href="#redundant-if-else">Redundant if/else</a></li>
+    <li><a href="#while-vs-if">while vs. if</a></li>
+    <li><a href="#parentheses">Parentheses</a></li>
+  </ul>
+  <li><a href="#comments">Comments</a></li>
+  <ul>
+    <li><a href="#docstrings">Docstrings</a></li>
+    <li><a href="#remove-commented-out-code">Remove commented-out code</a></li>
+    <li><a href="#unnecessary-comments">Unnecessary comments</a></li>
+  </ul>
+  <li><a href="#repetition">Repetition</a></li>
+  <li><a href="#semicolons">Semicolons</a></li>
+  <li><a href="#generator-expressions">Generator expressions</a></li>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+</script>
+
+  </body>
+</html>

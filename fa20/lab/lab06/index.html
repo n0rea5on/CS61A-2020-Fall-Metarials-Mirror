@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 6: Nonlocal, Mutability | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 6: Nonlocal, Mutability
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab06.zip" class="label label-outline">lab06.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, October 6.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab06.zip">lab06.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h1 id="topics">Topics</h1>
+
+
+<p>Consult this section if you need a refresher on the material for this lab. It's okay to skip directly to the questions and refer back here should you get stuck.</p>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Nonlocal<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+
+<h2 id="nonlocal">Nonlocal</h2>
+
+
+<p>We say that a variable defined in a frame is <em>local</em> to that frame. A variable
+is <strong>nonlocal</strong> to a frame if it is defined in the environment that the frame
+belongs to but not the frame itself, i.e. in its parent or ancestor frame.</p>
+
+<p>So far, we know that we can access variables in parent frames:</p>
+
+<pre><code>def make_adder(x):
+    &quot;&quot;&quot; Returns a one&#x2d;argument function that returns the result of
+    adding x and its argument. &quot;&quot;&quot;
+    def adder(y):
+        return x + y
+    return adder</code></pre>
+
+<p>Here, when we call <code>make_adder</code>, we create a function <code>adder</code> that is able to
+look up the name <code>x</code> in <code>make_adder</code>'s frame and use its value.</p>
+
+<p>However, we haven't been able to <em>modify</em> variables defined in parent frames.  Consider
+the following function:</p>
+
+<pre><code>def make_withdraw(balance):
+    &quot;&quot;&quot;Returns a function which can withdraw
+    some amount from balance
+
+    &gt;&gt;&gt; withdraw = make_withdraw(50)
+    &gt;&gt;&gt; withdraw(25)
+    25
+    &gt;&gt;&gt; withdraw(25)
+    0
+    &quot;&quot;&quot;
+    def withdraw(amount):
+        if amount &gt; balance:
+            return &quot;Insufficient funds&quot;
+        balance = balance &#x2d; amount
+        return balance
+    return withdraw</code></pre>
+
+<p>The inner function <code>withdraw</code> attempts to update the variable <code>balance</code> in its
+parent frame. Running this function's doctests, we find that it causes the
+following error:</p>
+
+<pre><code>UnboundLocalError: local variable &#x27;balance&#x27; referenced before assignment</code></pre>
+
+<p>Why does this happen? When we execute an assignment statement, remember that we
+are either creating a new binding in our current frame or we are updating an
+old one in the current frame. For example, the line <code>balance = ...</code> in <code>withdraw</code>,
+is creating the local variable <code>balance</code> inside <code>withdraw</code>'s frame. This
+assignment statement tells Python to expect a variable called <code>balance</code> inside
+<code>withdraw</code>'s frame, so Python will not look in parent frames for this variable.
+However, notice that we tried to compute <code>balance &#x2d; amount</code> before the local variable
+was created! That's why we get the <code>UnboundLocalError</code>.</p>
+
+<p>To avoid this problem, we introduce the <code>nonlocal</code> keyword. It allows us to
+update a variable in a parent frame!</p>
+
+<blockquote><p>Some important things to keep in mind when using <code>nonlocal</code></p>
+
+<ul>
+  <li><code>nonlocal</code> cannot be used with global variables (names defined in the
+  global frame).</li>
+  <li>If no nonlocal variable is found with the given name, a <code>SyntaxError</code> is
+  raised.</li>
+  <li>A name that is already local to a frame cannot be declared as nonlocal.</li>
+</ul></blockquote>
+
+<p>Consider this improved example:</p>
+
+<pre><code>def make_withdraw(balance):
+    &quot;&quot;&quot;Returns a function which can withdraw
+    some amount from balance
+
+    &gt;&gt;&gt; withdraw = make_withdraw(50)
+    &gt;&gt;&gt; withdraw(25)
+    25
+    &gt;&gt;&gt; withdraw(25)
+    0
+    &quot;&quot;&quot;
+    def withdraw(amount):
+        nonlocal balance
+        if amount &gt; balance:
+            return &quot;Insufficient funds&quot;
+        balance = balance &#x2d; amount
+        return balance
+    return withdraw</code></pre>
+
+<p>The line <code>nonlocal balance</code> tells Python that <code>balance</code> will not be local to this frame, so it will look for it in parent frames. Now we can update <code>balance</code> without running into problems.</p>
+
+</div>
+
+<br>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Mutability<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+
+<h2 id="mutability">Mutability</h2>
+
+
+<p>We say that an object is <strong>mutable</strong> if its state can change as code is executed.
+The process of changing an object's state is called <strong>mutation</strong>. Examples of
+mutable objects include lists and dictionaries.  Examples of objects that are
+<em>not</em> mutable include tuples and functions.</p>
+
+<p>We have seen how to use the <code>==</code> operator to check if two expressions evaluate
+to <em>equal</em> values. We now introduce a new comparison operator, <code>is</code>, that
+checks whether two expressions evaluate to the <em>same</em> values.</p>
+
+<p>Wait, what's the difference? For primitive values, there is none:</p>
+
+<pre><code>&gt;&gt;&gt; 2 + 2 == 3 + 1
+True
+&gt;&gt;&gt; 2 + 2 is 3 + 1
+True</code></pre>
+
+<p>This is because all primitives have the same <em>identity</em> under the hood.
+However, with non-primitive values, such as lists, each object has its own
+identity. That means you can construct two objects that may look exactly the
+same but have different identities.</p>
+
+<pre><code>&gt;&gt;&gt; lst1 = [1, 2, 3, 4]
+&gt;&gt;&gt; lst2 = [1, 2, 3, 4]
+&gt;&gt;&gt; lst1 == lst2
+True
+&gt;&gt;&gt; lst1 is lst2
+False</code></pre>
+
+<p>Here, although the lists referred to by <code>lst1</code> and <code>lst2</code> have <em>equal</em>
+contents, they are not the <em>same</em> object. In other words, they are the same in
+terms of equality, but not in terms of identity.</p>
+
+<p>This is important in our discussion of mutability because when we mutate an
+object, we simply change its state, <em>not</em> its identity.</p>
+
+<pre><code>&gt;&gt;&gt; lst1 = [1, 2, 3, 4]
+&gt;&gt;&gt; lst2 = lst1
+&gt;&gt;&gt; lst1.append(5)
+&gt;&gt;&gt; lst2
+[1, 2, 3, 4, 5]
+&gt;&gt;&gt; lst1 is lst2
+True</code></pre>
+
+</div>
+
+<br>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+<h2 id="nonlocal-codewriting">Nonlocal Codewriting</h2>
+
+
+<h3 class="question" id="q1">Q1: Make Adder Increasing</h3>
+
+<p>Write a function which takes in an integer <code>a</code> and returns a one-argument function.
+This function should take in some value <code>b</code> and return <code>a + b</code> the first time it is called,
+similar to <code>make_adder</code>. The second time it is called, however, it should return <code>a + b + 1</code>,
+then <code>a + b + 2</code> the third time, and so on.</p>
+
+<solution>
+
+<pre><code>def make_adder_inc(a):
+    &quot;&quot;&quot;
+    &gt;&gt;&gt; adder1 = make_adder_inc(5)
+    &gt;&gt;&gt; adder2 = make_adder_inc(6)
+    &gt;&gt;&gt; adder1(2)
+    7
+    &gt;&gt;&gt; adder1(2) # 5 + 2 + 1
+    8
+    &gt;&gt;&gt; adder1(10) # 5 + 10 + 2
+    17
+    &gt;&gt;&gt; [adder1(x) for x in [1, 2, 3]]
+    [9, 11, 13]
+    &gt;&gt;&gt; adder2(5)
+    11
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_adder_inc</code></pre>
+
+<h3 class="question" id="q2">Q2: Next Fibonacci</h3>
+
+<p>Write a function <code>make_fib</code> that returns a function that returns the
+next Fibonacci number each time it is called. (The Fibonacci sequence begins with 0
+and then 1, after which each element is the sum of the preceding two.)
+Use a <code>nonlocal</code> statement! In addition, do not use python lists to solve this problem.</p>
+
+<solution>
+
+<pre><code>def make_fib():
+    &quot;&quot;&quot;Returns a function that returns the next Fibonacci number
+    every time it is called.
+
+    &gt;&gt;&gt; fib = make_fib()
+    &gt;&gt;&gt; fib()
+    0
+    &gt;&gt;&gt; fib()
+    1
+    &gt;&gt;&gt; fib()
+    1
+    &gt;&gt;&gt; fib()
+    2
+    &gt;&gt;&gt; fib()
+    3
+    &gt;&gt;&gt; fib2 = make_fib()
+    &gt;&gt;&gt; fib() + sum([fib2() for _ in range(5)])
+    12
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # Do not use lists in your implementation
+    &gt;&gt;&gt; check(this_file, &#x27;make_fib&#x27;, [&#x27;List&#x27;])
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_fib</code></pre>
+<!--
+ -->
+
+
+<h2 id="mutability">Mutability</h2>
+
+
+<h3 class="question" id="q3">Q3: List-Mutation</h3>
+
+<blockquote><p>Test your understaninding of list mutation with the following questions. What would Python display? Type it in the intepreter if you're stuck!</p>
+
+<pre><code>python3 ok &#x2d;q list&#x2d;mutation &#x2d;u</code></pre>
+
+<p>Note: if nothing would be output by Python, type <code>Nothing</code>.</p></blockquote>
+
+<pre><code>&gt;&gt;&gt; lst = [5, 6, 7, 8]
+&gt;&gt;&gt; lst.append(6)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x4e;&#x6f;&#x74;&#x68;&#x69;&#x6e;&#x67;</div>
+&gt;&gt;&gt; lst
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x5b;&#x35;&#x2c;&#x20;&#x36;&#x2c;&#x20;&#x37;&#x2c;&#x20;&#x38;&#x2c;&#x20;&#x36;&#x5d;</div>
+&gt;&gt;&gt; lst.insert(0, 9)
+&gt;&gt;&gt; lst
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x5b;&#x39;&#x2c;&#x20;&#x35;&#x2c;&#x20;&#x36;&#x2c;&#x20;&#x37;&#x2c;&#x20;&#x38;&#x2c;&#x20;&#x36;&#x5d;</div>
+&gt;&gt;&gt; x = lst.pop(2)
+&gt;&gt;&gt; lst
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x5b;&#x39;&#x2c;&#x20;&#x35;&#x2c;&#x20;&#x37;&#x2c;&#x20;&#x38;&#x2c;&#x20;&#x36;&#x5d;</div>
+&gt;&gt;&gt; lst.remove(x)
+&gt;&gt;&gt; lst
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x5b;&#x39;&#x2c;&#x20;&#x35;&#x2c;&#x20;&#x37;&#x2c;&#x20;&#x38;&#x5d;</div>
+&gt;&gt;&gt; a, b = lst, lst[:]
+&gt;&gt;&gt; a is lst
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x54;&#x72;&#x75;&#x65;</div>
+&gt;&gt;&gt; b == lst
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x54;&#x72;&#x75;&#x65;</div>
+&gt;&gt;&gt; b is lst
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x46;&#x61;&#x6c;&#x73;&#x65;</div></code></pre>
+        <button id='prompt-1' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<h3 class="question" id="q4">Q4: Insert Items</h3>
+
+<p>Write a function which takes in a list <code>lst</code>, an argument <code>entry</code>, and another argument <code>elem</code>. This function will check through each item present in <code>lst</code> to see if it is equivalent with <code>entry</code>. Upon finding an equivalent entry, the function should modify the list by placing <code>elem</code> into the list right after the found entry. At the end of the function, the modified list should be returned. See the doctests for examples on how this function is utilized. Use list mutation to modify the original list, no new lists should be created or returned.</p>
+
+<p><strong>Be careful in situations where the values passed into <code>entry</code> and <code>elem</code> are equivalent, so as not to create an infinitely long list while iterating through it.</strong> If you find that your code is taking more than a few seconds to run, it is most likely that the function is in a loop of inserting new values.</p>
+
+<solution>
+
+<pre><code>def insert_items(lst, entry, elem):
+    &quot;&quot;&quot;
+    &gt;&gt;&gt; test_lst = [1, 5, 8, 5, 2, 3]
+    &gt;&gt;&gt; new_lst = insert_items(test_lst, 5, 7)
+    &gt;&gt;&gt; new_lst
+    [1, 5, 7, 8, 5, 7, 2, 3]
+    &gt;&gt;&gt; large_lst = [1, 4, 8]
+    &gt;&gt;&gt; large_lst2 = insert_items(large_lst, 4, 4)
+    &gt;&gt;&gt; large_lst2
+    [1, 4, 4, 8]
+    &gt;&gt;&gt; large_lst3 = insert_items(large_lst2, 4, 6)
+    &gt;&gt;&gt; large_lst3
+    [1, 4, 6, 4, 6, 8]
+    &gt;&gt;&gt; large_lst3 is large_lst
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q insert_items</code></pre>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#nonlocal">Nonlocal</a></li>
+    <li><a href="#mutability">Mutability</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#nonlocal-codewriting">Nonlocal Codewriting</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Make Adder Increasing</a></li>
+      <li><a href="#q2">Q2: Next Fibonacci</a></li>
+    </ul>
+    <li><a href="#mutability">Mutability</a></li>
+    <ul>
+      <li><a href="#q3">Q3: List-Mutation</a></li>
+      <li><a href="#q4">Q4: Insert Items</a></li>
+    </ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 1: Variables & Functions, Control | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 1: Variables & Functions, Control
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab01.zip" class="label label-outline">lab01.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, September 1.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab01.zip">lab01.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<p>Additionally, please fill out <a href="https://forms.gle/BP3tcRgqPhHq4Ymf9">this survey</a> with any issues you might have faced in Lab 0 Python installation or if you used the Windows automated installer.</p>
+
+<p><strong>For quickly generating ok commands, you can now use the <a href="https://links.cs61a.org/ok-help">ok command generator</a>.</strong></p>
+
+
+<h1 id="quick-logistics-review">Quick Logistics Review</h1>
+
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Using Python<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h2 id="using-python">Using Python</h2>
+
+
+<p>When running a Python file, you can use options on the command line
+to inspect your code further. Here are a few that will come in handy.
+If you want to learn more about other Python command-line options, take a look
+at the <a href="https://docs.python.org/3.4/using/cmdline.html">documentation</a>.</p>
+
+<ul>
+  <li><p>Using no command-line options will run the code in the file you
+  provide and return you to the command line.</p>
+
+<pre><code>python3 foo.py</code></pre></li>
+  <li><p><strong><code>&#x2d;i</code></strong>: The <code>&#x2d;i</code> option runs your Python script, then opens an interactive
+  session. In an interactive session, you run Python code line by line and get
+  immediate feedback instead of running an entire file all at once. To exit,
+  type <code>exit()</code> into the interpreter prompt. You can also use the keyboard
+  shortcut <code>Ctrl&#x2d;D</code> on Linux/Mac machines or <code>Ctrl&#x2d;Z  Enter</code> on Windows.</p>
+
+  <p>If you edit the Python file while running it interactively, you will need to
+  exit and restart the interpreter in order for those changes to take effect.</p>
+
+<pre><code>python3 &#x2d;i foo.py</code></pre></li>
+  <li><p><strong><code>&#x2d;m doctest</code></strong>: Runs doctests in a particular file. Doctests are
+  surrounded by triple quotes (<code>&quot;&quot;&quot;</code>) within functions.</p>
+
+  <p>Each test in the file consists of <code>&gt;&gt;&gt;</code> followed by some Python code and
+  the expected output (though the <code>&gt;&gt;&gt;</code> are not seen in the output of the
+  doctest command).</p>
+
+<pre><code> python3 &#x2d;m doctest foo.py</code></pre>
+
+  </div>
+  <br>
+  
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Using OK<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+  <h2 id="using-ok">Using OK</h2></li>
+</ul>
+
+<p>In 61A, we use a program called Ok for autograding labs, homeworks, and
+projects. You should have Ok in the starter files downloaded at the start of
+this lab. For more information on using Ok commands, learn more
+<a href="http://cs61a.org/articles/using-ok.html">here</a>.</p>
+
+<p><strong>You can quickly generate most ok commands at <a href="https://links.cs61a.org/ok-help">links.cs61a.org/ok-help</a>!</strong></p>
+
+<p>To use Ok to run doctests for a
+specified function, run the following command:</p>
+
+<pre><code>python3 ok &#x2d;q &lt;specified function&gt;</code></pre>
+
+<p>By default, only tests that did not pass will show up. You can use the <code>&#x2d;v</code>
+option to show all tests, including tests you have passed:</p>
+
+<pre><code>python3 ok &#x2d;v</code></pre>
+
+<p>You can also use the debug printing feature in OK by writing</p>
+
+<pre><code>print(&quot;DEBUG:&quot;, x)</code></pre>
+
+<p>Finally, when you have finished all the questions in
+<a href="lab01.py">lab01.py</a>, you must submit the assignment using the
+<code>&#x2d;&#x2d;submit</code> option:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p>For more Ok commands, visit <a href="https://cal-cs-61a-staff.github.io/ok-help/">here</a>.
+</div></p>
+
+
+<h1 id="topics">Topics</h1>
+
+
+<p>Consult this section if you need a refresher on the material for this lab. It's
+okay to skip directly to <a href="#required-questions">the questions</a> and refer back
+here should you get stuck.</p>
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Division<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+<h2 id="division">Division</h2>
+
+
+<p>Let's compare the different division-related operators in Python 3:</p>
+
+<div class = "table-responsive">
+    <table class='table table-bordered'>
+      <tr>
+        <th>True Division: <code>/</code> <br> (decimal division) </th>
+        <th>Floor Division: <code>//</code> <br> (integer division) </th>
+        <th>Modulo: <code>%</code> <br> (remainder) </th>
+
+  </tr>
+  <tr>
+    <td align="left">
+<pre><code>>>> 1 / 5
+0.2
+
+>>> 25 / 4
+6.25
+
+>>> 4 / 2
+2.0
+
+>>> 5 / 0
+ZeroDivisionError
+</code></pre>
+    </td>
+    <td align="left">
+<pre><code>>>> 1 // 5
+0
+
+>>> 25 // 4
+6
+
+>>> 4 // 2
+2
+
+>>> 5 // 0
+ZeroDivisionError
+</pre></code>
+    </td>
+    <td align="left">
+<pre><code>>>> 1 % 5
+1
+
+>>> 25 % 4
+1
+
+>>> 4 % 2
+0
+
+>>> 5 % 0
+ZeroDivisionError
+</pre></code>
+    </td>
+  </tr>
+</table>
+</div>
+
+<p>Notice that Python outputs <code>ZeroDivisionError</code> for certain cases. We will go over this later in this lab under <a href="#error-messages">Error Messages</a>.</p>
+
+<p>One useful technique involving the <code>%</code> operator is to check
+whether a number <code>x</code> is divisible by another number <code>y</code>:</p>
+
+<pre><code>x % y == 0</code></pre>
+
+<p>For example, in order to check if <code>x</code> is an even number:</p>
+
+<pre><code>x % 2 == 0</code></pre>
+
+</div>
+<br>
+
+        <button id='toggle-4' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Functions<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-4">
+
+<h2 id="functions">Functions</h2>
+
+
+<p>If we want to execute a series of statements over and over, we can abstract them away
+into a function to avoid repeating code.</p>
+
+<p>For example, let's say we want to know the results of multiplying the numbers 1-3 by
+3 and then adding 2 to it. Here's one way to do it:</p>
+
+<pre><code>&gt;&gt;&gt; 1 * 3 + 2
+5
+&gt;&gt;&gt; 2 * 3 + 2
+8
+&gt;&gt;&gt; 3 * 3 + 2
+11</code></pre>
+
+<p>If we wanted to do this with a larger set of numbers, that'd be a lot of repeated
+code! Let's write a function to capture this operation given any input number.</p>
+
+<pre><code>def foo(x):
+    return x * 3 + 2</code></pre>
+
+<p>This function, called <code>foo</code>, takes in a single <strong>argument</strong> and will <strong>return</strong> the
+result of multiplying that argument by 3 and adding 2.</p>
+
+<p>Now we can <strong>call</strong> this function whenever we want this operation to be done:</p>
+
+<pre><code>&gt;&gt;&gt; foo(1)
+5
+&gt;&gt;&gt; foo(2)
+8
+&gt;&gt;&gt; foo(1000)
+3002</code></pre>
+
+<p>Applying a function to some arguments is done with a <strong>call expression</strong>.</p>
+
+
+<h3 id="call-expressions">Call expressions</h3>
+
+
+<p>A call expression applies a function, which may or may not accept
+arguments. The call expression evaluates to the function's return value.</p>
+
+<p>The syntax of a function call:</p>
+
+<pre><code>  add   (    2   ,    3   )
+   |         |        |
+operator  operand  operand</code></pre>
+
+<p>Every call expression requires a set of parentheses delimiting its
+comma-separated operands.</p>
+
+<p>To evaluate a function call:</p>
+
+<ol>
+  <li>Evaluate the operator, and then the operands (from left to right).</li>
+  <li>Apply the operator to the operands (the values of the operands).</li>
+</ol>
+
+<p>If an operand is a nested call expression, then these two steps are
+applied to that inner operand first in order to evaluate the outer operand.</p>
+
+
+<h3 id="return-and-print"><code>return</code> and <code>print</code></h3>
+
+
+<p>Most functions that you define will contain a <code>return</code> statement. The <code>return</code>
+statement will give the result of some computation back to the caller of the
+function and exit the function. For example, the function <code>square</code> below takes
+in a number <code>x</code> and returns its square.</p>
+
+<pre><code>def square(x):
+    &quot;&quot;&quot;
+    &gt;&gt;&gt; square(4)
+    16
+    &quot;&quot;&quot;
+    return x * x</code></pre>
+
+<p>When Python executes a <code>return</code> statement, the function terminates immediately.
+If Python reaches the end of the function body without executing a <code>return</code>
+statement, it will automatically return <code>None</code>.</p>
+
+<p>In contrast, the <code>print</code> function is used to display values in the Terminal.
+This can lead to some confusion between <code>print</code> and <code>return</code> because calling a
+function in the Python interpreter will print out the function's return value.</p>
+
+<p>However, unlike a <code>return</code> statement, when Python evaluates a <code>print</code>
+expression, the function does <em>not</em> terminate immediately.</p>
+
+<pre><code>def what_prints():
+    print(&#x27;Hello World!&#x27;)
+    return &#x27;Exiting this function.&#x27;
+    print(&#x27;61A is awesome!&#x27;)
+
+&gt;&gt;&gt; what_prints()
+Hello World!
+&#x27;Exiting this function.&#x27;</code></pre>
+
+<blockquote><p>Notice also that <code>print</code> will display text <strong>without the quotes</strong>, but
+<code>return</code> will preserve the quotes.
+</div>
+<br>
+
+        <button id='toggle-5' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Control<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-5"></p>
+
+<h2 id="control">Control</h2></blockquote>
+
+
+<h3 id="boolean-operators">Boolean Operators</h3>
+
+
+<p>Python supports three boolean operators: <code>and</code>, <code>or</code>, and <code>not</code>:</p>
+
+<pre><code>&gt;&gt;&gt; a = 4
+&gt;&gt;&gt; a &lt; 2 and a &gt; 0
+False
+&gt;&gt;&gt; a &lt; 2 or a &gt; 0
+True
+&gt;&gt;&gt; not (a &gt; 0)
+False</code></pre>
+
+<ul>
+  <li><code>and</code> evaluates to <code>True</code> only if both operands evaluate to <code>True</code>.
+  If at least one operand is <code>False</code>, then <code>and</code> evaluates to <code>False</code>.</li>
+  <li><code>or</code> evaluates to <code>True</code> if at least one operand evaluates to <code>True</code>.
+  If both operands are <code>False</code>, then <code>or</code> evaluates to <code>False</code>.</li>
+  <li><code>not</code> evaluates to <code>True</code> if its operand evaluates to <code>False</code>. It evaluates
+  to <code>False</code> if its operand evalutes to <code>True</code>.</li>
+</ul>
+
+<p>What do you think the following expression evaluates to? Try it out in the
+Python interpreter.</p>
+
+<pre><code>&gt;&gt;&gt; True and not False or not True and False</code></pre>
+
+<p>It is difficult to read complex expressions, like the one above, and understand
+how a program will behave. Using parentheses can make your code easier to
+understand. Python interprets that expression in the
+following way:</p>
+
+<pre><code>&gt;&gt;&gt; (True and (not False)) or ((not True) and False)</code></pre>
+
+<p>This is because boolean operators, like arithmetic operators, have an order of operation:</p>
+
+<ul>
+  <li><code>not</code> has the highest priority</li>
+  <li><code>and</code></li>
+  <li><code>or</code> has the lowest priority</li>
+</ul>
+
+<p><strong>Truthy and Falsey Values</strong>: It turns out <code>and</code> and <code>or</code> work on more than just booleans (<code>True</code>,
+<code>False</code>). Python values such as <code>0</code>, <code>None</code>, <code>&#x27;&#x27;</code> (the empty string), and <code>[]</code>
+(the empty list) are considered false values. <em>All</em> other values are considered
+true values.</p>
+
+
+<h4 id="short-circuiting">Short Circuiting</h4>
+
+
+<p>What do you think will happen if we type the following into Python?</p>
+
+<pre><code>1 / 0</code></pre>
+
+<p>Try it out in Python! You should see a <code>ZeroDivisionError</code>. But what about this expression?</p>
+
+<pre><code>True or 1 / 0</code></pre>
+
+<p>It evaluates to <code>True</code> because Python's <code>and</code> and <code>or</code> operators <em>short-circuit</em>. That is, they don't necessarily evaluate every operand.</p>
+
+<div class = "table-responsive">
+  <table class='table table-bordered'>
+    <tr>
+      <th>Operator</th>
+      <th>Checks if:</th>
+      <th>Evaluates from left to right up to:</th>
+      <th>Example</th>
+    </tr>
+    <tr>
+      <td>AND</td>
+      <td>All values are true</td>
+      <td>The first false value</td>
+      <td><code>False and 1 / 0</code> evaluates to <code>False</code></td>
+    </tr>
+    <tr>
+      <td>OR</td>
+      <td>At least one value is true</td>
+      <td>The first true value</td>
+      <td><code>True or 1 / 0</code> evaluates to <code>True</code></td>
+    </tr>
+  </table>
+</div>
+
+<p>Short-circuiting happens when the operator reaches an operand that allows them to make a conclusion about the expression. For example, <code>and</code> will short-circuit as soon as it reaches the first false value because it then knows that not all the values are true.</p>
+
+<p>If <code>and</code> and <code>or</code> do not <em>short-circuit</em>, they just return the last
+value; another way to remember this is that <code>and</code> and <code>or</code> always return the last
+thing they evaluate, whether they short circuit or not. Keep in mind that <code>and</code> and <code>or</code>
+don't always return booleans when using values other than <code>True</code> and <code>False</code>.</p>
+
+
+<h3 id="if-statements">If Statements</h3>
+
+
+<p>You can review the syntax of <code>if</code> statements in
+<a href="http://composingprograms.com/pages/15-control.html#conditional-statements">Section 1.5.4</a>
+of Composing Programs.</p>
+
+<blockquote><p><em>Tip</em>: We sometimes see code that looks like this:</p>
+
+<pre><code>if x &gt; 3:
+    return True
+else:
+    return False</code></pre>
+
+<p>This can be written more concisely as <code>return x &gt; 3</code>. If your code looks like
+the code above, see if you can rewrite it more clearly!</p></blockquote>
+
+
+<h3 id="while-loops">While Loops</h3>
+
+
+<p>You can review the syntax of <code>while</code> loops in
+<a href="http://composingprograms.com/pages/15-control.html#iteration">Section 1.5.5</a>
+of Composing Programs.
+</div>
+<br>
+
+        <button id='toggle-6' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Error Messages<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-6"></p>
+
+<h2 id="error-messages">Error Messages</h2>
+
+
+<p>By now, you've probably seen a couple of error messages.
+They might look intimidating, but error messages are very helpful
+for debugging code. The following are some common types of errors:</p>
+
+<div class = "table-responsive">
+  <table class='table table-bordered'>
+    <tr>
+      <th>Error Types</th>
+      <th>Descriptions</th>
+    </tr>
+    <tr>
+      <td>SyntaxError</td>
+      <td align="left">Contained improper syntax (e.g. missing a colon after an <code>if</code> statement or forgetting to close parentheses/quotes)</td>
+    </tr>
+    <tr>
+      <td>IndentationError</td>
+      <td align="left">Contained improper indentation (e.g. inconsistent indentation of a function body)</td>
+    </tr>
+    <tr>
+      <td>TypeError</td>
+      <td align="left">Attempted operation on incompatible types (e.g. trying to add a function and a number) or called function with the wrong number of arguments</td>
+    </tr>
+    <tr>
+      <td>ZeroDivisionError</td>
+      <td align="left">Attempted division by zero</td>
+    </tr>
+  </table>
+</div>
+
+<p>Using these descriptions of error messages, you should be able to get
+a better idea of what went wrong with your code. <strong>If you run into
+error messages, try to identify the problem before asking for
+help.</strong> You can often Google unfamiliar error messages to see if others have
+made similar mistakes to help you debug.</p>
+
+<p>For example:</p>
+
+<pre><code>&gt;&gt;&gt; square(3, 3)
+Traceback (most recent call last):
+  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+TypeError: square() takes 1 positional argument but 2 were given</code></pre>
+
+<p>Note:</p>
+
+<ul>
+  <li>The last line of an error message tells us the type of the error. In the
+  example above, we have a <code>TypeError</code>.</li>
+  <li>The error message tells us what we did wrong -- we gave <code>square</code> 2 arguments
+  when it can only take in 1 argument. In general, the last line is the most
+  helpful.</li>
+  <li><p>The second to last line of the error message tells us on which line the
+  error occurred. This helps us track down the error. In the example above,
+  <code>TypeError</code> occurred at <code>line 1</code>.
+  </div></p>
+
+  <h1 id="required-questions">Required Questions</h1></li>
+</ul>
+
+
+<h2 id="what-would-python-display-part-1">What Would Python Display? (Part 1)</h2>
+
+
+<h3 class="question" id="q1">Q1: WWPD: Control</h3>
+
+<blockquote><p>Use Ok to test your knowledge with the following "What Would Python Display?"
+questions:</p>
+
+<pre><code>python3 ok &#x2d;q control &#x2d;u</code></pre>
+
+<p><strong>Hint</strong>: Make sure your <code>while</code> loop conditions eventually evaluate to a false value, or they'll never stop! Typing <code>Ctrl&#x2d;C</code> will stop infinite loops in the interpreter.</p></blockquote>
+
+<pre><code>&gt;&gt;&gt; def xk(c, d):
+...     if c == 4:
+...         return 6
+...     elif d &gt;= 4:
+...         return 6 + 7 + c
+...     else:
+...         return 25
+&gt;&gt;&gt; xk(10, 10)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x32;&#x33;</div>
+&gt;&gt;&gt; xk(10, 6)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x32;&#x33;</div>
+&gt;&gt;&gt; xk(4, 6)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x36;</div>
+&gt;&gt;&gt; xk(0, 0)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x32;&#x35;</div></code></pre>
+        <button id='prompt-1' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; def how_big(x):
+...     if x &gt; 10:
+...         print(&#x27;huge&#x27;)
+...     elif x &gt; 5:
+...         return &#x27;big&#x27;
+...     elif x &gt; 0:
+...         print(&#x27;small&#x27;)
+...     else:
+...         print(&quot;nothin&quot;)
+&gt;&gt;&gt; how_big(7)
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x27;&#x62;&#x69;&#x67;&#x27;</div>
+&gt;&gt;&gt; how_big(12)
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x68;&#x75;&#x67;&#x65;</div>
+&gt;&gt;&gt; how_big(1)
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x73;&#x6d;&#x61;&#x6c;&#x6c;</div>
+&gt;&gt;&gt; how_big(&#x2d;1)
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x6e;&#x6f;&#x74;&#x68;&#x69;&#x6e;</div></code></pre>
+        <button id='prompt-2' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; n = 3
+&gt;&gt;&gt; while n &gt;= 0:
+...     n &#x2d;= 1
+...     print(n)
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x32;&#xa;&#x31;&#xa;&#x30;&#xa;&#x2d;&#x31;</div></code></pre>
+        <button id='prompt-3' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; positive = 28
+&gt;&gt;&gt; while positive:
+...    print(&quot;positive?&quot;)
+...    positive &#x2d;= 3
+<div class="alt prompt-4">______</div><div class="solution prompt-4">&#x49;&#x6e;&#x66;&#x69;&#x6e;&#x69;&#x74;&#x65;&#x20;&#x4c;&#x6f;&#x6f;&#x70;</div></code></pre>
+        <button id='prompt-4' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; positive = &#x2d;9
+&gt;&gt;&gt; negative = &#x2d;12
+&gt;&gt;&gt; while negative:
+...    if positive:
+...        print(negative)
+...    positive += 3
+...    negative += 3
+<div class="alt prompt-5">______</div><div class="solution prompt-5">&#x2d;&#x31;&#x32;&#xa;&#x2d;&#x39;&#xa;&#x2d;&#x36;</div></code></pre>
+        <button id='prompt-5' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<h3 class="question" id="q2">Q2: WWPD: Veritasiness</h3>
+
+<blockquote><p>Use Ok to test your knowledge with the following "What Would Python Display?"
+questions:</p>
+
+<pre><code>python3 ok &#x2d;q short&#x2d;circuit &#x2d;u</code></pre></blockquote>
+
+<pre><code>&gt;&gt;&gt; True and 13
+<div class="alt prompt-6">______</div><div class="solution prompt-6">&#x31;&#x33;</div>
+&gt;&gt;&gt; False or 0
+<div class="alt prompt-6">______</div><div class="solution prompt-6">&#x30;</div>
+&gt;&gt;&gt; not 10
+<div class="alt prompt-6">______</div><div class="solution prompt-6">&#x46;&#x61;&#x6c;&#x73;&#x65;</div>
+&gt;&gt;&gt; not None
+<div class="alt prompt-6">______</div><div class="solution prompt-6">&#x54;&#x72;&#x75;&#x65;</div></code></pre>
+        <button id='prompt-6' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; True and 1 / 0 and False
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x45;&#x72;&#x72;&#x6f;&#x72;&#x20;&#x28;&#x5a;&#x65;&#x72;&#x6f;&#x44;&#x69;&#x76;&#x69;&#x73;&#x69;&#x6f;&#x6e;&#x45;&#x72;&#x72;&#x6f;&#x72;&#x29;</div>
+&gt;&gt;&gt; True or 1 / 0 or False
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x54;&#x72;&#x75;&#x65;</div>
+&gt;&gt;&gt; True and 0
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x30;</div>
+&gt;&gt;&gt; False or 1
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x31;</div>
+&gt;&gt;&gt; 1 and 3 and 6 and 10 and 15
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x31;&#x35;</div>
+&gt;&gt;&gt; &#x2d;1 and 1 &gt; 0
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x54;&#x72;&#x75;&#x65;</div>
+&gt;&gt;&gt; 0 or False or 2 or 1 / 0
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x32;</div></code></pre>
+        <button id='prompt-7' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; not 0
+<div class="alt prompt-8">______</div><div class="solution prompt-8">&#x54;&#x72;&#x75;&#x65;</div>
+&gt;&gt;&gt; (1 + 1) and 1
+<div class="alt prompt-8">______</div><div class="solution prompt-8">&#x31;</div>
+&gt;&gt;&gt; 1/0 or True
+<div class="alt prompt-8">______</div><div class="solution prompt-8">&#x45;&#x72;&#x72;&#x6f;&#x72;</div>
+&gt;&gt;&gt; (True or False) and False
+<div class="alt prompt-8">______</div><div class="solution prompt-8">&#x46;&#x61;&#x6c;&#x73;&#x65;</div></code></pre>
+        <button id='prompt-8' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<h3 class="question" id="q3">Q3: Debugging Quiz!</h3>
+
+<p>The following is a quick quiz on different debugging techniques you should use
+in this class. You should refer to <a href="/~cs61a/fa20/articles/debugging.html">this document</a> to
+answer the questions!</p>
+
+<p>Run the following to run the quiz.</p>
+
+<pre><code>python3 ok &#x2d;q debugging&#x2d;quiz &#x2d;u</code></pre>
+
+
+<h2 id="coding-practice">Coding Practice</h2>
+
+
+<h3 class="question" id="q4">Q4: Falling Factorial</h3>
+
+<p>Let's write a function <code>falling</code>, which is a "falling" factorial
+that takes two arguments, <code>n</code> and <code>k</code>, and returns the product of <code>k</code>
+consecutive numbers, starting from <code>n</code> and working downwards.</p>
+
+<solution>
+
+<pre><code>def falling(n, k):
+    &quot;&quot;&quot;Compute the falling factorial of n to depth k.
+
+    &gt;&gt;&gt; falling(6, 3)  # 6 * 5 * 4
+    120
+    &gt;&gt;&gt; falling(4, 3)  # 4 * 3 * 2
+    24
+    &gt;&gt;&gt; falling(4, 1)  # 4
+    4
+    &gt;&gt;&gt; falling(4, 0)
+    1
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q falling</code></pre>
+
+<h3 class="question" id="q5">Q5: Sum Digits</h3>
+
+<p>Write a function that takes in a nonnegative integer and sums its digits. (Using
+floor division and modulo might be helpful here!)</p>
+
+<solution>
+
+<pre><code>def sum_digits(y):
+    &quot;&quot;&quot;Sum all the digits of y.
+
+    &gt;&gt;&gt; sum_digits(10) # 1 + 0 = 1
+    1
+    &gt;&gt;&gt; sum_digits(4224) # 4 + 2 + 2 + 4 = 12
+    12
+    &gt;&gt;&gt; sum_digits(1234567890)
+    45
+    &gt;&gt;&gt; a = sum_digits(123) # make sure that you are using return rather than print
+    &gt;&gt;&gt; a
+    6
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q sum_digits</code></pre>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p><strong>Reminder</strong>: Please fill out the Lab 0 survey (also included at the beginning of this assignment): <a href="https://forms.gle/BP3tcRgqPhHq4Ymf9">this survey</a></p>
+
+
+<h1 id="extra-practice">Extra Practice</h1>
+
+
+<blockquote><p>These questions are optional and will not affect your score on this assignment. However, they are
+<strong>great practice</strong> for future assignments, projects, and exams. Attempting these questions is valuable in
+helping cement your knowledge of course concepts, and it's fun!</p></blockquote>
+
+
+<h2 id="what-would-python-display-part-2">What Would Python Display? (Part 2)</h2>
+
+
+<h3 class="question" id="q6">Q6: WWPD: What If?</h3>
+
+<blockquote><p>Use Ok to test your knowledge with the following "What Would Python Display?"
+questions:</p>
+
+<pre><code>python3 ok &#x2d;q if&#x2d;statements &#x2d;u</code></pre>
+
+<p><strong>Hint</strong>: <code>print</code> (unlike <code>return</code>) does <em>not</em> cause the function to exit!</p></blockquote>
+
+<!--
+<pre><code>&gt;&gt;&gt; def so_big(x):
+...     if x &gt; 10:
+...         print(&#x27;huge&#x27;)
+...     if x &gt; 5:
+...         return &#x27;big&#x27;
+...     if x &gt; 0:
+...         print(&#x27;small&#x27;)
+...     print(&quot;nothin&#x27;&quot;)
+&gt;&gt;&gt; so_big(7)
+<div class="alt prompt-9">______</div><div class="solution prompt-9">&#x27;&#x62;&#x69;&#x67;&#x27;</div>
+&gt;&gt;&gt; so_big(12)
+<div class="alt prompt-9">______</div><div class="solution prompt-9">&#x68;&#x75;&#x67;&#x65;&#xa;&#x27;&#x62;&#x69;&#x67;&#x27;</div>
+&gt;&gt;&gt; so_big(1)
+<div class="alt prompt-9">______</div><div class="solution prompt-9">&#x73;&#x6d;&#x61;&#x6c;&#x6c;&#xa;&#x6e;&#x6f;&#x74;&#x68;&#x69;&#x6e;&#x27;</div></code></pre>
+        <button id='prompt-9' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+-->
+
+<pre><code>&gt;&gt;&gt; def ab(c, d):
+...     if c &gt; 5:
+...         print(c)
+...     elif c &gt; 7:
+...         print(d)
+...     print(&#x27;foo&#x27;)
+&gt;&gt;&gt; ab(10, 20)
+<div class="alt prompt-10">______</div><div class="solution prompt-10">&#x31;&#x30;&#xa;&#x66;&#x6f;&#x6f;</div></code></pre>
+        <button id='prompt-10' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; def bake(cake, make):
+...     if cake == 0:
+...         cake = cake + 1
+...         print(cake)
+...     if cake == 1:
+...         print(make)
+...     else:
+...         return cake
+...     return make
+&gt;&gt;&gt; bake(0, 29)
+<div class="alt prompt-11">______</div><div class="solution prompt-11">&#x31;&#xa;&#x32;&#x39;&#xa;&#x32;&#x39;</div>
+&gt;&gt;&gt; bake(1, &quot;mashed potatoes&quot;)
+<div class="alt prompt-11">______</div><div class="solution prompt-11">&#x6d;&#x61;&#x73;&#x68;&#x65;&#x64;&#x20;&#x70;&#x6f;&#x74;&#x61;&#x74;&#x6f;&#x65;&#x73;&#xa;&#x27;&#x6d;&#x61;&#x73;&#x68;&#x65;&#x64;&#x20;&#x70;&#x6f;&#x74;&#x61;&#x74;&#x6f;&#x65;&#x73;&#x27;</div></code></pre>
+        <button id='prompt-11' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+
+<h2 id="more-coding-practice">More Coding Practice</h2>
+
+
+<h3 class="question" id="q7">Q7: Double Eights</h3>
+
+<p>Write a function that takes in a number and determines if the digits contain two
+adjacent 8s.</p>
+
+<solution>
+
+<pre><code>def double_eights(n):
+    &quot;&quot;&quot;Return true if n has two eights in a row.
+    &gt;&gt;&gt; double_eights(8)
+    False
+    &gt;&gt;&gt; double_eights(88)
+    True
+    &gt;&gt;&gt; double_eights(2882)
+    True
+    &gt;&gt;&gt; double_eights(880088)
+    True
+    &gt;&gt;&gt; double_eights(12345)
+    False
+    &gt;&gt;&gt; double_eights(80808080)
+    False
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q double_eights</code></pre>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#quick-logistics-review">Quick Logistics Review</a></li>
+  <ul>
+    <li><a href="#using-python">Using Python</a></li>
+    <li><a href="#using-ok">Using OK</a></li>
+  </ul>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#division">Division</a></li>
+    <li><a href="#functions">Functions</a></li>
+    <ul>
+      <li><a href="#call-expressions">Call expressions</a></li>
+      <li><a href="#return-and-print"><code>return</code> and <code>print</code></a></li>
+    </ul>
+    <li><a href="#control">Control</a></li>
+    <ul>
+      <li><a href="#boolean-operators">Boolean Operators</a></li>
+      <ul>
+        <li><a href="#short-circuiting">Short Circuiting</a></li>
+      </ul>
+      <li><a href="#if-statements">If Statements</a></li>
+      <li><a href="#while-loops">While Loops</a></li>
+    </ul>
+    <li><a href="#error-messages">Error Messages</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#what-would-python-display-part-1">What Would Python Display? (Part 1)</a></li>
+    <ul>
+      <li><a href="#q1">Q1: WWPD: Control</a></li>
+      <li><a href="#q2">Q2: WWPD: Veritasiness</a></li>
+      <li><a href="#q3">Q3: Debugging Quiz!</a></li>
+    </ul>
+    <li><a href="#coding-practice">Coding Practice</a></li>
+    <ul>
+      <li><a href="#q4">Q4: Falling Factorial</a></li>
+      <li><a href="#q5">Q5: Sum Digits</a></li>
+    </ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+  <li><a href="#extra-practice">Extra Practice</a></li>
+  <ul>
+    <li><a href="#what-would-python-display-part-2">What Would Python Display? (Part 2)</a></li>
+    <ul>
+      <li><a href="#q6">Q6: WWPD: What If?</a></li>
+    </ul>
+    <li><a href="#more-coding-practice">More Coding Practice</a></li>
+    <ul>
+      <li><a href="#q7">Q7: Double Eights</a></li>
+    </ul>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

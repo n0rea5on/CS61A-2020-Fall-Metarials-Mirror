@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 7: Iterators, Generators, Object-Oriented Programming | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 7: Iterators, Generators, Object-Oriented Programming
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab07.zip" class="label label-outline">lab07.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, October 13.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab07.zip">lab07.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h1 id="topics">Topics</h1>
+
+
+<p>Consult this section if you need a refresher on the material for this lab. It's
+okay to skip directly to <a href="#required-questions">the questions</a> and refer back
+here should you get stuck.</p>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Iterators<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h2 id="iterators">Iterators</h2>
+
+<!-- In lecture, we studied several Python object interfaces, or _protocols_. In this
+lab, we will study a new protocol, the _iterator protocol_. Implementing this
+protocol allows us to use our objects in for loops! Remember the <code>for</code> loop?
+(We really hope so!) -->
+
+<p>An iterable is any object that can be iterated through, or gone through one
+element at a time. One construct that we've used to iterate through an
+iterable is a for loop:</p>
+
+<pre><code>for elem in iterable:
+    # do something</code></pre>
+
+<p><code>for</code> loops work on any object that is <em>iterable</em>. We previously described it
+as working with any sequence -- all sequences are iterable, but there are other
+objects that are also iterable! We define an <strong>iterable</strong> as an object on which
+calling the built-in function <code>iter</code> function returns an <em>iterator</em>. An
+iterator is another type of object that allows us to iterate through an
+iterable by keeping track of which element is next in the sequence.</p>
+
+<p>To illustrate this, consider the following block of code, which does the exact
+same thing as a the for statement above:</p>
+
+<pre><code>iterator = iter(iterable)
+try:
+    while True:
+        elem = next(iterator)
+        # do something
+except StopIteration:
+    pass</code></pre>
+
+<p>Here's a breakdown of what's happening:</p>
+
+<ul>
+  <li>First, the built-in <code>iter</code> function is called on the iterable to create a
+  corresponding <em>iterator</em>.</li>
+  <li>To get the next element in the sequence, the built-in <code>next</code> function is
+  called on this iterator.</li>
+  <li>When <code>next</code> is called but there are no elements left in the iterator, a
+  <code>StopIteration</code> error is raised. In the for loop construct, this exception is
+  caught and execution can continue.</li>
+</ul>
+
+<p>Calling <code>iter</code> on an iterable multiple times returns a new iterator each time
+with distinct states (otherwise, you'd never be able to iterate through a
+iterable more than once). You can also call <code>iter</code> on the iterator itself, which
+will just return the same iterator without changing its state. However, note
+that you cannot call <code>next</code> directly on an iterable.</p>
+
+<p>Let's see the <code>iter</code> and <code>next</code> functions in action with an iterable we're
+already familiar with -- a list.</p>
+
+<pre><code>&gt;&gt;&gt; lst = [1, 2, 3, 4]
+&gt;&gt;&gt; next(lst)             # Calling next on an iterable
+TypeError: &#x27;list&#x27; object is not an iterator
+&gt;&gt;&gt; list_iter = iter(lst) # Creates an iterator for the list
+&gt;&gt;&gt; list_iter
+&lt;list_iterator object ...&gt;
+&gt;&gt;&gt; next(list_iter)       # Calling next on an iterator
+1
+&gt;&gt;&gt; next(list_iter)       # Calling next on the same iterator
+2
+&gt;&gt;&gt; next(iter(list_iter)) # Calling iter on an iterator returns itself
+3
+&gt;&gt;&gt; list_iter2 = iter(lst)
+&gt;&gt;&gt; next(list_iter2)      # Second iterator has new state
+1
+&gt;&gt;&gt; next(list_iter)       # First iterator is unaffected by second iterator
+4
+&gt;&gt;&gt; next(list_iter)       # No elements left!
+StopIteration
+&gt;&gt;&gt; lst                   # Original iterable is unaffected
+[1, 2, 3, 4]</code></pre>
+
+<p>Since you can call <code>iter</code> on iterators, this tells us that that they are also
+iterables! Note that while all iterators are iterables, the converse is not
+true - that is, not all iterables are iterators. You can use iterators wherever
+you can use iterables, but note that since iterators keep their state, they're
+only good to iterate through an iterable once:</p>
+
+<pre><code>&gt;&gt;&gt; list_iter = iter([4, 3, 2, 1])
+&gt;&gt;&gt; for e in list_iter:
+...     print(e)
+4
+3
+2
+1
+&gt;&gt;&gt; for e in list_iter:
+...     print(e)</code></pre>
+
+<blockquote><p><strong>Analogy</strong>: An iterable is like a book (one can flip through the
+pages) and an iterator for a book would be a bookmark (saves the position and
+can locate the next page).  Calling <code>iter</code> on a book gives you a new bookmark
+independent of other bookmarks, but calling <code>iter</code> on a bookmark gives you the
+bookmark itself, without changing its position at all. Calling <code>next</code> on the
+bookmark moves it to the next page, but does not change the pages in the book.
+Calling <code>next</code> on the book wouldn't make sense semantically. We can also have
+multiple bookmarks, all independent of each other.</p></blockquote>
+
+
+<h3 id="iterable-uses">Iterable Uses</h3>
+
+
+<p>We know that lists are one type of built-in iterable objects. You may have also
+encountered the <code>range(start, end)</code> function, which creates an iterable of
+ascending integers from start (inclusive) to end (exclusive).</p>
+
+<pre><code>&gt;&gt;&gt; for x in range(2, 6):
+...     print(x)
+...
+2
+3
+4
+5</code></pre>
+
+<p>Ranges are useful for many things, including performing some operations for a
+particular number of iterations or iterating through the indices of a list.</p>
+
+<p>There are also some built-in functions that take in iterables and return useful
+results:</p>
+
+<ul>
+  <li><code>map(f, iterable)</code> - Creates iterator over <code>f(x)</code> for each <code>x</code> in <code>iterable</code></li>
+  <li><code>filter(f, iterable)</code> - Creates iterator over <code>x</code> for each <code>x</code> in <code>iterable</code>
+  if <code>f(x)</code></li>
+  <li><code>zip(iter1, iter2)</code> - Creates iterator over co-indexed pairs (x, y) from both
+  input iterables</li>
+  <li><code>reversed(iterable)</code> - Creates iterator over all the elements in the input
+  iterable in reverse order</li>
+  <li><code>list(iterable)</code> - Creates a list containing all the elements in the input iterable</li>
+  <li><code>tuple(iterable)</code> - Creates a tuple containing all the elements in the input iterable</li>
+  <li><code>sorted(iterable)</code> - Creates a sorted list containing all the elements in the
+  input iterable</li>
+</ul>
+
+<!--
+How does <code>iter</code> work? It just calls the <code>__iter__</code> magic method on its argument,
+so <code>iter(something_iterable)</code> is equivalent to <code>something_iterable.__iter__()</code>.
+So, any object is iterable if it implements this magic method, and this method
+must return an iterator.
+
+How does <code>next</code> work? It just calls the <code>__next__</code> magic method on its argument,
+so <code>next(the_iterator)</code> is equivalent to <code>the_iterator.__next__()</code>. So, to
+implement the iterator protocol, we must implement this method. This method
+eithers returns the next element in our iteration (so it's usually non-pure!),
+or raises <code>StopIteration</code> when there are no elements left.-->
+
+<!--
+Here is a table summarizing the required methods on iterables and iterators.
+Python also has more
+<a href="https://docs.python.org/3/library/stdtypes.html#typeiter">documentation</a> about
+<a href="https://docs.python.org/3/glossary.html#term-iterable">iterable</a> and
+<a href="https://docs.python.org/3/glossary.html#term-iterator">iterator</a> types.
+
+<div class = "table-responsive">
+  <table class='table table-bordered'>
+    <tr>
+      <th>Iterable</th>
+      <th>Iterator</th>
+    </tr>
+    <tr>
+      <td><code>__iter__</code>: returns an iterator</td>
+      <td><code>__iter__</code>: returns an iterator, which is generally itself</td>
+    <tr>
+      <td><code>__next__</code>: (optional) need not be defined </td>
+      <td><code>__next__</code>: returns the next element, or raises
+      <code>StopIteration</code> if no more values left to produce</td>
+    </tr>
+  </table>
+</div>
+
+-->
+
+<!--
+Normally, when implementing a protocol, we create objects that are *both*
+iterable and an iterator, so it will have both the <code>__iter__</code> and <code>__next__</code>
+methods implemented. This is more convenient than creating two separate objects,
+so it is good to do this whenever possible. Here is an example of a class
+definition for an object that implements both the iterable and iterator
+interfaces:
+
+<pre><code>class Skipper:
+    def __init__(self, seq):
+        self.seq = seq
+        self.step = 1
+        self.current = 0
+
+    def __next__(self):
+        if self.current &gt;= len(self.seq):
+            raise StopIteration
+        val = self.seq[self.current]
+        self.current += self.step
+        self.step += 1
+        return val
+
+    def __iter__(self):
+        return self</code></pre>
+
+Let's go ahead and try out our new toy.
+
+<pre><code>&gt;&gt;&gt; for num in Skipper([3, 4, 5, 6, 7, 8, 9, 10]):
+...     print(num)
+3
+4
+6
+9</code></pre>
+
+That is, we skip through the elements of some sequence in ever-larger steps.
+-->
+
+<!--
+We can also use <code>Skipper</code> to create a new kind of iterable list:
+
+<pre><code>class SkippingList(list):
+
+    def __iter__(self):
+        return Skipper(self)</code></pre>
+
+and now we can write:
+
+<pre><code>&gt;&gt;&gt; aList = SkippingList([3, 4, 5, 6, 7, 8, 9, 10])
+&gt;&gt;&gt; for num in aList:
+...     print(num)
+3
+4
+6
+9</code></pre>
+
+-->
+</div>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Generators<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+<h2 id="generators">Generators</h2>
+
+
+<p>We can create our own custom iterators by writing a <em>generator function</em>, which
+returns a special type of iterator called a <strong>generator</strong>.  Generator functions
+have <code>yield</code> statements within the body of the function instead of <code>return</code>
+statements.  Calling a generator function will return a generator object and
+will <em>not</em> execute the body of the function.</p>
+
+<p>For example, let's consider the following generator function:</p>
+
+<pre><code>def countdown(n):
+    print(&quot;Beginning countdown!&quot;)
+    while n &gt;= 0:
+        yield n
+        n &#x2d;= 1
+    print(&quot;Blastoff!&quot;)</code></pre>
+
+<p>Calling <code>countdown(k)</code> will return a generator object that counts down from <code>k</code>
+to 0.  Since generators are iterators, we can call <code>iter</code> on the resulting
+object, which will simply return the same object.  Note that the body is not
+executed at this point; nothing is printed and no numbers are output.</p>
+
+<pre><code>&gt;&gt;&gt; c = countdown(5)
+&gt;&gt;&gt; c
+&lt;generator object countdown ...&gt;
+&gt;&gt;&gt; c is iter(c)
+True</code></pre>
+
+<p>So how is the counting done? Again, since generators are iterators, we call
+<code>next</code> on them to get the next element!  The first time <code>next</code> is called,
+execution begins at the first line of the function body and continues until the
+<code>yield</code> statement is reached. The result of evaluating the expression in the
+<code>yield</code> statement is returned.  The following interactive session continues
+from the one above.</p>
+
+<pre><code>&gt;&gt;&gt; next(c)
+Beginning countdown!
+5</code></pre>
+
+<p>Unlike functions we've seen before in this course, generator functions can
+remember their state. On any consecutive calls to <code>next</code>, execution picks up
+from the line after the <code>yield</code> statement that was previously executed. Like
+the first call to <code>next</code>, execution will continue until the next <code>yield</code>
+statement is reached. Note that because of this, <code>Beginning countdown!</code> doesn't
+get printed again.</p>
+
+<pre><code>&gt;&gt;&gt; next(c)
+4
+&gt;&gt;&gt; next(c)
+3</code></pre>
+
+<p>The next 3 calls to <code>next</code> will continue to yield consecutive descending
+integers until 0.  On the following call, a <code>StopIteration</code> error will be
+raised because there are no more values to yield (i.e. the end of the function
+body was reached before hitting a <code>yield</code> statement).</p>
+
+<pre><code>&gt;&gt;&gt; next(c)
+2
+&gt;&gt;&gt; next(c)
+1
+&gt;&gt;&gt; next(c)
+0
+&gt;&gt;&gt; next(c)
+Blastoff!
+StopIteration</code></pre>
+
+<p>Separate calls to <code>countdown</code> will create distinct generator objects with their
+own state. Usually, generators shouldn't restart. If you'd like to reset the
+sequence, create another generator object by calling the generator function
+again.</p>
+
+<pre><code>&gt;&gt;&gt; c1, c2 = countdown(5), countdown(5)
+&gt;&gt;&gt; c1 is c2
+False
+&gt;&gt;&gt; next(c1)
+5
+&gt;&gt;&gt; next(c2)
+5</code></pre>
+
+<p>Here is a summary of the above:</p>
+
+<ul>
+  <li>A <em>generator function</em> has a <code>yield</code> statement and returns a <em>generator object</em>.</li>
+  <li>Calling the <code>iter</code> function on a generator object returns the same object
+  without modifying its current state.</li>
+  <li>The body of a generator function is not evaluated until <code>next</code> is called on
+  a resulting generator object. Calling the <code>next</code> function on a generator
+  object computes and returns the next object in its sequence. If the sequence
+  is exhausted, <code>StopIteration</code> is raised.</li>
+  <li><p>A generator "remembers" its state for the next <code>next</code> call. Therefore,</p>
+
+  <ul>
+    <li><p>the first <code>next</code> call works like this:</p>
+
+    <ol>
+      <li>Enter the function and run until the line with <code>yield</code>.</li>
+      <li>Return the value in the <code>yield</code> statement, but remember the state of the
+      function for future <code>next</code> calls.</li>
+    </ol></li>
+    <li><p>And subsequent <code>next</code> calls work like this:</p>
+
+    <ol>
+      <li>Re-enter the function, start at <strong>the line after the <code>yield</code> statement that
+      was previously executed</strong>, and run until the next <code>yield</code> statement.</li>
+      <li>Return the value in the <code>yield</code> statement, but remember the state of the
+      function for future <code>next</code> calls.</li>
+    </ol></li>
+  </ul></li>
+  <li>Calling a generator function returns a brand new generator object (like
+  calling <code>iter</code> on an iterable object).</li>
+  <li>A generator should not restart unless it's defined that way. To start over
+  from the first element in a generator, just call the generator function again
+  to create a new generator.</li>
+</ul>
+
+<p>Another useful tool for generators is the <code>yield from</code> statement (introduced in
+Python 3.3). <code>yield from</code> will yield all values from an iterator or iterable.</p>
+
+<pre><code>&gt;&gt;&gt; def gen_list(lst):
+...     yield from lst
+...
+&gt;&gt;&gt; g = gen_list([1, 2, 3, 4])
+&gt;&gt;&gt; next(g)
+1
+&gt;&gt;&gt; next(g)
+2
+&gt;&gt;&gt; next(g)
+3
+&gt;&gt;&gt; next(g)
+4
+&gt;&gt;&gt; next(g)
+StopIteration</code></pre>
+
+</div>
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Object-Oriented Programming<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+<h2 id="object-oriented-programming">Object-Oriented Programming</h2>
+
+
+<p><strong>Object-oriented programming</strong> (OOP) is a style of programming that
+allows you to think of code in terms of "objects." Here's an example of
+a <code>Car</code> class:</p>
+
+<pre><code>class Car(object):
+    num_wheels = 4
+
+    def __init__(self, color):
+        self.wheels = Car.num_wheels
+        self.color = color
+
+    def drive(self):
+        if self.wheels &lt;= Car.num_wheels:
+            return self.color + &#x27; car cannot drive!&#x27;
+        return self.color + &#x27; car goes vroom!&#x27;
+
+    def pop_tire(self):
+        if self.wheels &gt; 0:
+            self.wheels &#x2d;= 1</code></pre>
+
+<p>Here's some terminology:</p>
+
+<ul>
+  <li><strong>class</strong>: a blueprint for how to build a certain type of object.
+  The <code>Car</code> class (shown above) describes the behavior and data that
+  all <code>Car</code> objects have.</li>
+  <li><p><strong>instance</strong>: a particular occurrence of a class. In Python, we
+  create instances of a class like this:</p>
+
+<pre><code>&gt;&gt;&gt; my_car = Car(&#x27;red&#x27;)</code></pre>
+
+  <p><code>my_car</code> is an instance of the <code>Car</code> class.</p></li>
+  <li><p><strong>attribute</strong> or <strong>field</strong>: a variable that belongs to the class.
+  Think of an attribute as a quality of the object: cars have <em>wheels</em>
+  and <em>color</em>, so we have given our <code>Car</code> class <code>self.wheels</code> and
+  <code>self.color</code> attributes. We can access attributes using <strong>dot
+  notation</strong>:</p>
+
+<pre><code>&gt;&gt;&gt; my_car.color
+&#x27;red&#x27;
+&gt;&gt;&gt; my_car.wheels
+4</code></pre></li>
+  <li><p><strong>method</strong>: Methods are just like normal functions, except that they
+  are tied to an instance or a class. Think of a method as a "verb" of
+  the class: cars can <em>drive</em> and also <em>pop their tires</em>, so we have
+  given our <code>Car</code> class the methods <code>drive</code> and <code>pop_tire</code>. We call
+  methods using <strong>dot notation</strong>:</p>
+
+<pre><code>&gt;&gt;&gt; my_car = Car(&#x27;red&#x27;)
+&gt;&gt;&gt; my_car.drive()
+&#x27;red car goes vroom!&#x27;</code></pre></li>
+  <li><p><strong>constructor</strong>: As with data abstraction, constructors describe how
+  to build an instance of the class. Most classes have a constructor.
+  In Python, the constructor of the class defined as <code>__init__</code>.  For
+  example, here is the <code>Car</code> class's constructor:</p>
+
+<pre><code>def __init__(self, color):
+    self.wheels = Car.num_wheels
+    self.color = color</code></pre>
+
+  <p>The constructor takes in one argument, <code>color</code>. As you can see, the
+  constructor also creates the <code>self.wheels</code> and <code>self.color</code> attributes.</p></li>
+  <li><p><code>self</code>: in Python, <code>self</code> is the first parameter for many methods
+  (in this class, we will only use methods whose first parameter is
+  <code>self</code>). When a method is called, <code>self</code> is bound to an instance of
+  the class. For example:</p>
+
+<pre><code>&gt;&gt;&gt; my_car = Car(&#x27;red&#x27;)
+&gt;&gt;&gt; car.drive()</code></pre>
+
+  <p>Notice that the <code>drive</code> method takes in <code>self</code> as an argument, but it
+  looks like we didn't pass one in! This is because the dot notation
+  <em>implicitly</em> passes in <code>car</code> as <code>self</code> for us.
+  </div>
+  <br></p></li>
+</ul>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+<h2 id="iterators-and-generators">Iterators and Generators</h2>
+
+<p>Generators also allow us to represent infinite sequences, such as the sequence of
+natural numbers (1, 2, ...) shown in the function below!</p>
+
+<pre><code>def naturals():
+    &quot;&quot;&quot;A generator function that yields the infinite sequence of natural
+    numbers, starting at 1.
+
+    &gt;&gt;&gt; m = naturals()
+    &gt;&gt;&gt; type(m)
+    &lt;class &#x27;generator&#x27;&gt;
+    &gt;&gt;&gt; [next(m) for _ in range(10)]
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    &quot;&quot;&quot;
+    i = 1
+    while True:
+        yield i
+        i += 1</code></pre>
+
+<h3 class="question" id="q1">Q1: Scale</h3>
+
+<p>Implement the generator function <code>scale(it, multiplier)</code>, which yields elements of the
+given iterable <code>it</code>, scaled by <code>multiplier</code>. As an extra challenge, try writing this
+function using a <code>yield from</code> statement!</p>
+
+<solution>
+
+<pre><code>def scale(it, multiplier):
+    &quot;&quot;&quot;Yield elements of the iterable it scaled by a number multiplier.
+
+    &gt;&gt;&gt; m = scale([1, 5, 2], 5)
+    &gt;&gt;&gt; type(m)
+    &lt;class &#x27;generator&#x27;&gt;
+    &gt;&gt;&gt; list(m)
+    [5, 25, 10]
+
+    &gt;&gt;&gt; m = scale(naturals(), 2)
+    &gt;&gt;&gt; [next(m) for _ in range(5)]
+    [2, 4, 6, 8, 10]
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q scale</code></pre>
+
+<h3 class="question" id="q2">Q2: Hailstone</h3>
+
+<p>Write a generator that outputs the hailstone sequence from homework 1.</p>
+
+<p>Here's a quick reminder of how the hailstone sequence is defined:</p>
+
+<ol>
+  <li>Pick a positive integer <code>n</code> as the start.</li>
+  <li>If <code>n</code> is even, divide it by 2.</li>
+  <li>If <code>n</code> is odd, multiply it by 3 and add 1.</li>
+  <li>Continue this process until <code>n</code> is 1.</li>
+</ol>
+
+<p><strong>Note:</strong> It is highly encouraged (though not required) to try writing a solution using recursion for some extra practice. Since
+<code>hailstone</code> returns a generator, you can <code>yield from</code> a call to <code>hailstone</code>!</p>
+
+<solution>
+
+<pre><code>def hailstone(n):
+    &quot;&quot;&quot;
+    &gt;&gt;&gt; for num in hailstone(10):
+    ...     print(num)
+    ...
+    10
+    5
+    16
+    8
+    4
+    2
+    1
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q hailstone</code></pre>
+
+
+
+
+<h2 id="wwpd-objects">WWPD: Objects</h2>
+
+
+<h3 class="question" id="q3">Q3: The Car class</h3>
+
+<p><strong>Note:</strong> These questions use inheritance. For an overview of inheritance, see the <a href="http://composingprograms.com/pages/25-object-oriented-programming.html#inheritance">inheritance portion</a> of Composing Programs</p>
+
+<p>Below is the definition of a <code>Car</code> class that we will be using in the following WWPD questions.
+<strong>Note:</strong> This definition can also be found in <code>car.py</code>.</p>
+
+<pre><code>class Car(object):
+    num_wheels = 4
+    gas = 30
+    headlights = 2
+    size = &#x27;Tiny&#x27;
+
+    def __init__(self, make, model):
+        self.make = make
+        self.model = model
+        self.color = &#x27;No color yet. You need to paint me.&#x27;
+        self.wheels = Car.num_wheels
+        self.gas = Car.gas
+
+    def paint(self, color):
+        self.color = color
+        return self.make + &#x27; &#x27; + self.model + &#x27; is now &#x27; + color
+
+    def drive(self):
+        if self.wheels &lt; Car.num_wheels or self.gas &lt;= 0:
+            return &#x27;Cannot drive!&#x27;
+        self.gas &#x2d;= 10
+        return self.make + &#x27; &#x27; + self.model + &#x27; goes vroom!&#x27;
+
+    def pop_tire(self):
+        if self.wheels &gt; 0:
+            self.wheels &#x2d;= 1
+
+    def fill_gas(self):
+        self.gas += 20
+        return &#x27;Gas level: &#x27; + str(self.gas)</code></pre>
+
+<blockquote><p>Use Ok to test your knowledge with the following What would Python Display
+questions.</p>
+
+<pre><code>python3 ok &#x2d;q wwpd&#x2d;car &#x2d;u</code></pre>
+
+<p>If an error occurs, type Error. If nothing is displayed, type Nothing.</p></blockquote>
+
+<!--
+
+<blockquote><pre><code>python3 ok &#x2d;q food_truck &#x2d;u</code></pre>
+
+<p>--></p></blockquote>
+
+<!-- <pre><code>&gt;&gt;&gt; garcias_car = Car(&#x27;Tesla&#x27;, &#x27;Model S&#x27;)
+&gt;&gt;&gt; garcias_car.color
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x27;&#x4e;&#x6f;&#x20;&#x63;&#x6f;&#x6c;&#x6f;&#x72;&#x20;&#x79;&#x65;&#x74;&#x2e;&#x20;&#x59;&#x6f;&#x75;&#x20;&#x6e;&#x65;&#x65;&#x64;&#x20;&#x74;&#x6f;&#x20;&#x70;&#x61;&#x69;&#x6e;&#x74;&#x20;&#x6d;&#x65;&#x2e;&#x27;</div>
+&gt;&gt;&gt; garcias_car.paint(&#x27;black&#x27;)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x27;&#x54;&#x65;&#x73;&#x6c;&#x61;&#x20;&#x4d;&#x6f;&#x64;&#x65;&#x6c;&#x20;&#x53;&#x20;&#x69;&#x73;&#x20;&#x6e;&#x6f;&#x77;&#x20;&#x62;&#x6c;&#x61;&#x63;&#x6b;&#x27;</div>
+&gt;&gt;&gt; garcias_car.color
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x27;&#x62;&#x6c;&#x61;&#x63;&#x6b;&#x27;</div></code></pre>
+        <button id='prompt-1' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+         -->
+<!--
+<pre><code>&gt;&gt;&gt; garcias_car = Car(&#x27;Tesla&#x27;, &#x27;Model S&#x27;)
+&gt;&gt;&gt; garcias_truck = MonsterTruck(&#x27;Monster Truck&#x27;, &#x27;XXL&#x27;)
+&gt;&gt;&gt; garcias_car.size
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x27;&#x54;&#x69;&#x6e;&#x79;&#x27;</div>
+&gt;&gt;&gt; garcias_truck.size
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x27;&#x4d;&#x6f;&#x6e;&#x73;&#x74;&#x65;&#x72;&#x27;</div></code></pre>
+        <button id='prompt-2' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+-->
+<pre><code>&gt;&gt;&gt; deneros_car = Car(&#x27;Tesla&#x27;, &#x27;Model S&#x27;)
+&gt;&gt;&gt; deneros_car.model
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x27;&#x4d;&#x6f;&#x64;&#x65;&#x6c;&#x20;&#x53;&#x27;</div>
+&gt;&gt;&gt; deneros_car.gas = 10
+&gt;&gt;&gt; deneros_car.drive()
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x27;&#x54;&#x65;&#x73;&#x6c;&#x61;&#x20;&#x4d;&#x6f;&#x64;&#x65;&#x6c;&#x20;&#x53;&#x20;&#x67;&#x6f;&#x65;&#x73;&#x20;&#x76;&#x72;&#x6f;&#x6f;&#x6d;&#x21;&#x27;</div>
+&gt;&gt;&gt; deneros_car.drive()
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x27;&#x43;&#x61;&#x6e;&#x6e;&#x6f;&#x74;&#x20;&#x64;&#x72;&#x69;&#x76;&#x65;&#x21;&#x27;</div>
+&gt;&gt;&gt; deneros_car.fill_gas()
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x27;&#x47;&#x61;&#x73;&#x20;&#x6c;&#x65;&#x76;&#x65;&#x6c;&#x3a;&#x20;&#x32;&#x30;&#x27;</div>
+&gt;&gt;&gt; deneros_car.gas
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x32;&#x30;</div>
+&gt;&gt;&gt; Car.gas
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x33;&#x30;</div></code></pre>
+        <button id='prompt-3' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<!-- <pre><code>&gt;&gt;&gt; Car.headlights
+<div class="alt prompt-4">______</div><div class="solution prompt-4">&#x32;</div>
+&gt;&gt;&gt; garcias_car.headlights
+<div class="alt prompt-4">______</div><div class="solution prompt-4">&#x32;</div>
+&gt;&gt;&gt; Car.headlights = 3
+&gt;&gt;&gt; garcias_car.headlights
+<div class="alt prompt-4">______</div><div class="solution prompt-4">&#x33;</div>
+&gt;&gt;&gt; garcias_car.headlights = 2
+&gt;&gt;&gt; Car.headlights
+<div class="alt prompt-4">______</div><div class="solution prompt-4">&#x33;</div></code></pre>
+        <button id='prompt-4' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+         -->
+
+<pre><code>&gt;&gt;&gt; deneros_car = Car(&#x27;Tesla&#x27;, &#x27;Model S&#x27;)
+&gt;&gt;&gt; deneros_car.wheels = 2
+&gt;&gt;&gt; deneros_car.wheels
+<div class="alt prompt-5">______</div><div class="solution prompt-5">&#x32;</div>
+&gt;&gt;&gt; Car.num_wheels
+<div class="alt prompt-5">______</div><div class="solution prompt-5">&#x34;</div>
+&gt;&gt;&gt; deneros_car.drive()
+<div class="alt prompt-5">______</div><div class="solution prompt-5">&#x27;&#x43;&#x61;&#x6e;&#x6e;&#x6f;&#x74;&#x20;&#x64;&#x72;&#x69;&#x76;&#x65;&#x21;&#x27;</div>
+&gt;&gt;&gt; Car.drive()
+<div class="alt prompt-5">______</div><div class="solution prompt-5">&#x45;&#x72;&#x72;&#x6f;&#x72;&#x20;&#x28;&#x54;&#x79;&#x70;&#x65;&#x45;&#x72;&#x72;&#x6f;&#x72;&#x29;</div>
+&gt;&gt;&gt; Car.drive(deneros_car)
+<div class="alt prompt-5">______</div><div class="solution prompt-5">&#x27;&#x43;&#x61;&#x6e;&#x6e;&#x6f;&#x74;&#x20;&#x64;&#x72;&#x69;&#x76;&#x65;&#x21;&#x27;</div></code></pre>
+        <button id='prompt-5' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+<!--
+
+<pre><code>&gt;&gt;&gt; MonsterTruck.drive(garcias_car)
+Error (AttributeError)</code></pre>
+
+-->
+
+<p>For the following, we reference the <code>MonsterTruck</code> class below.
+<strong>Note</strong>: The <code>MonsterTruck</code> class can also be found in <code>car.py</code>.</p>
+
+<pre><code> class MonsterTruck(Car):
+     size = &#x27;Monster&#x27;
+
+     def rev(self):
+         print(&#x27;Vroom! This Monster Truck is huge!&#x27;)
+
+     def drive(self):
+         self.rev()
+         return Car.drive(self)</code></pre>
+
+<pre><code>&gt;&gt;&gt; deneros_car = MonsterTruck(&#x27;Monster&#x27;, &#x27;Batmobile&#x27;)
+&gt;&gt;&gt; deneros_car.drive()
+<div class="alt prompt-6">______</div><div class="solution prompt-6">&#x56;&#x72;&#x6f;&#x6f;&#x6d;&#x21;&#x20;&#x54;&#x68;&#x69;&#x73;&#x20;&#x4d;&#x6f;&#x6e;&#x73;&#x74;&#x65;&#x72;&#x20;&#x54;&#x72;&#x75;&#x63;&#x6b;&#x20;&#x69;&#x73;&#x20;&#x68;&#x75;&#x67;&#x65;&#x21;&#xa;&#x27;&#x4d;&#x6f;&#x6e;&#x73;&#x74;&#x65;&#x72;&#x20;&#x42;&#x61;&#x74;&#x6d;&#x6f;&#x62;&#x69;&#x6c;&#x65;&#x20;&#x67;&#x6f;&#x65;&#x73;&#x20;&#x76;&#x72;&#x6f;&#x6f;&#x6d;&#x21;&#x27;</div>
+&gt;&gt;&gt; Car.drive(deneros_car)
+<div class="alt prompt-6">______</div><div class="solution prompt-6">&#x27;&#x4d;&#x6f;&#x6e;&#x73;&#x74;&#x65;&#x72;&#x20;&#x42;&#x61;&#x74;&#x6d;&#x6f;&#x62;&#x69;&#x6c;&#x65;&#x20;&#x67;&#x6f;&#x65;&#x73;&#x20;&#x76;&#x72;&#x6f;&#x6f;&#x6d;&#x21;&#x27;</div>
+&gt;&gt;&gt; MonsterTruck.drive(deneros_car)
+<div class="alt prompt-6">______</div><div class="solution prompt-6">&#x56;&#x72;&#x6f;&#x6f;&#x6d;&#x21;&#x20;&#x54;&#x68;&#x69;&#x73;&#x20;&#x4d;&#x6f;&#x6e;&#x73;&#x74;&#x65;&#x72;&#x20;&#x54;&#x72;&#x75;&#x63;&#x6b;&#x20;&#x69;&#x73;&#x20;&#x68;&#x75;&#x67;&#x65;&#x21;&#xa;&#x27;&#x4d;&#x6f;&#x6e;&#x73;&#x74;&#x65;&#x72;&#x20;&#x42;&#x61;&#x74;&#x6d;&#x6f;&#x62;&#x69;&#x6c;&#x65;&#x20;&#x67;&#x6f;&#x65;&#x73;&#x20;&#x76;&#x72;&#x6f;&#x6f;&#x6d;&#x21;&#x27;</div>
+&gt;&gt;&gt; Car.rev(deneros_car)
+<div class="alt prompt-6">______</div><div class="solution prompt-6">&#x45;&#x72;&#x72;&#x6f;&#x72;&#x20;&#x28;&#x41;&#x74;&#x74;&#x72;&#x69;&#x62;&#x75;&#x74;&#x65;&#x45;&#x72;&#x72;&#x6f;&#x72;&#x29;</div></code></pre>
+        <button id='prompt-6' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+<!--
+<pre><code>&gt;&gt;&gt; class FoodTruck(MonsterTruck):
+...    delicious = &#x27;meh&#x27;
+...    def serve(self):
+...        if FoodTruck.size == &#x27;delicious&#x27;:
+...            print(&#x27;Yum!&#x27;)
+...        if self.food != &#x27;Tacos&#x27;:
+...            return &#x27;But no tacos...&#x27;
+...        else:
+...            return &#x27;Mmm!&#x27;
+&gt;&gt;&gt; taco_truck = FoodTruck(&#x27;Tacos&#x27;, &#x27;Truck&#x27;)
+&gt;&gt;&gt; taco_truck.food = &#x27;Guacamole&#x27;
+&gt;&gt;&gt; taco_truck.serve()
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x27;&#x42;&#x75;&#x74;&#x20;&#x6e;&#x6f;&#x20;&#x74;&#x61;&#x63;&#x6f;&#x73;&#x2e;&#x2e;&#x2e;&#x27;</div>
+&gt;&gt;&gt; taco_truck.food = taco_truck.make
+&gt;&gt;&gt; FoodTruck.size = taco_truck.delicious
+&gt;&gt;&gt; taco_truck.serve()
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x27;&#x4d;&#x6d;&#x6d;&#x21;&#x27;</div>
+&gt;&gt;&gt; taco_truck.size = &#x27;delicious&#x27;
+&gt;&gt;&gt; taco_truck.serve()
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x27;&#x4d;&#x6d;&#x6d;&#x21;&#x27;</div>
+&gt;&gt;&gt; FoodTruck.pop_tire()
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x45;&#x72;&#x72;&#x6f;&#x72;</div>
+&gt;&gt;&gt; FoodTruck.pop_tire(taco_truck)
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x4e;&#x6f;&#x74;&#x68;&#x69;&#x6e;&#x67;</div>
+&gt;&gt;&gt; taco_truck.drive()
+<div class="alt prompt-7">______</div><div class="solution prompt-7">&#x56;&#x72;&#x6f;&#x6f;&#x6d;&#x21;&#x20;&#x54;&#x68;&#x69;&#x73;&#x20;&#x4d;&#x6f;&#x6e;&#x73;&#x74;&#x65;&#x72;&#x20;&#x54;&#x72;&#x75;&#x63;&#x6b;&#x20;&#x69;&#x73;&#x20;&#x68;&#x75;&#x67;&#x65;&#x21;&#xa;&#x27;&#x54;&#x61;&#x63;&#x6f;&#x73;&#x20;&#x54;&#x72;&#x75;&#x63;&#x6b;&#x20;&#x63;&#x61;&#x6e;&#x6e;&#x6f;&#x74;&#x20;&#x64;&#x72;&#x69;&#x76;&#x65;&#x21;&#x27;</div></code></pre>
+        <button id='prompt-7' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+-->
+
+
+<h2 id="magic-the-lambda-ing">Magic: The Lambda-ing</h2>
+
+
+<p>In the next part of this lab, we will be implementing a card game!</p>
+
+<p>You can start the game by typing:</p>
+
+<pre><code>python3 cardgame.py</code></pre>
+
+<p><strong>This game doesn't work yet</strong>. If we run this right now, the code will
+error, since we haven't implemented anything yet. When it's working, you
+can exit the game and return to the command line with <code>Ctrl&#x2d;C</code> or <code>Ctrl&#x2d;D</code>.</p>
+
+<p>This game uses several different files.</p>
+
+<ul>
+  <li>Code for all the questions in this lab can be found in <code>classes.py</code>.</li>
+  <li>Some utility for the game can be found in <code>cardgame.py</code>, but you won't need
+  to open or read this file. This file doesn't actually mutate any instances
+  directly - instead, it calls methods of the different classes, maintaining
+  a strict abstraction barrier.</li>
+  <li>If you want to modify your game later to add your own custom cards and decks,
+  you can look in <code>cards.py</code> to see all the standard cards and the default deck;
+  here, you can add more cards and change what decks you and your opponent use.
+  The cards were not created with balance in mind, so feel free to modify the stats
+  and add/remove cards as desired.</li>
+</ul>
+
+<p><strong>Rules of the Game</strong> This game is a little involved, though not nearly as much as its namesake. Here's
+how it goes:</p>
+
+<p>There are two players. Each player has a hand of cards and a deck, and at the
+start of each round, each player draws a card from their deck. If a player's
+deck is empty when they try to draw, they will automatically lose the game.
+Cards have a name, an attack stat, and a defense stat. Each round, each player
+chooses one card to play from their own hands. The card with the higher <em>power</em>
+wins the round. Each played card's power value is calculated as follows:</p>
+
+<pre><code>(player card&#x27;s attack) &#x2d; (opponent card&#x27;s defense) / 2</code></pre>
+
+<p>For example, let's say Player 1 plays a card with 2000 ATK/1000 DEF and Player 2 plays
+a card with 1500 ATK/3000 DEF. Their cards' powers are calculated as:</p>
+
+<pre><code>P1: 2000 &#x2d; 3000/2 = 2000 &#x2d; 1500 = 500
+P2: 1500 &#x2d; 1000/2 = 1500 &#x2d; 500 = 1000</code></pre>
+
+<p>so Player 2 would win this round.</p>
+
+<p>The first player to win 8 rounds wins the match!</p>
+
+<p>However, there are a few effects we can add (in the optional questions section) to
+make this game a bit more interesting. Cards are split into Tutor, TA, and Professor
+types, and each type has a different <em>effect</em> when they're played. All effects are applied
+before power is calculated during that round:</p>
+
+<ul>
+  <li>A Tutor will cause the opponent to discard and re-draw the first 3 cards in their hand.</li>
+  <li>A TA will swap the opponent card's attack and defense.
+  <!-- * An Instructor will add 300 attack and defense to all cards in the player's deck, and then
+  add a copy of the opponent's card to both the player's deck and the player's hand.--></li>
+  <li>A Professor adds the opponent card's attack and defense to all cards in their deck and
+  then remove all cards in the opponent's deck that share its attack <em>or</em> defense!</li>
+</ul>
+
+<p>These are a lot of rules to remember, so refer back here if you need to review them,
+and let's start making the game!</p>
+
+<h3 class="question" id="q4">Q4: Making Cards</h3>
+
+<p>To play a card game, we're going to need to have cards, so let's make some!
+We're gonna implement the basics of the <code>Card</code> class first.</p>
+
+<p>First, implement the <code>Card</code> class constructor in <code>classes.py</code>. This constructor
+takes three arguments:</p>
+
+<ul>
+  <li>the <code>name</code> of the card, a string</li>
+  <li>the <code>attack</code> stat of the card, an integer</li>
+  <li>the <code>defense</code> stat of the card, an integer</li>
+</ul>
+
+<p>Each <code>Card</code> instance should keep track of these values using instance attributes
+called <code>name</code>, <code>attack</code>, and <code>defense</code>.</p>
+
+<p>You should also implement the <code>power</code> method in <code>Card</code>, which takes in another card as
+an input and calculates the current card's power. Check the Rules section if you want
+a refresher on how power is calculated.</p>
+
+<solution>
+
+<pre><code>class Card:
+    cardtype = &#x27;Staff&#x27;
+
+    def __init__(self, name, attack, defense):
+        &quot;&quot;&quot;
+        Create a Card object with a name, attack,
+        and defense.
+        &gt;&gt;&gt; staff_member = Card(&#x27;staff&#x27;, 400, 300)
+        &gt;&gt;&gt; staff_member.name
+        &#x27;staff&#x27;
+        &gt;&gt;&gt; staff_member.attack
+        400
+        &gt;&gt;&gt; staff_member.defense
+        300
+        &gt;&gt;&gt; other_staff = Card(&#x27;other&#x27;, 300, 500)
+        &gt;&gt;&gt; other_staff.attack
+        300
+        &gt;&gt;&gt; other_staff.defense
+        500
+        &quot;&quot;&quot;
+        "*** YOUR CODE HERE ***"
+
+    def power(self, other_card):
+        &quot;&quot;&quot;
+        Calculate power as:
+        (player card&#x27;s attack) &#x2d; (opponent card&#x27;s defense)/2
+        where other_card is the opponent&#x27;s card.
+        &gt;&gt;&gt; staff_member = Card(&#x27;staff&#x27;, 400, 300)
+        &gt;&gt;&gt; other_staff = Card(&#x27;other&#x27;, 300, 500)
+        &gt;&gt;&gt; staff_member.power(other_staff)
+        150.0
+        &gt;&gt;&gt; other_staff.power(staff_member)
+        150.0
+        &gt;&gt;&gt; third_card = Card(&#x27;third&#x27;, 200, 400)
+        &gt;&gt;&gt; staff_member.power(third_card)
+        200.0
+        &gt;&gt;&gt; third_card.power(staff_member)
+        50.0
+        &quot;&quot;&quot;
+        "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q Card.__init__
+python3 ok -q Card.power</code></pre>
+
+<h3 class="question" id="q5">Q5: Making a Player</h3>
+Now that we have cards, we can make a deck, but we still need players to
+actually use them. We'll now fill in the implementation of the <code>Player</code> class.
+
+<p>A <code>Player</code> instance has three instance attributes:</p>
+
+<ul>
+  <li><code>name</code> is the player's name. When you play the game, you can enter your name,
+  which will be converted into a string to be passed to the constructor.</li>
+  <li><code>deck</code> is an instance of the <code>Deck</code> class. You can draw from it using
+  its <code>.draw()</code> method.</li>
+  <li><code>hand</code> is a list of <code>Card</code> instances. Each player should start with 5
+  cards in their hand, drawn from their <code>deck</code>. Each card in the hand can be
+  selected by its index in the list during the game. When a player draws a new
+  card from the deck, it is added to the end of this list.</li>
+</ul>
+
+<p>Complete the implementation of the constructor for <code>Player</code> so that <code>self.hand</code>
+is set to a list of 5 cards drawn from the player's <code>deck</code>.</p>
+
+<p>Next, implement the <code>draw</code> and <code>play</code> methods in the <code>Player</code> class.  The
+<code>draw</code> method draws a card from the deck and adds it to the
+player's hand. The <code>play</code> method removes and returns a card from the player's hand at the
+given index.</p>
+
+<blockquote><p>Call <code>deck.draw()</code> when implementing <code>Player.__init__</code> and <code>Player.draw</code>.
+Don't worry about how this function works - leave it all to the abstraction!</p></blockquote>
+
+<solution>
+
+<pre><code>class Player:
+    def __init__(self, deck, name):
+        &quot;&quot;&quot;Initialize a Player object.
+        A Player starts the game by drawing 5 cards from their deck. Each turn,
+        a Player draws another card from the deck and chooses one to play.
+        &gt;&gt;&gt; test_card = Card(&#x27;test&#x27;, 100, 100)
+        &gt;&gt;&gt; test_deck = Deck([test_card.copy() for _ in range(6)])
+        &gt;&gt;&gt; test_player = Player(test_deck, &#x27;tester&#x27;)
+        &gt;&gt;&gt; len(test_deck.cards)
+        1
+        &gt;&gt;&gt; len(test_player.hand)
+        5
+        &quot;&quot;&quot;
+        self.deck = deck
+        self.name = name
+        "*** YOUR CODE HERE ***"
+
+    def draw(self):
+        &quot;&quot;&quot;Draw a card from the player&#x27;s deck and add it to their hand.
+        &gt;&gt;&gt; test_card = Card(&#x27;test&#x27;, 100, 100)
+        &gt;&gt;&gt; test_deck = Deck([test_card.copy() for _ in range(6)])
+        &gt;&gt;&gt; test_player = Player(test_deck, &#x27;tester&#x27;)
+        &gt;&gt;&gt; test_player.draw()
+        &gt;&gt;&gt; len(test_deck.cards)
+        0
+        &gt;&gt;&gt; len(test_player.hand)
+        6
+        &quot;&quot;&quot;
+        assert not self.deck.is_empty(), &#x27;Deck is empty!&#x27;
+        "*** YOUR CODE HERE ***"
+
+    def play(self, card_index):
+        &quot;&quot;&quot;Remove and return a card from the player&#x27;s hand at the given index.
+        &gt;&gt;&gt; from cards import *
+        &gt;&gt;&gt; test_player = Player(standard_deck, &#x27;tester&#x27;)
+        &gt;&gt;&gt; ta1, ta2 = TACard(&quot;ta_1&quot;, 300, 400), TACard(&quot;ta_2&quot;, 500, 600)
+        &gt;&gt;&gt; tutor1, tutor2 = TutorCard(&quot;t1&quot;, 200, 500), TutorCard(&quot;t2&quot;, 600, 400)
+        &gt;&gt;&gt; test_player.hand = [ta1, ta2, tutor1, tutor2]
+        &gt;&gt;&gt; test_player.play(0) is ta1
+        True
+        &gt;&gt;&gt; test_player.play(2) is tutor2
+        True
+        &gt;&gt;&gt; len(test_player.hand)
+        2
+        &quot;&quot;&quot;
+        "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q Player.__init__
+python3 ok -q Player.draw
+python3 ok -q Player.play</code></pre>
+
+<p>After you complete this problem, you'll be able to play a working version of
+the game! Type</p>
+
+<pre><code>python3 cardgame.py</code></pre>
+
+<p>to start a game of Magic: The Lambda-ing!</p>
+
+<p>This version doesn't have the effects for different cards, yet - to get those
+working, try out the optional questions below.</p>
+
+
+<h1 id="optional-questions">Optional Questions</h1>
+
+
+<p>The following code-writing questions will all be in <code>classes.py</code>.</p>
+
+<p>For the following sections, do <strong>not</strong> overwrite any lines already provided in the
+code. Additionally, make sure to uncomment any calls to <code>print</code> once you have implemented
+each method. These are used to display information to the user, and changing them
+may cause you to fail tests that you would otherwise pass.</p>
+
+<h3 class="question" id="q6">Q6: Tutors: Flummox</h3>
+
+<p>To really make this card game interesting, our cards should have effects!
+We'll do this with the <code>effect</code> function for cards, which takes
+in the opponent card, the current player, and the opponent player.</p>
+
+<p>Implement the <code>effect</code> method for Tutors, which causes the opponent to discard
+the first 3 cards in their hand and then draw 3 new cards. Assume there at least 3 cards
+in the opponent's hand and at least 3 cards in the opponent's deck.</p>
+
+<p>Remember to uncomment the call to <code>print</code> once you're done!</p>
+
+<solution>
+
+<pre><code>class TutorCard(Card):
+    cardtype = &#x27;Tutor&#x27;
+
+    def effect(self, other_card, player, opponent):
+        &quot;&quot;&quot;
+        Discard the first 3 cards in the opponent&#x27;s hand and have
+        them draw the same number of cards from their deck.
+        &gt;&gt;&gt; from cards import *
+        &gt;&gt;&gt; player1, player2 = Player(player_deck, &#x27;p1&#x27;), Player(opponent_deck, &#x27;p2&#x27;)
+        &gt;&gt;&gt; other_card = Card(&#x27;other&#x27;, 500, 500)
+        &gt;&gt;&gt; tutor_test = TutorCard(&#x27;Tutor&#x27;, 500, 500)
+        &gt;&gt;&gt; initial_deck_length = len(player2.deck.cards)
+        &gt;&gt;&gt; tutor_test.effect(other_card, player1, player2)
+        p2 discarded and re&#x2d;drew 3 cards!
+        &gt;&gt;&gt; len(player2.hand)
+        5
+        &gt;&gt;&gt; len(player2.deck.cards) == initial_deck_length &#x2d; 3
+        True
+        &quot;&quot;&quot;
+        "*** YOUR CODE HERE ***"
+        #Uncomment the line below when you&#x27;ve finished implementing this method!
+        #print(&#x27;{} discarded and re&#x2d;drew 3 cards!&#x27;.format(opponent.name))</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q TutorCard.effect</code></pre>
+
+<h3 class="question" id="q7">Q7: TAs: Shift</h3>
+
+<p>Let's add an effect for TAs now! Implement the <code>effect</code> method for TAs, which
+swaps the attack and defense of the opponent's card.</p>
+
+<solution>
+
+<pre><code>class TACard(Card):
+    cardtype = &#x27;TA&#x27;
+
+    def effect(self, other_card, player, opponent):
+        &quot;&quot;&quot;
+        Swap the attack and defense of an opponent&#x27;s card.
+        &gt;&gt;&gt; from cards import *
+        &gt;&gt;&gt; player1, player2 = Player(player_deck, &#x27;p1&#x27;), Player(opponent_deck, &#x27;p2&#x27;)
+        &gt;&gt;&gt; other_card = Card(&#x27;other&#x27;, 300, 600)
+        &gt;&gt;&gt; ta_test = TACard(&#x27;TA&#x27;, 500, 500)
+        &gt;&gt;&gt; ta_test.effect(other_card, player1, player2)
+        &gt;&gt;&gt; other_card.attack
+        600
+        &gt;&gt;&gt; other_card.defense
+        300
+        &quot;&quot;&quot;
+        "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q TACard.effect</code></pre>
+
+<h3 class="question" id="q8">Q8: The Professor Arrives</h3>
+
+<p>A new challenger has appeared! Implement the <code>effect</code> method for the Professor,
+who adds the opponent card's attack and defense to all cards in the player's
+deck and then removes <em>all</em> cards in the opponent's deck that have the same
+attack or defense as the opponent's card.</p>
+
+<blockquote><p><em>Note:</em> You might run into trouble when you mutate a list as you're iterating
+through it. Try iterating through a copy instead! You can use slicing to copy
+a list:</p>
+
+<pre><code>  &gt;&gt;&gt; lst = [1, 2, 3, 4]
+  &gt;&gt;&gt; copy = lst[:]
+  &gt;&gt;&gt; copy
+  [1, 2, 3, 4]
+  &gt;&gt;&gt; copy is lst
+  False</code></pre></blockquote>
+
+<solution>
+
+<pre><code>class ProfessorCard(Card):
+    cardtype = &#x27;Professor&#x27;
+
+    def effect(self, other_card, player, opponent):
+        &quot;&quot;&quot;
+        Adds the attack and defense of the opponent&#x27;s card to
+        all cards in the player&#x27;s deck, then removes all cards
+        in the opponent&#x27;s deck that share an attack or defense
+        stat with the opponent&#x27;s card.
+        &gt;&gt;&gt; test_card = Card(&#x27;card&#x27;, 300, 300)
+        &gt;&gt;&gt; professor_test = ProfessorCard(&#x27;Professor&#x27;, 500, 500)
+        &gt;&gt;&gt; opponent_card = test_card.copy()
+        &gt;&gt;&gt; test_deck = Deck([test_card.copy() for _ in range(8)])
+        &gt;&gt;&gt; player1, player2 = Player(test_deck.copy(), &#x27;p1&#x27;), Player(test_deck.copy(), &#x27;p2&#x27;)
+        &gt;&gt;&gt; professor_test.effect(opponent_card, player1, player2)
+        3 cards were discarded from p2&#x27;s deck!
+        &gt;&gt;&gt; [(card.attack, card.defense) for card in player1.deck.cards]
+        [(600, 600), (600, 600), (600, 600)]
+        &gt;&gt;&gt; len(player2.deck.cards)
+        0
+        &quot;&quot;&quot;
+        orig_opponent_deck_length = len(opponent.deck.cards)
+        "*** YOUR CODE HERE ***"
+        discarded = orig_opponent_deck_length &#x2d; len(opponent.deck.cards)
+        if discarded:
+            #Uncomment the line below when you&#x27;ve finished implementing this method!
+            #print(&#x27;{} cards were discarded from {}\&#x27;s deck!&#x27;.format(discarded, opponent.name))
+            return</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q ProfessorCard.effect</code></pre>
+
+<p>After you complete this problem, we'll have a fully functional game of Magic:
+The Lambda-ing! This doesn't have to be the end, though - we encourage you to
+get creative with more card types, effects, and even adding more custom cards
+to your deck!</p>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#iterators">Iterators</a></li>
+    <ul>
+      <li><a href="#iterable-uses">Iterable Uses</a></li>
+    </ul>
+    <li><a href="#generators">Generators</a></li>
+    <li><a href="#object-oriented-programming">Object-Oriented Programming</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#iterators-and-generators">Iterators and Generators</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Scale</a></li>
+      <li><a href="#q2">Q2: Hailstone</a></li>
+    </ul>
+    <li><a href="#wwpd-objects">WWPD: Objects</a></li>
+    <ul>
+      <li><a href="#q3">Q3: The Car class</a></li>
+    </ul>
+    <li><a href="#magic-the-lambda-ing">Magic: The Lambda-ing</a></li>
+    <ul>
+      <li><a href="#q4">Q4: Making Cards</a></li>
+      <li><a href="#q5">Q5: Making a Player</a></li>
+    </ul>
+  </ul>
+  <li><a href="#optional-questions">Optional Questions</a></li>
+  <ul>
+    <li><a href="#q6">Q6: Tutors: Flummox</a></li>
+    <li><a href="#q7">Q7: TAs: Shift</a></li>
+    <li><a href="#q8">Q8: The Professor Arrives</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

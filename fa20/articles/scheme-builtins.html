@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Scheme Built-In Procedure Reference | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>Scheme Built-In Procedure Reference</h1>
+    </header>
+     <blockquote><p>Last Updated: Spring 2020</p></blockquote>
+
+<p>This document serves as a reference for the built-in procedures in the Scheme
+project and <a href="http://cs61a.org/assets/interpreter/scheme">staff Scheme interpreter</a>. The <a href="https://scheme.cs61a.org">web interpreter</a> includes
+several additional built-in procedures.</p>
+
+<p>In all of the syntax definitions below, <code>&lt;x&gt;</code> refers to a required element <code>x</code>
+that can vary, while <code>[x]</code> refers to an optional element <code>x</code>. Ellipses
+indicate that there can be more than one of the preceding element. It is
+assumed for all of these built-ins that the elements represent evaluated
+arguments not the literal expressions typed in.</p>
+
+<style>.builtin-header { display: block; margin: 0.5em 0em; font-size: 1.5em; } </style>
+
+
+<h2 id="core-interpreter">Core Interpreter</h2>
+
+
+<a class='builtin-header' id='apply'><strong><code>apply</code></strong></a>
+
+<pre><code class="scheme">(apply &lt;procedure&gt; &lt;args&gt;)</code></pre>
+
+
+
+<p>Calls <code>procedure</code> with the given list of <code>args</code>.</p>
+
+<pre><code class="scheme">scm&gt; (apply + &#x27;(1 2 3))
+6</code></pre>
+
+
+
+<p>On macros, this has the effect of calling the macro without the initial quoting
+or final evaluation. Thus, <code>apply</code> treats a macro as if it were a function.</p>
+
+<a class='builtin-header' id='display'><strong><code>display</code></strong></a>
+
+<pre><code class="scheme">(display &lt;val&gt;)</code></pre>
+
+
+
+<p>Prints <code>val</code>. If <code>val</code> is a Scheme string, it will be output without quotes.</p>
+
+<p>A new line will not be automatically included.</p>
+
+<a class='builtin-header' id='displayln'><strong><code>displayln</code></strong></a>
+
+<pre><code class="scheme">(displayln &lt;val&gt;)</code></pre>
+
+
+
+<p>Like <code>display</code>, but includes a newline at the end.</p>
+
+<a class='builtin-header' id='error'><strong><code>error</code></strong></a>
+
+<pre><code class="scheme">(error &lt;msg&gt;)</code></pre>
+
+
+
+<p>Raises an <code>SchemeError</code> with <code>msg</code> as it's message. If there is no <code>msg</code>,
+the error's message will be empty.</p>
+
+<a class='builtin-header' id='eval'><strong><code>eval</code></strong></a>
+
+<pre><code class="scheme">(eval &lt;expression&gt;)</code></pre>
+
+
+
+<p>Evaluates <code>expression</code> in the current environment.</p>
+
+<pre><code class="scheme">scm&gt; (eval &#x27;(cons 1 (cons 2 nil)))
+(1 2)</code></pre>
+
+
+
+<a class='builtin-header' id='exit'><strong><code>exit</code></strong></a>
+
+<pre><code class="scheme">(exit)</code></pre>
+
+
+
+<p>Exits the interpreter. In the web interpreter, this does nothing.</p>
+
+<a class='builtin-header' id='load'><strong><code>load</code></strong></a>
+
+<pre><code class="scheme">(load &lt;filename&gt;)</code></pre>
+
+
+
+<p>Loads the contents of the file with <code>filename</code> and evaluates the code within.
+<code>filename</code> must be a symbol. If that file is not found, <code>filename</code>.scm will
+be attempted.</p>
+
+<p>The web interpreter's does not currently support <code>load</code>. The closest analog is
+<code>import&#x2d;inline</code>, which takes a URL and evaluates the Scheme code in the current
+environment.</p>
+
+<a class='builtin-header' id='newline'><strong><code>newline</code></strong></a>
+
+<pre><code class="scheme">(newline)</code></pre>
+
+
+
+<p>Prints a new line.</p>
+
+<a class='builtin-header' id='print'><strong><code>print</code></strong></a>
+
+<pre><code class="scheme">(print &lt;val&gt;...)</code></pre>
+
+
+
+<p>Prints the Scheme representation of each <code>val</code>, separated by spaces. Unlike <code>display</code>, this will include
+the outer quotes on a Scheme string, and a newline.</p>
+
+
+<h2 id="type-checking">Type Checking</h2>
+
+
+<a class='builtin-header' id='atom?'><strong><code>atom?</code></strong></a>
+
+<pre><code class="scheme">(atom? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a boolean, number, symbol, string, or nil;
+false otherwise.</p>
+
+<a class='builtin-header' id='boolean?'><strong><code>boolean?</code></strong></a>
+
+<pre><code class="scheme">(boolean? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a boolean; false otherwise.</p>
+
+<a class='builtin-header' id='integer?'><strong><code>integer?</code></strong></a>
+
+<pre><code class="scheme">(integer? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a integer; false otherwise.</p>
+
+<a class='builtin-header' id='list?'><strong><code>list?</code></strong></a>
+
+<pre><code class="scheme">(list? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a well-formed list (i.e., it doesn't contain
+a stream); false otherwise. If the list has a cycle, this may cause an
+error or infinite loop.</p>
+
+<pre><code class="scheme">scm&gt; (list? &#x27;(1 2 3))
+True
+scm&gt; (list? (cons&#x2d;stream 1 nil))
+False</code></pre>
+
+
+
+<a class='builtin-header' id='number?'><strong><code>number?</code></strong></a>
+
+<pre><code class="scheme">(number? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a number; false otherwise.</p>
+
+<a class='builtin-header' id='null?'><strong><code>null?</code></strong></a>
+
+<pre><code class="scheme">(null? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is <code>nil</code> (the empty list); false otherwise.</p>
+
+<a class='builtin-header' id='pair?'><strong><code>pair?</code></strong></a>
+
+<pre><code class="scheme">(pair? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a pair; false otherwise.</p>
+
+<a class='builtin-header' id='procedure?'><strong><code>procedure?</code></strong></a>
+
+<pre><code class="scheme">(procedure? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a procedure; false otherwise.</p>
+
+<a class='builtin-header' id='promise?'><strong><code>promise?</code></strong></a>
+
+<pre><code class="scheme">(promise? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a promise; false otherwise.</p>
+
+<a class='builtin-header' id='string?'><strong><code>string?</code></strong></a>
+
+<pre><code class="scheme">(string? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a string; false otherwise.</p>
+
+<a class='builtin-header' id='symbol?'><strong><code>symbol?</code></strong></a>
+
+<pre><code class="scheme">(symbol? &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is a symbol; false otherwise.</p>
+
+
+<h2 id="pair-and-list-manipulation">Pair and List Manipulation</h2>
+
+
+<a class='builtin-header' id='append'><strong><code>append</code></strong></a>
+
+<pre><code class="scheme">(append [lst] ...)</code></pre>
+
+
+
+<p>Returns the result of appending the items of all <code>lst</code>s in order into a single
+list. Returns <code>nil</code> if no <code>lst</code>s.</p>
+
+<pre><code class="scheme">scm&gt; (append &#x27;(1 2 3) &#x27;(4 5 6))
+(1 2 3 4 5 6)
+scm&gt; (append)
+()
+scm&gt; (append &#x27;(1 2 3) &#x27;(a b c) &#x27;(foo bar baz))
+(1 2 3 a b c foo bar baz)
+scm&gt; (append &#x27;(1 2 3) 4)
+Error</code></pre>
+
+
+
+<a class='builtin-header' id='car'><strong><code>car</code></strong></a>
+
+<pre><code class="scheme">(car &lt;pair&gt;)</code></pre>
+
+
+
+<p>Returns the <code>car</code> of <code>pair</code>. Errors if <code>pair</code> is not a pair.</p>
+
+<a class='builtin-header' id='cdr'><strong><code>cdr</code></strong></a>
+
+<pre><code class="scheme">(cdr &lt;pair&gt;)</code></pre>
+
+
+
+<p>Returns the <code>cdr</code> of <code>pair</code>. Errors if <code>pair</code> is not a pair.</p>
+
+<a class='builtin-header' id='cons'><strong><code>cons</code></strong></a>
+
+<pre><code class="scheme">(cons &lt;first&gt; &lt;rest&gt;)</code></pre>
+
+
+
+<p>Returns a new pair with <code>first</code> as the <code>car</code> and <code>rest</code> as the <code>cdr</code></p>
+
+<a class='builtin-header' id='length'><strong><code>length</code></strong></a>
+
+<pre><code class="scheme">(length &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns the length of <code>arg</code>. If <code>arg</code> is not a list, this
+will cause an error.</p>
+
+<a class='builtin-header' id='list'><strong><code>list</code></strong></a>
+
+<pre><code class="scheme">(list &lt;item&gt; ...)</code></pre>
+
+
+
+<p>Returns a list with the <code>item</code>s in order as its elements.</p>
+
+<a class='builtin-header' id='map'><strong><code>map</code></strong></a>
+
+<pre><code class="scheme">(map &lt;proc&gt; &lt;lst&gt;)</code></pre>
+
+
+
+<p>Returns a list constructed by calling <code>proc</code> (a one-argument
+procedure) on each item in <code>lst</code>.</p>
+
+<a class='builtin-header' id='filter'><strong><code>filter</code></strong></a>
+
+<pre><code class="scheme">(filter &lt;pred&gt; &lt;lst&gt;)</code></pre>
+
+
+
+<p>Returns a list consisting of only the elements of <code>lst</code> that
+return true when called on <code>pred</code> (a one-argument
+procedure).</p>
+
+<a class='builtin-header' id='reduce'><strong><code>reduce</code></strong></a>
+
+<pre><code class="scheme">(reduce &lt;combiner&gt; &lt;lst&gt;)</code></pre>
+
+
+
+<p>Returns the result of sequentially combining each element in <code>lst</code>
+using <code>combiner</code> (a two-argument procedure). <code>reduce</code> works
+from left-to-right, with the existing combined value passed as the first
+argument and the new value as the second argument. <code>lst</code> must contain at least
+one item.</p>
+
+
+<h3 id="mutation">Mutation</h3>
+
+
+<a class='builtin-header' id='set-car!'><strong><code>set&#x2d;car!</code></strong></a>
+
+<pre><code class="scheme">(set&#x2d;car! &lt;pair&gt; &lt;value&gt;)</code></pre>
+
+
+
+<p>Sets the <code>car</code> of <code>pair</code> to <code>value</code>. <code>pair</code> must be a pair.</p>
+
+<a class='builtin-header' id='set-cdr!'><strong><code>set&#x2d;cdr!</code></strong></a>
+
+<pre><code class="scheme">(set&#x2d;cdr! &lt;pair&gt; &lt;value&gt;)</code></pre>
+
+
+
+<p>Sets the <code>cdr</code> of <code>pair</code> to <code>value</code>. <code>pair</code> must be a pair.</p>
+
+
+<h2 id="arithmetic-operations">Arithmetic Operations</h2>
+
+
+<a class='builtin-header' id='+'><strong><code>+</code></strong></a>
+
+<pre><code class="scheme">(+ [num] ...)</code></pre>
+
+
+
+<p>Returns the sum of all <code>num</code>s. Returns 0 if there are none. If any <code>num</code> is not
+a number, this will error.</p>
+
+<a class='builtin-header' id='-'><strong><code>&#x2d;</code></strong></a>
+
+<pre><code class="scheme">(&#x2d; &lt;num&gt; ...)</code></pre>
+
+
+
+<p>If there is only one <code>num</code>, return its negation. Otherwise, return the first
+<code>num</code> minus the sum of the remaining <code>num</code>s. If any <code>num</code> is not a number, this
+will error.</p>
+
+<a class='builtin-header' id='*'><strong><code>*</code></strong></a>
+
+<pre><code class="scheme">(* [num] ...)</code></pre>
+
+
+
+<p>Returns the product of all <code>num</code>s. Returns 1 if there are none. If any <code>num</code> is
+not a number, this will error.</p>
+
+<a class='builtin-header' id='/'><strong><code>/</code></strong></a>
+
+<pre><code class="scheme">(/ &lt;dividend&gt; [divisor] ...)</code></pre>
+
+
+
+<p>If there are no <code>divisor</code>s, return 1 divided by <code>dividend</code>. Otherwise, return
+<code>dividend</code> divided by the product of the <code>divisors</code>. This built-in does true
+division, not floor division. <code>dividend</code> and all <code>divisor</code>s must be numbers.</p>
+
+<pre><code class="scheme">scm&gt; (/ 4)
+0.25
+scm&gt; (/ 7 2)
+3.5
+scm&gt; (/ 16 2 2 2)
+2</code></pre>
+
+
+
+<a class='builtin-header' id='abs'><strong><code>abs</code></strong></a>
+
+<pre><code class="scheme">(abs &lt;num&gt;)</code></pre>
+
+
+
+<p>Returns the absolute value of <code>num</code>, which must be a number.</p>
+
+<a class='builtin-header' id='expt'><strong><code>expt</code></strong></a>
+
+<pre><code class="scheme">(expt &lt;base&gt; &lt;power&gt;)</code></pre>
+
+
+
+<p>Returns the <code>base</code> raised to the <code>power</code> power. Both must be numbers.</p>
+
+<a class='builtin-header' id='modulo'><strong><code>modulo</code></strong></a>
+
+<pre><code class="scheme">(modulo &lt;a&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>Returns <code>a</code> modulo <code>b</code>. Both must be numbers.</p>
+
+<pre><code class="scheme">scm&gt; (modulo 7 3)
+1
+scm&gt; (modulo &#x2d;7 3)
+2</code></pre>
+
+
+
+<a class='builtin-header' id='quotient'><strong><code>quotient</code></strong></a>
+
+<pre><code class="scheme">(quotient &lt;dividend&gt; &lt;divisor&gt;)</code></pre>
+
+
+
+<p>Returns <code>dividend</code> integer divided by <code>divisor</code>. Both must be numbers.</p>
+
+<pre><code class="scheme">scm&gt; (quotient 7 3)
+2</code></pre>
+
+
+
+<a class='builtin-header' id='remainder'><strong><code>remainder</code></strong></a>
+
+<pre><code class="scheme">(remainder &lt;dividend&gt; &lt;divisor&gt;)</code></pre>
+
+
+
+<p>Returns the remainder that results when <code>dividend</code> is integer divided by
+<code>divisor</code>. Both must be numbers. Differs from <code>modulo</code> in behavior when
+negative numbers are involved.</p>
+
+<pre><code class="scheme">scm&gt; (remainder 7 3)
+1
+scm&gt; (remainder &#x2d;7 3)
+&#x2d;1</code></pre>
+
+
+
+
+<h3 id="additional-math-procedures">Additional Math Procedures</h3>
+
+
+<p>The Python-based interpreter adds the following additional procedures whose
+behavior exactly match the corresponding Python functions in the
+<a href="https://docs.python.org/3/library/math.html">math module</a>.</p>
+
+<ul>
+  <li>acos</li>
+  <li>acosh</li>
+  <li>asin</li>
+  <li>asinh</li>
+  <li>atan</li>
+  <li>atan2</li>
+  <li>atanh</li>
+  <li>ceil</li>
+  <li>copysign</li>
+  <li>cos</li>
+  <li>cosh</li>
+  <li>degrees</li>
+  <li>floor</li>
+  <li>log</li>
+  <li>log10</li>
+  <li>log1p</li>
+  <li>log2</li>
+  <li>radians</li>
+  <li>sin</li>
+  <li>sinh</li>
+  <li>sqrt</li>
+  <li>tan</li>
+  <li>tanh</li>
+  <li>trunc</li>
+</ul>
+
+
+<h2 id="boolean-operations">Boolean Operations</h2>
+
+
+
+<h3 id="general">General</h3>
+
+
+<a class='builtin-header' id='eq?'><strong><code>eq?</code></strong></a>
+
+<pre><code class="scheme">(eq? &lt;a&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>If <code>a</code> and <code>b</code> are both numbers, booleans, symbols, or strings, return true if
+they are equivalent; false otherwise.</p>
+
+<p>Otherwise, return true if <code>a</code> and <code>b</code> both refer to the same object in memory;
+false otherwise.</p>
+
+<pre><code class="scheme">scm&gt; (eq? &#x27;(1 2 3) &#x27;(1 2 3))
+False
+scm&gt; (define x &#x27;(1 2 3))
+scm&gt; (eq? x x)
+True</code></pre>
+
+
+
+<a class='builtin-header' id='equal?'><strong><code>equal?</code></strong></a>
+
+<pre><code class="scheme">(equal? &lt;a&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>a</code> and <code>b</code> are equivalent. For two pairs, they are equivalent
+if their <code>car</code>s are equivalent and their <code>cdr</code>s are equivalent.</p>
+
+<pre><code class="scheme">scm&gt; (equal? &#x27;(1 2 3) &#x27;(1 2 3))
+True</code></pre>
+
+
+
+<a class='builtin-header' id='not'><strong><code>not</code></strong></a>
+
+<pre><code class="scheme">(not &lt;arg&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>arg</code> is false-y or false if <code>arg</code> is truthy.</p>
+
+
+<h3 id="on-numbers">On Numbers</h3>
+
+
+<a class='builtin-header' id='='><strong><code>=</code></strong></a>
+
+<pre><code class="scheme">(= &lt;a&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>a</code> equals <code>b</code>. Both must be numbers.</p>
+
+<a class='builtin-header' id='<'><strong><code>&lt;</code></strong></a>
+
+<pre><code class="scheme">(&lt; &lt;a&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>a</code> is less than <code>b</code>. Both must be numbers.</p>
+
+<a class='builtin-header' id='>'><strong><code>&gt;</code></strong></a>
+
+<pre><code class="scheme">(&gt; &lt;a&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>a</code> is greater than <code>b</code>. Both must be numbers.</p>
+
+<a class='builtin-header' id='<='><strong><code>&lt;=</code></strong></a>
+
+<pre><code class="scheme">(&lt;= &lt;a&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>a</code> is less than or equal to <code>b</code>. Both must be numbers.</p>
+
+<a class='builtin-header' id='>='><strong><code>&gt;=</code></strong></a>
+
+<pre><code class="scheme">(&gt;= &lt;a&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>a</code> is greater than or equal to <code>b</code>. Both must be numbers.</p>
+
+<a class='builtin-header' id='even?'><strong><code>even?</code></strong></a>
+
+<pre><code class="scheme">(even? &lt;num&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>num</code> is even. <code>num</code> must be a number.</p>
+
+<a class='builtin-header' id='odd?'><strong><code>odd?</code></strong></a>
+
+<pre><code class="scheme">(odd? &lt;num&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>num</code> is odd. <code>num</code> must be a number.</p>
+
+<a class='builtin-header' id='zero?'><strong><code>zero?</code></strong></a>
+
+<pre><code class="scheme">(zero? &lt;num&gt;)</code></pre>
+
+
+
+<p>Returns true if <code>num</code> is zero. <code>num</code> must be a number.</p>
+
+
+<h2 id="promises-and-streams">Promises and Streams</h2>
+
+
+<a class='builtin-header' id='force'><strong><code>force</code></strong></a>
+
+<pre><code class="scheme">(force &lt;promise&gt;)</code></pre>
+
+
+
+<p>Returns the evaluated result of <code>promise</code>. If <code>promise</code> has already been
+forced, its expression will not be evaluated again. Instead, the result from
+the previous evaluation will be returned. <code>promise</code> must be a promise.</p>
+
+<a class='builtin-header' id='cdr-stream'><strong><code>cdr&#x2d;stream</code></strong></a>
+
+<pre><code class="scheme">(cdr&#x2d;stream &lt;stream&gt;)</code></pre>
+
+
+
+<p>Shorthand for <code>(force (cdr &lt;stream&gt;))</code>.</p>
+
+
+<h2 id="turtle-graphics">Turtle Graphics</h2>
+
+
+<a class='builtin-header' id='backward'><strong><code>backward</code></strong></a>
+
+<pre><code class="scheme">(backward &lt;n&gt;)</code></pre>
+
+
+
+<p>Moves the turtle backward <code>n</code> units in its current direction from its current
+position.</p>
+
+<p><em>Aliases: <code>back</code>, <code>bk</code></em></p>
+
+<a class='builtin-header' id='begin_fill'><strong><code>begin_fill</code></strong></a>
+
+<pre><code class="scheme">(begin_fill)</code></pre>
+
+
+
+<p>Starts a sequence of moves that outline a shape to be filled.
+Call <code>end_fill</code> to complete the fill.</p>
+
+<a class='builtin-header' id='bgcolor'><strong><code>bgcolor</code></strong></a>
+
+<pre><code class="scheme">(bgcolor &lt;c&gt;)</code></pre>
+
+
+
+<p>Sets the background color of the turtle window to a color <code>c</code> (same rules as
+when calling <code>color</code>).</p>
+
+<a class='builtin-header' id='circle'><strong><code>circle</code></strong></a>
+
+<pre><code class="scheme">(circle &lt;r&gt; [extent])</code></pre>
+
+
+
+<p>Draws a circle of radius <code>r</code>, centered <code>r</code> units to the turtle's left.
+If <code>extent</code> exists, draw only the first <code>extent</code> degrees of the circle.
+If <code>r</code> is positive, draw in the counterclockwise direction. Otherwise, draw
+in the clockwise direction.</p>
+
+<p>The web interpreter has trouble accurately drawing partial circles.</p>
+
+<a class='builtin-header' id='clear'><strong><code>clear</code></strong></a>
+
+<pre><code class="scheme">(clear)</code></pre>
+
+
+
+<p>Clears the drawing, leaving the turtle unchanged.</p>
+
+<a class='builtin-header' id='color'><strong><code>color</code></strong></a>
+
+<pre><code class="scheme">(color &lt;c&gt;)</code></pre>
+
+
+
+<p>Sets the pen color to <code>c</code>, which is a Scheme string such as "red" or "#ffc0c0".</p>
+
+<p>The web interpreter also allows <code>c</code> to be a symbol. Available named colors may
+vary depending on the interpreter.</p>
+
+<a class='builtin-header' id='end_fill'><strong><code>end_fill</code></strong></a>
+
+<pre><code class="scheme">(end_fill)</code></pre>
+
+
+
+<p>Fill in shape drawn since last call to <code>begin_fill</code>.</p>
+
+<a class='builtin-header' id='exitonclick'><strong><code>exitonclick</code></strong></a>
+
+<pre><code class="scheme">(exitonclick)</code></pre>
+
+
+
+<p>In pillow-turtle mode, this exits the current program. In tk-turtle mode, it exits the current program
+when the window is clicked. In the web interpreter, it closes the canvas.</p>
+
+<p>In the local interpreter, you can pass <code>&#x2d;&#x2d;turtle&#x2d;save&#x2d;path PATH</code> to also effectively call
+<code>(save&#x2d;to&#x2d;file PATH)</code> right before exit.</p>
+
+<a class='builtin-header' id='forward'><strong><code>forward</code></strong></a>
+
+<pre><code class="scheme">(forward &lt;n&gt;)</code></pre>
+
+
+
+<p>Moves the turtle forward <code>n</code> units in its current direction from its current
+position.</p>
+
+<p><em>Alias: <code>fd</code></em></p>
+
+<a class='builtin-header' id='hideturtle'><strong><code>hideturtle</code></strong></a>
+
+<pre><code class="scheme">(hideturtle)</code></pre>
+
+
+
+<p>Makes the turtle invisible.</p>
+
+<p>This procedure has no effect on the web interpreter, as the turtle is always
+invisible.</p>
+
+<p><em>Alias: <code>ht</code></em></p>
+
+<a class='builtin-header' id='left'><strong><code>left</code></strong></a>
+
+<pre><code class="scheme">(left &lt;n&gt;)</code></pre>
+
+
+
+<p>Rotates the turtle's heading <code>n</code> degrees counterclockwise.</p>
+
+<p><em>Alias: <code>lt</code></em></p>
+
+<a class='builtin-header' id='pendown'><strong><code>pendown</code></strong></a>
+
+<pre><code class="scheme">(pendown)</code></pre>
+
+
+
+<p>Lowers the pen so that the turtle starts drawing.</p>
+
+<p><em>Alias: <code>pd</code></em></p>
+
+<a class='builtin-header' id='penup'><strong><code>penup</code></strong></a>
+
+<pre><code class="scheme">(penup)</code></pre>
+
+
+
+<p>Raises the pen so that the turtle does not draw.</p>
+
+<p><em>Alias: <code>pu</code></em></p>
+
+<a class='builtin-header' id='pixel'><strong><code>pixel</code></strong></a>
+
+<pre><code class="scheme">(pixel &lt;x&gt; &lt;y&gt; &lt;c&gt;)</code></pre>
+
+
+
+<p>Draws a box filled with pixels starting at (<code>x</code>, <code>y</code>) in color <code>c</code> (same rules
+as in <code>color</code>). By default the box is one pixel, though this can be changed
+with <code>pixelsize</code>.</p>
+
+<a class='builtin-header' id='pixelsize'><strong><code>pixelsize</code></strong></a>
+
+<pre><code class="scheme">(pixelsize &lt;size&gt;)</code></pre>
+
+
+
+<p>Changes the size of the box drawn by <code>pixel</code> to be <code>size</code>x<code>size</code>.</p>
+
+<a class='builtin-header' id='rgb'><strong><code>rgb</code></strong></a>
+
+<pre><code class="scheme">(rgb &lt;r&gt; &lt;g&gt; &lt;b&gt;)</code></pre>
+
+
+
+<p>Returns a color string formed from <code>r</code>, <code>g</code>, and <code>b</code> values between 0 and 1.</p>
+
+<a class='builtin-header' id='right'><strong><code>right</code></strong></a>
+
+<pre><code class="scheme">(right &lt;n&gt;)</code></pre>
+
+
+
+<p>Rotates the turtle's heading <code>n</code> degrees clockwise.</p>
+
+<p><em>Alias: <code>rt</code></em></p>
+
+<a class='builtin-header' id='save-to-file'><strong><code>save&#x2d;to&#x2d;file</code></strong></a>
+
+<pre><code>(save&#x2d;to&#x2d;file &lt;f&gt;)</code></pre>
+
+<p>Saves the current canvas to a file specified by <code>f</code>, with an added file extension.</p>
+
+<p>For example, <code>(save&#x2d;to&#x2d;file &quot;hi&quot;)</code></p>
+
+<ul>
+  <li>saves to <code>./hi.png</code> in the local interpreter using the pillow-turtle</li>
+  <li>saves to <code>./hi.ps</code> in the local interpreter using the tk-turtle  (default)</li>
+  <li>has no effect in the web interpreter</li>
+</ul>
+
+<a class='builtin-header' id='screen_width'><strong><code>screen_width</code></strong></a>
+
+<pre><code class="scheme">(screen_width)</code></pre>
+
+
+
+<p>Returns the width of the turtle screen in pixels of the current size.</p>
+
+<a class='builtin-header' id='screen_height'><strong><code>screen_height</code></strong></a>
+
+<pre><code class="scheme">(screen_height)</code></pre>
+
+
+
+<p>Returns the height of the turtle screen in pixels of the current size.</p>
+
+<a class='builtin-header' id='setheading'><strong><code>setheading</code></strong></a>
+
+<pre><code class="scheme">(setheading &lt;h&gt;)</code></pre>
+
+
+
+<p>Sets the turtle's heading <code>h</code> degrees clockwise from the north.</p>
+
+<p><em>Alias: <code>seth</code></em></p>
+
+<a class='builtin-header' id='setposition'><strong><code>setposition</code></strong></a>
+
+<pre><code class="scheme">(setposition &lt;x&gt; &lt;y&gt;)</code></pre>
+
+
+
+<p>Moves the turtle to position (<code>x</code>, <code>y</code>) without changing its heading.</p>
+
+<p><em>Aliases: <code>setpos</code>, <code>goto</code></em></p>
+
+<a class='builtin-header' id='showturtle'><strong><code>showturtle</code></strong></a>
+
+<pre><code class="scheme">(showturtle)</code></pre>
+
+
+
+<p>Makes the turtle visible.</p>
+
+<p>This procedure has no effect on the web interpreter, as the turtle is always
+invisible.</p>
+
+<p><em>Alias: <code>st</code></em></p>
+
+<a class='builtin-header' id='speed'><strong><code>speed</code></strong></a>
+
+<pre><code class="scheme">(speed &lt;s&gt;)</code></pre>
+
+
+
+<p>Sets the turtle's animation speed to some value between 0 and 10 with 0
+indicating no animation and 1-10 indicating faster and faster movement.</p>
+
+<blockquote><p>On the local interpreter in tk-turtle mode, this changes the animation speed.
+This feature has no effect on the web interpreter and
+on the gui-less pillow-turtle mode.</p></blockquote>
+
+
+<h2 id="additional-reading">Additional Reading</h2>
+
+
+<ul>
+  <li><a href="scheme-spec.html">Scheme Specification</a> - the core specification of 61A Scheme</li>
+  <li><a href="http://www.schemers.org/Documents/Standards/R5RS/">R5RS Specification</a> - the full Scheme specificaton that 61A Scheme
+  most closely resembles.</li>
+</ul>
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#core-interpreter">Core Interpreter</a></li>
+  <li><a href="#type-checking">Type Checking</a></li>
+  <li><a href="#pair-and-list-manipulation">Pair and List Manipulation</a></li>
+  <ul>
+    <li><a href="#mutation">Mutation</a></li>
+  </ul>
+  <li><a href="#arithmetic-operations">Arithmetic Operations</a></li>
+  <ul>
+    <li><a href="#additional-math-procedures">Additional Math Procedures</a></li>
+  </ul>
+  <li><a href="#boolean-operations">Boolean Operations</a></li>
+  <ul>
+    <li><a href="#general">General</a></li>
+    <li><a href="#on-numbers">On Numbers</a></li>
+  </ul>
+  <li><a href="#promises-and-streams">Promises and Streams</a></li>
+  <li><a href="#turtle-graphics">Turtle Graphics</a></li>
+  <li><a href="#additional-reading">Additional Reading</a></li>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+</script>
+
+  </body>
+</html>

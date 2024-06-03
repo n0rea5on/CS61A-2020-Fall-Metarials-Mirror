@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link href="/~cs61a/fa20/assets/css/project.css" rel="stylesheet" type="text/css">
+<style>
+  img {
+    max-height:500px;
+  }
+</style>
+
+
+    <title>
+Scheme Art Gallery | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Scheme Art Gallery
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="scheme_gallery.zip" class="label label-outline">scheme_gallery.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+<div class="haiku">
+  <blockquote><cite>
+The output is art,<br>
+But what about its source code?<br>
+It's just as abstract.
+
+</cite></blockquote>
+</div>
+
+    
+<p>Please vote for your favorite entry in this semester's CS 61A Scheme Art
+Contest. The winner should exemplify the principles of elegance, beauty, and
+abstraction that are prized in the Berkeley computer science curriculum. As an
+academic community, we should strive to recognize and reward merit and
+achievement (in other words, please don't just vote for your friends).</p>
+
+<p><a href="https://docs.google.com/forms/d/e/1FAIpQLScZfax6ojrdFKN9lX_H3F0OLLREa3WpoATAd8cEMAjtulxTzg/viewform">Cast your vote by submitting this form</a>. Voting is due <strong>11:59 PM
+on Friday, 12/11</strong>.</p>
+
+
+<h1 id="featherweight-division">Featherweight Division</h1>
+
+
+
+<h2 id="500-million-rays">500 million rays</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/090d45d4/artwork.png">
+  <blockquote>(length (filter (lambda (word) (= word "egg")) text))</blockquote>
+  <p>Tokens: 509</p>
+</div>
+
+<a class="btn" href="entries/090d45d4/contest.scm">View Code</a>
+
+
+<h2 id="fractal-tree">Fractal Tree</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/337e6b92/artwork.png">
+  <blockquote></blockquote>
+  <p>Tokens: 138</p>
+</div>
+
+<a class="btn" href="entries/337e6b92/contest.scm">View Code</a>
+
+
+<h2 id="buttabrot-probability-distribution">Buttabrot Probability Distribution</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/38346344/artwork.png">
+  <blockquote>The points that escape <br>From the Mandelbrot fractal <br>give us Buddabrot</blockquote>
+  <p>Tokens: 474</p>
+</div>
+
+<a class="btn" href="entries/38346344/contest.scm">View Code</a>
+
+
+<h2 id="blank-minded-stare">Blank Minded Stare</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/3949b07b/artwork.png">
+  <blockquote>I don't know<br>I don't know<br>I don't know</blockquote>
+  <p>Tokens: 117</p>
+</div>
+
+<a class="btn" href="entries/3949b07b/contest.scm">View Code</a>
+
+
+<h2 id="trexagon">Trexagon</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/3c8b3180/artwork.png">
+  <blockquote>The fusion of triangles and hexagons.</blockquote>
+  <p>Tokens: 505</p>
+</div>
+
+<a class="btn" href="entries/3c8b3180/contest.scm">View Code</a>
+
+
+<h2 id="impostor-among-a-swirl-of-stars">Impostor Among a Swirl of Stars</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/54196e29/artwork.png">
+  <blockquote>Here drifts impostor <br> among solitary stars; <br> all alone, once more.</blockquote>
+  <p>Tokens: 496</p>
+</div>
+
+<a class="btn" href="entries/54196e29/contest.scm">View Code</a>
+
+
+<h2 id="i-was-scanning-in-medbay">I was scanning in medbay</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/5f49e954/artwork.png">
+  <blockquote>my heart thumps as I<br>spew evidence, but no use...<br>self report- they say</blockquote>
+  <p>Tokens: 505</p>
+</div>
+
+<a class="btn" href="entries/5f49e954/contest.scm">View Code</a>
+
+
+<h2 id="this-is-the-only-time-i-want-to-be-voted">this is the only time I want to be voted</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/73595e63/artwork.png">
+  <blockquote>Why are we in space? <br> I want to be at the ship! <br> I miss my mommy 🥺</blockquote>
+  <p>Tokens: 433</p>
+</div>
+
+<a class="btn" href="entries/73595e63/contest.scm">View Code</a>
+
+
+<h2 id="hailstone-flower-of-27-up-to-80">Hailstone Flower of 27 (Up to 80)</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/7b73a72e/artwork.png">
+  <blockquote>Up and down it goes<br>Each layer the magnitude<br>How high will it go? (FYI 9232)<br><br>Side note:<br>The distance from the center represents the magnitude of the hailstone value (of 27) at x (0-80). Denser layers represent the more traversed values, while spaces represent values that don't appear in the hailstone sequence. </blockquote>
+  <p>Tokens: 321</p>
+</div>
+
+<a class="btn" href="entries/7b73a72e/contest.scm">View Code</a>
+
+
+<h2 id="time-enough">Time Enough</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/86a8f93b/artwork.png">
+  <blockquote>Dare I sigh relief? <br> How gentle the implosion <br> Till the bubble pops</blockquote>
+  <p>Tokens: 509</p>
+</div>
+
+<a class="btn" href="entries/86a8f93b/contest.scm">View Code</a>
+
+
+<h2 id="the-old-king-of-christmas">The Old King of Christmas</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/8a5fb2c3/artwork.png">
+  <blockquote>We tell our kids about Santa <br> But forget it is The Messiah <br> The Lion roaring in Judah.</blockquote>
+  <p>Tokens: 364</p>
+</div>
+
+<a class="btn" href="entries/8a5fb2c3/contest.scm">View Code</a>
+
+
+<h2 id="nebula">Nebula</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/9de3deb1/artwork.png">
+  <blockquote>Computer Science<br>Where some stars thrive but most die<br>DADDY DENERO</blockquote>
+  <p>Tokens: 402</p>
+</div>
+
+<a class="btn" href="entries/9de3deb1/contest.scm">View Code</a>
+
+
+<h2 id="psudeo-random-heart-generator">Psudeo Random Heart Generator</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/a820bac7/artwork.png">
+  <blockquote>A random heart explosion<br>Erratic like a human heart</blockquote>
+  <p>Tokens: 382</p>
+</div>
+
+<a class="btn" href="entries/a820bac7/contest.scm">View Code</a>
+
+
+<h2 id="define-spiral-turtle-recursion-special_sauce-spiral-turtle-recursion">(define (spiral turtle recursion) (* special_sauce (spiral turtle recursion)))</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/aa07ff5a/artwork.png">
+  <blockquote>That's a nice spiral <br> you've there... Shame if something were <br> to happen to it...</blockquote>
+  <p>Tokens: 249</p>
+</div>
+
+<a class="btn" href="entries/aa07ff5a/contest.scm">View Code</a>
+
+
+<h2 id="red">red</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/bda9643a/artwork.png">
+  <blockquote>red <br> red <br> Drake 🤔</blockquote>
+  <p>Tokens: 19</p>
+</div>
+
+<a class="btn" href="entries/bda9643a/contest.scm">View Code</a>
+
+
+<h2 id="11-58-submission">11:58 Submission</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/c29c0819/artwork.png">
+  <blockquote>Lazy Work <br><br>Repetitive Calls <br><br>Clock Ticking - Help me</blockquote>
+  <p>Tokens: 394</p>
+</div>
+
+<a class="btn" href="entries/c29c0819/contest.scm">View Code</a>
+
+
+<h2 id="breakout-rooms-be-like">Breakout Rooms be like</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/d3ed09d6/artwork.png">
+  <blockquote>Red: I saw Blue kill <br> Body in electrical <br> Everyone: red sus</blockquote>
+  <p>Tokens: 511</p>
+</div>
+
+<a class="btn" href="entries/d3ed09d6/contest.scm">View Code</a>
+
+
+<h2 id="you-re-welcome">You're Welcome :)</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/e2d34b0f/artwork.png">
+  <blockquote>The Konami Code <br> Try pressing the keys right now <br> Darkness awaits ye ...</blockquote>
+  <p>Tokens: 436</p>
+</div>
+
+<a class="btn" href="entries/e2d34b0f/contest.scm">View Code</a>
+
+
+<h2 id="creeper">Creeper</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/e6a6ce80/artwork.png">
+  <blockquote>Aww Man...</blockquote>
+  <p>Tokens: 166</p>
+</div>
+
+<a class="btn" href="entries/e6a6ce80/contest.scm">View Code</a>
+
+
+<h2 id="my-neighbor-piglet">My Neighbor Piglet</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/f8e6ff3c/artwork.png">
+  <blockquote>Once dreamt I rode a piglet to school<br>and most excitedly<br>I found a parking space</blockquote>
+  <p>Tokens: 333</p>
+</div>
+
+<a class="btn" href="entries/f8e6ff3c/contest.scm">View Code</a>
+
+
+<h2 id="self-portrait">self-portrait</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/late1/artwork.jpg">
+  <blockquote>Finals await us<br>Yet I make this sub-par clown<br>Like the clown I am</blockquote>
+  <p>Tokens: 507</p>
+</div>
+
+<a class="btn" href="entries/late1/contest.scm">View Code</a>
+
+
+<h1 id="heavyweight-division">Heavyweight Division</h1>
+
+
+
+<h2 id="beachy">Beachy</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/05e89b52/artwork.png">
+  <blockquote>It is very cold. <br><br>I wish I was at the beach -- <br><br>not studying, oof.</blockquote>
+  <p>Tokens: 859</p>
+</div>
+
+<a class="btn" href="entries/05e89b52/contest.scm">View Code</a>
+
+
+<h2 id="sus">sus</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/1158f5f8/artwork.png">
+  <blockquote>I was in navigation but<br>John seems kinda sus<br>- Hany</blockquote>
+  <p>Tokens: 1363</p>
+</div>
+
+<a class="btn" href="entries/1158f5f8/contest.scm">View Code</a>
+
+
+<h2 id="lightning-boi">Lightning boi</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/6864819c/artwork.png">
+  <blockquote>A whole speedy boi <br> When will the movie come out <br> I want to watch it</blockquote>
+  <p>Tokens: 819</p>
+</div>
+
+<a class="btn" href="entries/6864819c/contest.scm">View Code</a>
+
+
+<h2 id="a-petri-dish-coughed-upon">A Petri Dish Coughed Upon</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/6a3de5b1/artwork.png">
+  <blockquote>   Scheme, I hate your guts<br>   -- obtuse and complicated --<br>   But look, pretty points.<br><br>Where the Mandelbrot set is defined as specifically the points that do not escape to infinity when iterated through the function <br>    z_next = z^2+c,<br>The Buddhabrot image, which our code  takes inspiration from, looks at the paths that points take when they DO escape to infinity. This is not the actual Buddhabrot image, but rather a few of these paths (called orbits), before they escape to infinity. Essentially, a complicated way to produce points that end up looking almost random with some notable patterns. Many think that this image resembles the Buddha.</blockquote>
+  <p>Tokens: 3544</p>
+</div>
+
+<a class="btn" href="entries/6a3de5b1/contest.scm">View Code</a>
+
+
+<h2 id="two-pretty-best-friends">Two Pretty Best Friends</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/9c458b24/artwork.png">
+  <blockquote>I ain't never seen <br> two pretty best friends until <br> Denero-Farid.</blockquote>
+  <p>Tokens: 2102</p>
+</div>
+
+<a class="btn" href="entries/9c458b24/contest.scm">View Code</a>
+
+
+<h2 id="pizza">Pizza</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/c6586b2e/artwork.png">
+  <blockquote>A hot dog is a <br> sandwich, birds are real, time is <br> a social construct</blockquote>
+  <p>Tokens: 4057</p>
+</div>
+
+<a class="btn" href="entries/c6586b2e/contest.scm">View Code</a>
+
+
+<h2 id="the-pink-killa">the pink killa</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/c74670f1/artwork.png">
+  <blockquote>I am pink. CS is green. rip.</blockquote>
+  <p>Tokens: 864</p>
+</div>
+
+<a class="btn" href="entries/c74670f1/contest.scm">View Code</a>
+
+
+<h2 id="there-is-1-impostor-among-us">There is 1 Impostor Among Us</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/c97e4b00/artwork.png">
+  <blockquote>I wonder who the Impostor is... Boo Trees! Go Bears!</blockquote>
+  <p>Tokens: 1187</p>
+</div>
+
+<a class="btn" href="entries/c97e4b00/contest.scm">View Code</a>
+
+
+<h2 id="sunset">Sunset</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/d0e1dc9d/artwork.png">
+  <blockquote>The most beautiful sunsets<br> are the ones<br> that pass all the tests</blockquote>
+  <p>Tokens: 3151</p>
+</div>
+
+<a class="btn" href="entries/d0e1dc9d/contest.scm">View Code</a>
+
+
+<h2 id="serenity">Serenity</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/d2969080/artwork.png">
+  <blockquote>Divine, Serene, Peace<br>What more do we need in these<br>times, plus finals soon</blockquote>
+  <p>Tokens: 3407</p>
+</div>
+
+<a class="btn" href="entries/d2969080/contest.scm">View Code</a>
+
+
+<h2 id="superheroski">SUPERHEROSKI</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/d6b06054/artwork.png">
+  <blockquote>Soaring through the clouds <br><br>Searching for trees with no clout <br><br>Superheroski</blockquote>
+  <p>Tokens: 3999</p>
+</div>
+
+<a class="btn" href="entries/d6b06054/contest.scm">View Code</a>
+
+
+<h2 id="false-values-in-python-mostly">False Values in Python (Mostly)</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/late2/artwork.png">
+  <blockquote>Five falsy values<br>They must discover the truth<br>I saw orange vent</blockquote>
+  <p>Tokens: 4077</p>
+</div>
+
+<a class="btn" href="entries/late2/contest.scm">View Code</a>
+
+
+<h1 id="ultra-heavyweight-division">Ultra-Heavyweight Division</h1>
+
+<p>This submission has too many tokens to be considered for the Heavyweight Division, but it is still part of the Gallery!</p>
+
+<h2 id="bonfire">Bonfire</h2>
+
+
+<div class="haiku">
+  <img class="img-responsive center-block" src="entries/66ad6e82/artwork.png">
+  <blockquote>Dank Knight, burning fire<br>CS kids, one desire<br>B+, or higher</blockquote>
+  <p>Tokens: 4990</p>
+</div>
+
+<a class="btn" href="entries/66ad6e82/contest.scm">View Code</a>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#featherweight-division">Featherweight Division</a></li>
+  <ul>
+    <li><a href="#500-million-rays">500 million rays</a></li>
+    <li><a href="#fractal-tree">Fractal Tree</a></li>
+    <li><a href="#buttabrot-probability-distribution">Buttabrot Probability Distribution</a></li>
+    <li><a href="#blank-minded-stare">Blank Minded Stare</a></li>
+    <li><a href="#trexagon">Trexagon</a></li>
+    <li><a href="#impostor-among-a-swirl-of-stars">Impostor Among a Swirl of Stars</a></li>
+    <li><a href="#i-was-scanning-in-medbay">I was scanning in medbay</a></li>
+    <li><a href="#this-is-the-only-time-i-want-to-be-voted">this is the only time I want to be voted</a></li>
+    <li><a href="#hailstone-flower-of-27-up-to-80">Hailstone Flower of 27 (Up to 80)</a></li>
+    <li><a href="#time-enough">Time Enough</a></li>
+    <li><a href="#the-old-king-of-christmas">The Old King of Christmas</a></li>
+    <li><a href="#nebula">Nebula</a></li>
+    <li><a href="#psudeo-random-heart-generator">Psudeo Random Heart Generator</a></li>
+    <li><a href="#define-spiral-turtle-recursion-special_sauce-spiral-turtle-recursion">(define (spiral turtle recursion) (* special_sauce (spiral turtle recursion)))</a></li>
+    <li><a href="#red">red</a></li>
+    <li><a href="#11-58-submission">11:58 Submission</a></li>
+    <li><a href="#breakout-rooms-be-like">Breakout Rooms be like</a></li>
+    <li><a href="#you-re-welcome">You're Welcome :)</a></li>
+    <li><a href="#creeper">Creeper</a></li>
+    <li><a href="#my-neighbor-piglet">My Neighbor Piglet</a></li>
+    <li><a href="#self-portrait">self-portrait</a></li>
+  </ul>
+  <li><a href="#heavyweight-division">Heavyweight Division</a></li>
+  <ul>
+    <li><a href="#beachy">Beachy</a></li>
+    <li><a href="#sus">sus</a></li>
+    <li><a href="#lightning-boi">Lightning boi</a></li>
+    <li><a href="#a-petri-dish-coughed-upon">A Petri Dish Coughed Upon</a></li>
+    <li><a href="#two-pretty-best-friends">Two Pretty Best Friends</a></li>
+    <li><a href="#pizza">Pizza</a></li>
+    <li><a href="#the-pink-killa">the pink killa</a></li>
+    <li><a href="#there-is-1-impostor-among-us">There is 1 Impostor Among Us</a></li>
+    <li><a href="#sunset">Sunset</a></li>
+    <li><a href="#serenity">Serenity</a></li>
+    <li><a href="#superheroski">SUPERHEROSKI</a></li>
+    <li><a href="#false-values-in-python-mostly">False Values in Python (Mostly)</a></li>
+  </ul>
+  <li><a href="#ultra-heavyweight-division">Ultra-Heavyweight Division</a></li>
+  <ul>
+    <li><a href="#bonfire">Bonfire</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

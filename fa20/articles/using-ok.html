@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Using Ok | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>Using Ok</h1>
+    </header>
+     <p>CS 61A uses a program called <code>ok</code> to test and submit homework
+assignments, labs, and projects.</p>
+
+<p>Every programming assignment will include a <code>.zip</code> archive that
+contains the following:</p>
+
+<ul>
+  <li>Starter code</li>
+  <li>A copy of <code>ok</code></li>
+</ul>
+
+<p>After extracting the contents of the archive, you can begin your
+assignment.</p>
+
+
+<h2 id="signing-in-with-ok">Signing in with Ok</h2>
+
+
+<p>To get started, open your terminal, and <code>cd</code> into the right directory
+(you should see a file called <code>ok</code> when you <code>ls</code> in the right
+directory).</p>
+
+<p>Try the following command:</p>
+
+<pre><code>python3 ok</code></pre>
+
+<p>This runs the tests (don't worry if the tests fail at first; you
+haven't written code yet!).</p>
+
+<p>The first time you run <code>ok</code>, you will be asked for your bCourses email.
+This should be your Berkeley email address (ending with <code>@berkeley.edu</code>).
+If you have more than one, please use the one that you log into your
+bConnected Google account with.</p>
+
+<p>If you don't have a Berkeley email address, you can create one
+<a href="https://mybconnected.berkeley.edu/my/account/index">here</a> by logging
+in to your CalNet account.</p>
+
+<p>After typing in your email, your web browser will open an
+authentication page. Click "Accept" to authenticate <code>ok</code>.</p>
+
+
+<h3 id="troubleshooting">Troubleshooting</h3>
+
+
+
+<h4 id="not-enrolled">Not enrolled</h4>
+
+
+<p>If you see an error message that indicates you are not enrolled in the course,
+make sure you are using the email address that would appear on the course
+roster. If the email you used is correct, you may continue to use the email;
+your submissions will still be saved. You must contact your TA for that email
+address to be enrolled.</p>
+
+
+<h4 id="wrong-email">Wrong email</h4>
+
+
+<p>If you typed your email incorrectly, you can re-authenticate with the following
+command:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;authenticate</code></pre>
+
+
+<h4 id="can-t-authenticate-browser-issues-redirections-to-127-0-0-1-etc">Can't authenticate/browser issues/redirections to <code>127.0.0.1</code>/etc.</h4>
+
+
+<p>Try running with <code>&#x2d;&#x2d;no&#x2d;browser</code>:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;authenticate &#x2d;&#x2d;no&#x2d;browser</code></pre>
+
+<p>Also, double-check your internet connection. If you're on campus, try using
+<a href="https://ist.berkeley.edu/airbears/">AirBears2</a>.</p>
+
+
+<h4 id="crashed-or-did-not-load">Crashed or did not load</h4>
+
+
+<p>Make sure you have the 64-bit version of Python 3 installed. You can check
+whether you have the incorrect 32-bit version by running the following command
+in your terminal.</p>
+
+<pre><code>python3 &#x2d;c &quot;import struct,platform;print(8 * struct.calcsize(&#x27;P&#x27;), platform.python_version())&quot;</code></pre>
+
+
+<h2 id="testing-with-ok">Testing with Ok</h2>
+
+
+<p>After writing some code, you can test your code with <code>ok</code> in various
+ways.</p>
+
+
+<h3 id="test-specific-questions">Test specific questions</h3>
+
+
+<p>To test a specific question, use the <code>&#x2d;q</code> option with the name of the question:</p>
+
+<pre><code>python3 ok &#x2d;q &lt;question&gt;</code></pre>
+
+
+<h3 id="test-all-questions">Test all questions</h3>
+
+
+<p>You can run all the tests with the following command:</p>
+
+<pre><code>python3 ok</code></pre>
+
+
+<h3 id="display-all-tests">Display all tests</h3>
+
+
+<p>By default, only tests that <strong>fail</strong> will appear. If you want to see how you did
+on all tests, you can use the <code>&#x2d;v</code> option:</p>
+
+<pre><code>python3 ok &#x2d;v</code></pre>
+
+
+<h3 id="test-locally">Test locally</h3>
+
+
+<p>If you do not want to send your progress to our server or you have any problems
+logging in, add the <code>&#x2d;&#x2d;local</code> flag to block all communication:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;local</code></pre>
+
+
+<h3 id="adding-your-own-tests">Adding your own tests</h3>
+
+
+<p><img class="img-responsive center-block" src="assets/custom-test.png" alt="Adding Tests">
+You can write your own tests and run them using <code>ok</code>. By default, a test file
+will be named <code>mytests.rst</code>. You may use a different name, but you will need to
+specify it when running tests.</p>
+
+
+<h3 id="running-your-own-tests">Running your own tests</h3>
+
+
+<p>To run all your tests in <code>mytests.rst</code> with verbose results:</p>
+
+<pre><code>python3 ok &#x2d;t &#x2d;v</code></pre>
+
+<p>If you put your tests in a different file or split your tests up into multiple
+files:</p>
+
+<pre><code>python3 ok &#x2d;t your_new_filename.rst</code></pre>
+
+<p>To run just the tests from suite 1 case 1 in <code>mytests.rst</code>:</p>
+
+<pre><code>python3 ok &#x2d;t &#x2d;&#x2d;suite 1 &#x2d;&#x2d;case 1</code></pre>
+
+<p>You might have noticed that there's a "test coverage" percentage for your tests
+(note that coverage statistics are only returned when running all tests). This
+is a measure of your test's
+<a href="https://en.wikipedia.org/wiki/Code_coverage">code coverage</a>.</p>
+
+<p>To receive guidance on which lines you should test to increase your coverage:</p>
+
+<pre><code>python3 ok &#x2d;t &#x2d;cov</code></pre>
+
+<p>Code coverage won't include <code>ok</code> tests, so the coverage percentage might be
+higher in reality.</p>
+
+<p>While code coverage is a useful tool, you should not get fixated on this number.
+It is better to write tests that help you complete the problem and make life
+easier instead of achieving a higher coverage.</p>
+
+
+<h3 id="submit-assignment">Submit assignment</h3>
+
+
+<p>When you are ready to submit, run <code>ok</code> with the <code>&#x2d;&#x2d;submit</code> option:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p>After submitting, <code>ok</code> will display a submission URL, with which you can view
+your submission on <a href="https://okpy.org">okpy.org</a>.</p>
+
+
+<h2 id="viewing-submissions">Viewing submissions</h2>
+
+
+<p>You can go to <a href="https://okpy.org">okpy.org</a> to check your submissions and backups. Make sure you
+sign in with the same bCourses email that you authenticated with.</p>
+
+
+<h2 id="faq">FAQ</h2>
+
+
+
+<h3 id="adding-partners-on-okpy-org">Adding partners on okpy.org</h3>
+
+
+<p>This <a href="<a href='https://youtu.be/3qx_RfKbvuQ'> https://youtu.be/3qx_RfKbvuQ </a>">video</a> walks through adding partners on
+<a href="https://okpy.org">okpy.org</a>.</p>
+
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/3qx_RfKbvuQ"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#signing-in-with-ok">Signing in with Ok</a></li>
+  <ul>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <ul>
+      <li><a href="#not-enrolled">Not enrolled</a></li>
+      <li><a href="#wrong-email">Wrong email</a></li>
+      <li><a href="#can-t-authenticate-browser-issues-redirections-to-127-0-0-1-etc">Can't authenticate/browser issues/redirections to <code>127.0.0.1</code>/etc.</a></li>
+      <li><a href="#crashed-or-did-not-load">Crashed or did not load</a></li>
+    </ul>
+  </ul>
+  <li><a href="#testing-with-ok">Testing with Ok</a></li>
+  <ul>
+    <li><a href="#test-specific-questions">Test specific questions</a></li>
+    <li><a href="#test-all-questions">Test all questions</a></li>
+    <li><a href="#display-all-tests">Display all tests</a></li>
+    <li><a href="#test-locally">Test locally</a></li>
+    <li><a href="#adding-your-own-tests">Adding your own tests</a></li>
+    <li><a href="#running-your-own-tests">Running your own tests</a></li>
+    <li><a href="#submit-assignment">Submit assignment</a></li>
+  </ul>
+  <li><a href="#viewing-submissions">Viewing submissions</a></li>
+  <li><a href="#faq">FAQ</a></li>
+  <ul>
+    <li><a href="#adding-partners-on-okpy-org">Adding partners on okpy.org</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 9: Midterm Review | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 9: Midterm Review
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab09.zip" class="label label-outline">lab09.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, October 27.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab09.zip">lab09.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h2 id="submission">Submission</h2>
+
+
+<p>In order to facilitate midterm studying, solutions to this lab were released with the lab. We encourage you to try out the problems and struggle for a while before looking at the solutions!
+<strong>Note: You do not need to run</strong> <code>python ok &#x2d;&#x2d;submit</code> <strong>to receive credit for this assignment.</strong></p>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+<h3 class="question" id="q1">Q1: All Questions Are Optional</h3>
+
+<p><strong>Updated</strong>: The following questions in this assignment are not graded, but they are highly recommended to help you prepare for the upcoming midterm. You will receive credit for this lab even if you not complete these questions.</p>
+
+<p>This question has no Ok tests.</p>
+
+
+<h1 id="suggested-questions">Suggested Questions</h1>
+
+
+
+<h2 id="recursion-and-tree-recursion">Recursion and Tree Recursion</h2>
+
+
+<h3 class="question" id="q2">Q2: Subsequences</h3>
+
+<p>A subsequence of a sequence <code>S</code> is a sequence of elements from <code>S</code>, in the same
+order they appear in <code>S</code>, but possibly with elements missing.  Thus, the lists
+<code>[]</code>, <code>[1, 3]</code>, <code>[2]</code>, and <code>[1, 2, 3]</code> are some (but not all) of the
+subsequences of <code>[1, 2, 3]</code>. Write a function that takes a list and returns a
+list of lists, for which each individual list is a subsequence of the original
+input.</p>
+
+<p>In order to accomplish this, you might first want to write a function <code>insert_into_all</code>
+that takes an item and a list of lists, adds the item to the beginning of nested list,
+and returns the resulting list.</p>
+
+<solution>
+
+<pre><code>def insert_into_all(item, nested_list):
+    &quot;&quot;&quot;Assuming that nested_list is a list of lists, return a new list
+    consisting of all the lists in nested_list, but with item added to
+    the front of each.
+
+    &gt;&gt;&gt; nl = [[], [1, 2], [3]]
+    &gt;&gt;&gt; insert_into_all(0, nl)
+    [[0], [0, 1, 2], [0, 3]]
+    &quot;&quot;&quot;
+    return ______________________________
+
+def subseqs(s):
+    &quot;&quot;&quot;Assuming that S is a list, return a nested list of all subsequences
+    of S (a list of lists). The subsequences can appear in any order.
+
+    &gt;&gt;&gt; seqs = subseqs([1, 2, 3])
+    &gt;&gt;&gt; sorted(seqs)
+    [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]]
+    &gt;&gt;&gt; subseqs([])
+    [[]]
+    &quot;&quot;&quot;
+    if ________________:
+        ________________
+    else:
+        ________________
+        ________________
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q subseqs</code></pre>
+
+<h3 class="question" id="q3">Q3: Increasing Subsequences</h3>
+
+<p>Just like the last question, we want to write a function that takes a list and
+returns a list of lists, where each individual list is a subsequence of the
+original input.</p>
+
+<p>This time we have another condition: we only want the subsequences for which
+consecutive elements are <em>nondecreasing</em>.  For example, <code>[1, 3, 2]</code> is a
+subsequence of <code>[1, 3, 2, 4]</code>, but since 2 &lt; 3, this subsequence would <em>not</em>
+be included in our result.</p>
+
+<p><strong>Fill in the blanks</strong> to complete the implementation of the <code>inc_subseqs</code>
+function. You may assume that the input list contains no negative elements.</p>
+
+<p>You may use the provided helper function <code>insert_into_all</code>, which takes in an
+<code>item</code> and a list of lists and inserts the <code>item</code> to the front of each list.</p>
+
+<solution>
+
+<pre><code>def inc_subseqs(s):
+    &quot;&quot;&quot;Assuming that S is a list, return a nested list of all subsequences
+    of S (a list of lists) for which the elements of the subsequence
+    are strictly nondecreasing. The subsequences can appear in any order.
+
+    &gt;&gt;&gt; seqs = inc_subseqs([1, 3, 2])
+    &gt;&gt;&gt; sorted(seqs)
+    [[], [1], [1, 2], [1, 3], [2], [3]]
+    &gt;&gt;&gt; inc_subseqs([])
+    [[]]
+    &gt;&gt;&gt; seqs2 = inc_subseqs([1, 1, 2])
+    &gt;&gt;&gt; sorted(seqs2)
+    [[], [1], [1], [1, 1], [1, 1, 2], [1, 2], [1, 2], [2]]
+    &quot;&quot;&quot;
+    def subseq_helper(s, prev):
+        if not s:
+            return ____________________
+        elif s[0] &lt; prev:
+            return ____________________
+        else:
+            a = ______________________
+            b = ______________________
+            return insert_into_all(________, ______________) + ________________
+    return subseq_helper(____, ____)
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q inc_subseqs</code></pre>
+
+<h3 class="question" id="q4">Q4: Number of Trees</h3>
+
+<p>A <strong>full binary tree</strong> is a tree where each node has either 2 branches or 0 branches, but never 1 branch.</p>
+
+<p>How many possible full binary tree structures exist that have exactly n leaves?</p>
+
+<p>For those interested in combinatorics, this problem does have a <a href="http://en.wikipedia.org/wiki/Catalan_number">closed
+form solution</a>):</p>
+
+<solution>
+
+<pre><code>def num_trees(n):
+    &quot;&quot;&quot;How many full binary trees have exactly n leaves? E.g.,
+
+    1   2        3       3    ...
+    *   *        *       *
+       / \      / \     / \
+      *   *    *   *   *   *
+              / \         / \
+             *   *       *   *
+
+    &gt;&gt;&gt; num_trees(1)
+    1
+    &gt;&gt;&gt; num_trees(2)
+    1
+    &gt;&gt;&gt; num_trees(3)
+    2
+    &gt;&gt;&gt; num_trees(8)
+    429
+
+    &quot;&quot;&quot;
+    if ____________________:
+        return _______________
+    return _______________
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q num_trees</code></pre>
+
+
+<h2 id="generators">Generators</h2>
+
+<h3 class="question" id="q5">Q5: Generators generator</h3>
+
+<p>Write the generator function <code>make_generators_generator</code>, which takes a
+zero-argument generator function <code>g</code> and returns a generator that yields
+generators.  For each element <code>e</code> yielded by the generator object returned by
+calling <code>g</code>, a new generator object is yielded that will generate entries 1
+through <code>e</code> yielded by the generator returned by <code>g</code>.</p>
+
+<solution>
+
+<pre><code>def make_generators_generator(g):
+    &quot;&quot;&quot;Generates all the &quot;sub&quot;&#x2d;generators of the generator returned by
+    the generator function g.
+
+    &gt;&gt;&gt; def every_m_ints_to(n, m):
+    ...     i = 0
+    ...     while (i &lt;= n):
+    ...         yield i
+    ...         i += m
+    ...
+    &gt;&gt;&gt; def every_3_ints_to_10():
+    ...     for item in every_m_ints_to(10, 3):
+    ...         yield item
+    ...
+    &gt;&gt;&gt; for gen in make_generators_generator(every_3_ints_to_10):
+    ...     print(&quot;Next Generator:&quot;)
+    ...     for item in gen:
+    ...         print(item)
+    ...
+    Next Generator:
+    0
+    Next Generator:
+    0
+    3
+    Next Generator:
+    0
+    3
+    6
+    Next Generator:
+    0
+    3
+    6
+    9
+    &quot;&quot;&quot;
+    def gen(i):
+        for ___________ in ___________:
+            if _________________________:
+                _________________________
+            _______________________
+            _______________________
+    __________________________
+    for _________ in __________________:
+        ______________________________
+        ______________________________
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_generators_generator</code></pre>
+
+
+<h2 id="objects">Objects</h2>
+
+<h3 class="question" id="q6">Q6: Keyboard</h3>
+
+<p>We'd like to create a <code>Keyboard</code> class that takes in an arbitrary
+number of <code>Button</code>s and stores these <code>Button</code>s in a dictionary. The
+keys in the dictionary will be ints that represent the postition on the
+<code>Keyboard</code>, and the values will be the respective <code>Button</code>. Fill out
+the methods in the <code>Keyboard</code> class according to each description,
+using the doctests as a reference for the behavior of a <code>Keyboard</code>.</p>
+
+<solution>
+
+<pre><code>class Button:
+    &quot;&quot;&quot;
+    Represents a single button
+    &quot;&quot;&quot;
+    def __init__(self, pos, key):
+        &quot;&quot;&quot;
+        Creates a button
+        &quot;&quot;&quot;
+        self.pos = pos
+        self.key = key
+        self.times_pressed = 0
+
+class Keyboard:
+    &quot;&quot;&quot;A Keyboard takes in an arbitrary amount of buttons, and has a
+    dictionary of positions as keys, and values as Buttons.
+
+    &gt;&gt;&gt; b1 = Button(0, &quot;H&quot;)
+    &gt;&gt;&gt; b2 = Button(1, &quot;I&quot;)
+    &gt;&gt;&gt; k = Keyboard(b1, b2)
+    &gt;&gt;&gt; k.buttons[0].key
+    &#x27;H&#x27;
+    &gt;&gt;&gt; k.press(1)
+    &#x27;I&#x27;
+    &gt;&gt;&gt; k.press(2) #No button at this position
+    &#x27;&#x27;
+    &gt;&gt;&gt; k.typing([0, 1])
+    &#x27;HI&#x27;
+    &gt;&gt;&gt; k.typing([1, 0])
+    &#x27;IH&#x27;
+    &gt;&gt;&gt; b1.times_pressed
+    2
+    &gt;&gt;&gt; b2.times_pressed
+    3
+    &quot;&quot;&quot;
+
+    def __init__(self, *args):
+        ________________
+        for _________ in ________________:
+            ________________
+
+    def press(self, info):
+        &quot;&quot;&quot;Takes in a position of the button pressed, and
+        returns that button&#x27;s output&quot;&quot;&quot;
+        if ____________________:
+            ________________
+            ________________
+            ________________
+        ________________
+
+    def typing(self, typing_input):
+        &quot;&quot;&quot;Takes in a list of positions of buttons pressed, and
+        returns the total output&quot;&quot;&quot;
+        ________________
+        for ________ in ____________________:
+            ________________
+        ________________
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q Keyboard</code></pre>
+
+
+<h2 id="nonlocal">Nonlocal</h2>
+
+<h3 class="question" id="q7">Q7: Advanced Counter</h3>
+
+<p>Complete the definition of <code>make_advanced_counter_maker</code>,
+which creates a function that creates counters. These counters can not
+only update their personal count, but also a shared count for all
+counters.  They can also reset either count.</p>
+
+<solution>
+
+<pre><code>def make_advanced_counter_maker():
+    &quot;&quot;&quot;Makes a function that makes counters that understands the
+    messages &quot;count&quot;, &quot;global&#x2d;count&quot;, &quot;reset&quot;, and &quot;global&#x2d;reset&quot;.
+    See the examples below:
+
+    &gt;&gt;&gt; make_counter = make_advanced_counter_maker()
+    &gt;&gt;&gt; tom_counter = make_counter()
+    &gt;&gt;&gt; tom_counter(&#x27;count&#x27;)
+    1
+    &gt;&gt;&gt; tom_counter(&#x27;count&#x27;)
+    2
+    &gt;&gt;&gt; tom_counter(&#x27;global&#x2d;count&#x27;)
+    1
+    &gt;&gt;&gt; jon_counter = make_counter()
+    &gt;&gt;&gt; jon_counter(&#x27;global&#x2d;count&#x27;)
+    2
+    &gt;&gt;&gt; jon_counter(&#x27;count&#x27;)
+    1
+    &gt;&gt;&gt; jon_counter(&#x27;reset&#x27;)
+    &gt;&gt;&gt; jon_counter(&#x27;count&#x27;)
+    1
+    &gt;&gt;&gt; tom_counter(&#x27;count&#x27;)
+    3
+    &gt;&gt;&gt; jon_counter(&#x27;global&#x2d;count&#x27;)
+    3
+    &gt;&gt;&gt; jon_counter(&#x27;global&#x2d;reset&#x27;)
+    &gt;&gt;&gt; tom_counter(&#x27;global&#x2d;count&#x27;)
+    1
+    &quot;&quot;&quot;
+    ________________
+    def ____________(__________):
+        ________________
+        def ____________(__________):
+            ________________
+            "*** YOUR CODE HERE ***"
+            # as many lines as you want
+        ________________
+    ________________
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_advanced_counter_maker</code></pre>
+
+
+<h2 id="mutable-lists">Mutable Lists</h2>
+
+<h3 class="question" id="q8">Q8: Trade</h3>
+
+<p>In the integer market, each participant has a list of positive integers to
+trade. When two participants meet, they trade the smallest non-empty prefix of
+their list of integers. A prefix is a slice that starts at index
+0.</p>
+
+<p>Write a function <code>trade</code> that exchanges the first <code>m</code> elements of list <code>first</code>
+with the first <code>n</code> elements of list <code>second</code>, such that the sums of those
+elements are equal, and the sum is as small as possible. If no such prefix
+exists, return the string <code>&#x27;No deal!&#x27;</code> and do not change either list. Otherwise
+change both lists and return <code>&#x27;Deal!&#x27;</code>. A partial implementation is provided.</p>
+
+<blockquote><p><strong>Hint:</strong> You can mutate a slice of a list using <em>slice assignment</em>. To do so, specify
+a slice of the list <code>[i:j]</code> on the left-hand side of an assignment statement
+and another list on the right-hand side of the assignment statement. The
+operation will replace the entire given slice of the list from <code>i</code> inclusive
+to <code>j</code> exclusive with the elements from the given list. The slice and the
+given list need not be the same length.</p>
+
+<pre><code>&gt;&gt;&gt; a = [1, 2, 3, 4, 5, 6]
+&gt;&gt;&gt; b = a
+&gt;&gt;&gt; a[2:5] = [10, 11, 12, 13]
+&gt;&gt;&gt; a
+[1, 2, 10, 11, 12, 13, 6]
+&gt;&gt;&gt; b
+[1, 2, 10, 11, 12, 13, 6]</code></pre>
+
+<p>Additionally, recall that the starting and ending indices for a slice can be left out
+and Python will use a default value. <code>lst[i:]</code> is the same as <code>lst[i:len(lst)]</code>, and
+<code>lst[:j]</code> is the same as <code>lst[0:j]</code>.</p></blockquote>
+
+<solution>
+
+<pre><code>def trade(first, second):
+    &quot;&quot;&quot;Exchange the smallest prefixes of first and second that have equal sum.
+
+    &gt;&gt;&gt; a = [1, 1, 3, 2, 1, 1, 4]
+    &gt;&gt;&gt; b = [4, 3, 2, 7]
+    &gt;&gt;&gt; trade(a, b) # Trades 1+1+3+2=7 for 4+3=7
+    &#x27;Deal!&#x27;
+    &gt;&gt;&gt; a
+    [4, 3, 1, 1, 4]
+    &gt;&gt;&gt; b
+    [1, 1, 3, 2, 2, 7]
+    &gt;&gt;&gt; c = [3, 3, 2, 4, 1]
+    &gt;&gt;&gt; trade(b, c)
+    &#x27;No deal!&#x27;
+    &gt;&gt;&gt; b
+    [1, 1, 3, 2, 2, 7]
+    &gt;&gt;&gt; c
+    [3, 3, 2, 4, 1]
+    &gt;&gt;&gt; trade(a, c)
+    &#x27;Deal!&#x27;
+    &gt;&gt;&gt; a
+    [3, 3, 2, 1, 4]
+    &gt;&gt;&gt; b
+    [1, 1, 3, 2, 2, 7]
+    &gt;&gt;&gt; c
+    [4, 3, 1, 4, 1]
+    &quot;&quot;&quot;
+    m, n = 1, 1
+
+    equal_prefix = lambda: ______________________
+    while _______________________________:
+        if __________________:
+            m += 1
+        else:
+            n += 1
+
+    if equal_prefix():
+        first[:m], second[:n] = second[:n], first[:m]
+        return &#x27;Deal!&#x27;
+    else:
+        return &#x27;No deal!&#x27;</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q trade</code></pre>
+
+<h3 class="question" id="q9">Q9: Shuffle</h3>
+
+<p>Define a function <code>shuffle</code> that takes a sequence with an even number of
+elements (cards) and creates a new list that interleaves the elements
+of the first half with the elements of the second half.</p>
+
+<solution>
+
+<pre><code>def card(n):
+    &quot;&quot;&quot;Return the playing card numeral as a string for a positive n &lt;= 13.&quot;&quot;&quot;
+    assert type(n) == int and n &gt; 0 and n &lt;= 13, &quot;Bad card n&quot;
+    specials = {1: &#x27;A&#x27;, 11: &#x27;J&#x27;, 12: &#x27;Q&#x27;, 13: &#x27;K&#x27;}
+    return specials.get(n, str(n))
+
+def shuffle(cards):
+    &quot;&quot;&quot;Return a shuffled list that interleaves the two halves of cards.
+
+    &gt;&gt;&gt; shuffle(range(6))
+    [0, 3, 1, 4, 2, 5]
+    &gt;&gt;&gt; suits = [&#x27;♡&#x27;, &#x27;♢&#x27;, &#x27;♤&#x27;, &#x27;♧&#x27;]
+    &gt;&gt;&gt; cards = [card(n) + suit for n in range(1,14) for suit in suits]
+    &gt;&gt;&gt; cards[:12]
+    [&#x27;A♡&#x27;, &#x27;A♢&#x27;, &#x27;A♤&#x27;, &#x27;A♧&#x27;, &#x27;2♡&#x27;, &#x27;2♢&#x27;, &#x27;2♤&#x27;, &#x27;2♧&#x27;, &#x27;3♡&#x27;, &#x27;3♢&#x27;, &#x27;3♤&#x27;, &#x27;3♧&#x27;]
+    &gt;&gt;&gt; cards[26:30]
+    [&#x27;7♤&#x27;, &#x27;7♧&#x27;, &#x27;8♡&#x27;, &#x27;8♢&#x27;]
+    &gt;&gt;&gt; shuffle(cards)[:12]
+    [&#x27;A♡&#x27;, &#x27;7♤&#x27;, &#x27;A♢&#x27;, &#x27;7♧&#x27;, &#x27;A♤&#x27;, &#x27;8♡&#x27;, &#x27;A♧&#x27;, &#x27;8♢&#x27;, &#x27;2♡&#x27;, &#x27;8♤&#x27;, &#x27;2♢&#x27;, &#x27;8♧&#x27;]
+    &gt;&gt;&gt; shuffle(shuffle(cards))[:12]
+    [&#x27;A♡&#x27;, &#x27;4♢&#x27;, &#x27;7♤&#x27;, &#x27;10♧&#x27;, &#x27;A♢&#x27;, &#x27;4♤&#x27;, &#x27;7♧&#x27;, &#x27;J♡&#x27;, &#x27;A♤&#x27;, &#x27;4♧&#x27;, &#x27;8♡&#x27;, &#x27;J♢&#x27;]
+    &gt;&gt;&gt; cards[:12]  # Should not be changed
+    [&#x27;A♡&#x27;, &#x27;A♢&#x27;, &#x27;A♤&#x27;, &#x27;A♧&#x27;, &#x27;2♡&#x27;, &#x27;2♢&#x27;, &#x27;2♤&#x27;, &#x27;2♧&#x27;, &#x27;3♡&#x27;, &#x27;3♢&#x27;, &#x27;3♤&#x27;, &#x27;3♧&#x27;]
+    &quot;&quot;&quot;
+    assert len(cards) % 2 == 0, &#x27;len(cards) must be even&#x27;
+    half = _______________
+    shuffled = []
+    for i in _____________:
+        _________________
+        _________________
+    return shuffled</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q shuffle</code></pre>
+
+
+<h2 id="linked-lists">Linked Lists</h2>
+
+<h3 class="question" id="q10">Q10: Insert</h3>
+
+<p>Implement a function <code>insert</code> that takes a <code>Link</code>, a <code>value</code>, and an
+<code>index</code>, and inserts the <code>value</code> into the <code>Link</code> at the given <code>index</code>.
+You can assume the linked list already has at least one element. Do not
+return anything -- <code>insert</code> should mutate the linked list.</p>
+
+<blockquote><p><strong>Note</strong>: If the index is out of bounds, you can raise an <code>IndexError</code> with:</p>
+
+<pre><code>raise IndexError</code></pre></blockquote>
+
+<solution>
+
+<pre><code>def insert(link, value, index):
+    &quot;&quot;&quot;Insert a value into a Link at the given index.
+
+    &gt;&gt;&gt; link = Link(1, Link(2, Link(3)))
+    &gt;&gt;&gt; print(link)
+    &lt;1 2 3&gt;
+    &gt;&gt;&gt; insert(link, 9001, 0)
+    &gt;&gt;&gt; print(link)
+    &lt;9001 1 2 3&gt;
+    &gt;&gt;&gt; insert(link, 100, 2)
+    &gt;&gt;&gt; print(link)
+    &lt;9001 1 100 2 3&gt;
+    &gt;&gt;&gt; insert(link, 4, 5)
+    IndexError
+    &quot;&quot;&quot;
+    if ____________________:
+        ____________________
+        ____________________
+        ____________________
+    elif ____________________:
+        ____________________
+    else:
+        ____________________
+
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q insert</code></pre>
+
+<h3 class="question" id="q11">Q11: Deep Linked List Length</h3>
+
+<p>A linked list that contains one or more linked lists as elements is called a
+<em>deep</em> linked list. Write a function <code>deep_len</code> that takes in a (possibly deep)
+linked list and returns the <em>deep length</em> of that linked list. The deep length of
+a linked list is the total number of non-link elements in the list, as well as the
+total number of elements contained in all contained lists. See the function's doctests
+for examples of the deep length of linked lists.</p>
+
+<blockquote><p><strong>Hint:</strong> Use <code>isinstance</code> to check if something is an instance of an object.</p></blockquote>
+
+<solution>
+
+<pre><code>def deep_len(lnk):
+    &quot;&quot;&quot; Returns the deep length of a possibly deep linked list.
+
+    &gt;&gt;&gt; deep_len(Link(1, Link(2, Link(3))))
+    3
+    &gt;&gt;&gt; deep_len(Link(Link(1, Link(2)), Link(3, Link(4))))
+    4
+    &gt;&gt;&gt; levels = Link(Link(Link(1, Link(2)), \
+            Link(3)), Link(Link(4), Link(5)))
+    &gt;&gt;&gt; print(levels)
+    &lt;&lt;&lt;1 2&gt; 3&gt; &lt;4&gt; 5&gt;
+    &gt;&gt;&gt; deep_len(levels)
+    5
+    &quot;&quot;&quot;
+    if ______________:
+        return 0
+    elif ______________:
+        return 1
+    else:
+        return _________________________
+</code></pre>
+
+</solution>
+
+
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q deep_len</code></pre>
+
+<h3 class="question" id="q12">Q12: Linked Lists as Strings</h3>
+
+<p>Kevin and Jerry like different ways of displaying the linked list
+structure in Python. While Kevin likes box and pointer diagrams,
+Jerry prefers a more futuristic way. Write a function
+<code>make_to_string</code> that returns a function that converts the
+linked list to a string in their preferred style.</p>
+
+<p><em>Hint</em>:  You can convert numbers to strings using the <code>str</code> function,
+and you can combine strings together using <code>+</code>.</p>
+
+<pre><code>&gt;&gt;&gt; str(4)
+&#x27;4&#x27;
+&gt;&gt;&gt; &#x27;cs &#x27; + str(61) + &#x27;a&#x27;
+&#x27;cs 61a&#x27;</code></pre>
+
+<solution>
+
+<pre><code>def make_to_string(front, mid, back, empty_repr):
+    &quot;&quot;&quot; Returns a function that turns linked lists to strings.
+
+    &gt;&gt;&gt; kevins_to_string = make_to_string(&quot;[&quot;, &quot;|&#x2d;]&#x2d;&#x2d;&gt;&quot;, &quot;&quot;, &quot;[]&quot;)
+    &gt;&gt;&gt; jerrys_to_string = make_to_string(&quot;(&quot;, &quot; . &quot;, &quot;)&quot;, &quot;()&quot;)
+    &gt;&gt;&gt; lst = Link(1, Link(2, Link(3, Link(4))))
+    &gt;&gt;&gt; kevins_to_string(lst)
+    &#x27;[1|&#x2d;]&#x2d;&#x2d;&gt;[2|&#x2d;]&#x2d;&#x2d;&gt;[3|&#x2d;]&#x2d;&#x2d;&gt;[4|&#x2d;]&#x2d;&#x2d;&gt;[]&#x27;
+    &gt;&gt;&gt; kevins_to_string(Link.empty)
+    &#x27;[]&#x27;
+    &gt;&gt;&gt; jerrys_to_string(lst)
+    &#x27;(1 . (2 . (3 . (4 . ()))))&#x27;
+    &gt;&gt;&gt; jerrys_to_string(Link.empty)
+    &#x27;()&#x27;
+    &quot;&quot;&quot;
+    def printer(lnk):
+        if ______________:
+            return _________________________
+        else:
+            return _________________________
+    return printer</code></pre>
+
+</solution>
+
+
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_to_string</code></pre>
+
+
+<h2 id="trees">Trees</h2>
+
+<h3 class="question" id="q13">Q13: Prune Small</h3>
+
+<p>Complete the function <code>prune_small</code> that takes in a <code>Tree</code> <code>t</code> and a
+number <code>n</code> and prunes <code>t</code> mutatively. If <code>t</code> or any of its branches
+has more than <code>n</code> branches, the <code>n</code> branches with the smallest labels
+should be kept and any other branches should be <em>pruned</em>, or removed,
+from the tree.</p>
+
+<solution>
+
+<pre><code>def prune_small(t, n):
+    &quot;&quot;&quot;Prune the tree mutatively, keeping only the n branches
+    of each node with the smallest label.
+
+    &gt;&gt;&gt; t1 = Tree(6)
+    &gt;&gt;&gt; prune_small(t1, 2)
+    &gt;&gt;&gt; t1
+    Tree(6)
+    &gt;&gt;&gt; t2 = Tree(6, [Tree(3), Tree(4)])
+    &gt;&gt;&gt; prune_small(t2, 1)
+    &gt;&gt;&gt; t2
+    Tree(6, [Tree(3)])
+    &gt;&gt;&gt; t3 = Tree(6, [Tree(1), Tree(3, [Tree(1), Tree(2), Tree(3)]), Tree(5, [Tree(3), Tree(4)])])
+    &gt;&gt;&gt; prune_small(t3, 2)
+    &gt;&gt;&gt; t3
+    Tree(6, [Tree(1), Tree(3, [Tree(1), Tree(2)])])
+    &quot;&quot;&quot;
+    while ___________________________:
+        largest = max(_______________, key=____________________)
+        _________________________
+    for __ in _____________:
+        ___________________
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q prune_small</code></pre>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#submission">Submission</a></li>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#q1">Q1: All Questions Are Optional</a></li>
+  </ul>
+  <li><a href="#suggested-questions">Suggested Questions</a></li>
+  <ul>
+    <li><a href="#recursion-and-tree-recursion">Recursion and Tree Recursion</a></li>
+    <ul>
+      <li><a href="#q2">Q2: Subsequences</a></li>
+      <li><a href="#q3">Q3: Increasing Subsequences</a></li>
+      <li><a href="#q4">Q4: Number of Trees</a></li>
+    </ul>
+    <li><a href="#generators">Generators</a></li>
+    <ul>
+      <li><a href="#q5">Q5: Generators generator</a></li>
+    </ul>
+    <li><a href="#objects">Objects</a></li>
+    <ul>
+      <li><a href="#q6">Q6: Keyboard</a></li>
+    </ul>
+    <li><a href="#nonlocal">Nonlocal</a></li>
+    <ul>
+      <li><a href="#q7">Q7: Advanced Counter</a></li>
+    </ul>
+    <li><a href="#mutable-lists">Mutable Lists</a></li>
+    <ul>
+      <li><a href="#q8">Q8: Trade</a></li>
+      <li><a href="#q9">Q9: Shuffle</a></li>
+    </ul>
+    <li><a href="#linked-lists">Linked Lists</a></li>
+    <ul>
+      <li><a href="#q10">Q10: Insert</a></li>
+      <li><a href="#q11">Q11: Deep Linked List Length</a></li>
+      <li><a href="#q12">Q12: Linked Lists as Strings</a></li>
+    </ul>
+    <li><a href="#trees">Trees</a></li>
+    <ul>
+      <li><a href="#q13">Q13: Prune Small</a></li>
+    </ul>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

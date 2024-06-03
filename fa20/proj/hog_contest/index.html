@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link href="/~cs61a/fa20/assets/css/project.css" rel="stylesheet" type="text/css">
+
+
+    <title>
+Optional Contest: Hog Strategy | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Optional Contest: Hog Strategy
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hog_contest.zip" class="label label-outline">hog_contest.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+<div class="haiku">
+  <blockquote><cite>
+A strategy is<br/>
+A single function that makes<br/>
+Ten thousand choices.
+</cite></blockquote>
+</div>
+
+    
+<h2 id="instructions">Instructions</h2>
+
+
+<blockquote><p>This contest is completely optional!</p></blockquote>
+
+<p>Download a blank <code>final_strategy.py</code> file and simple tests for correct
+formatting as a <a href="hog_contest.zip">zip archive</a>. Type <code>python3 ok</code> to run the provided tests.</p>
+
+<p>Submit a <code>final_strategy.py</code> file containing a function called <code>final_strategy</code>
+and a <code>PLAYER_NAME</code>.</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p>The contest ends on <strong>Monday, September 21st at 11:59 PM</strong>. We will use your latest
+submission before this date to determine the final results of the contest.</p>
+
+<p>You can use the <code>compare_strategies.py</code> file to compute the exact win rate
+between any pair of two strategies using our server. Depending on server load,
+we may rate-limit or disable this functionality at any point, so consider
+re-implementing this file yourself locally!</p>
+
+<p>Your strategy can run as long as you want. If <code>ok</code> complains that you're
+exceeding the time limit, run it with the flag <code>&#x2d;&#x2d;timeout 0</code> to disable the time
+limit.</p>
+
+
+<h2 id="leaderboard">Leaderboard</h2>
+
+
+<p>The leaderboard can be found <a href="https://hog-contest.cs61a.org">here</a>. It will
+continuously update as the contest progresses. Go to the
+<a href="https://hog-contest.cs61a.org/log">server log</a> to see the status of your submission.</p>
+
+
+<h2 id="contest-rules">Contest rules</h2>
+
+
+<p>Teams can have one or two people. Each person can only be part of one team.</p>
+
+<p>Each submitted strategy will play against all other submissions. The player to
+go first will be determined by a flip of a fair coin. We will exactly compute
+the expected win rate for each player, so that the outcome of this tournament
+will be determined by strategy alone and not the roll of the dice or flip of a
+coin. A submission scores a match point each time it has an expected win rate
+strictly above 50.0001%. We will rank submissions based on the number of matches
+they won. Ties count as losses.</p>
+
+<p>The top three submissions will earn the following:</p>
+
+<ol>
+  <li>First place gets 3 points of extra credit.</li>
+  <li>Second place gets 2 points of extra credit.</li>
+  <li>Third place gets 1 point of extra credit.</li>
+</ol>
+
+<p>Winners will also be publicly recognized in future iterations of 61A.</p>
+
+<p><strong>More Contest Rules</strong>:</p>
+
+<ul>
+  <li>In addition to the game rules described in the <a href="/~cs61a/fa20/proj/hog">Hog Project</a>,
+  players will roll 8-sided dice on all extra turns.</li>
+  <li>All strategies must be deterministic, pure functions of the current player
+  scores. Non-deterministic strategies or strategies based on the history of the
+  game will not behave as expected when submitted and will likely not do well.</li>
+  <li>You may use any libraries (such as NumPy, TensorFlow, or anything else you can
+  think of) in your submission.</li>
+</ul>
+
+<p>If you have any questions about the rules, don't hesitate to post on Piazza.</p>
+
+<p>Happy coding!</p>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#instructions">Instructions</a></li>
+  <li><a href="#leaderboard">Leaderboard</a></li>
+  <li><a href="#contest-rules">Contest rules</a></li>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,40 @@
+/* Stylesheet for CS 61A projects */
+/* IE5 Mac hack \*/
+pre {
+  overflow: auto;
+  overflow-y: hidden;
+  margin: 0 0 1.5em;
+}
+
+/* End IE5 Mac hack */
+/* Ants */
+table.ant {
+  margin: 10px auto;
+  border-collapse: collapse;
+}
+
+table.ant td {
+  margin: 0;
+  padding: 0.5em;
+  border: 1px solid #000000;
+  text-align: center;
+}
+
+table.ant img {
+  max-width: 80px;
+}
+
+/* Haiku */
+.haiku {
+  text-align: center;
+}
+
+.haiku blockquote {
+  font-style: italic;
+  background-color: inherit;
+  border-color: transparent;
+}
+
+.haiku img {
+  max-width: 80%;
+}

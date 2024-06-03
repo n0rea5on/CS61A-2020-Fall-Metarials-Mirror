@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 4: Recursion, Tree Recursion, Python Lists | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 4: Recursion, Tree Recursion, Python Lists
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab04.zip" class="label label-outline">lab04.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, September 22.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab04.zip">lab04.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h1 id="topics">Topics</h1>
+
+
+<p>Consult this section if you need a refresher on the material for this lab. It's
+okay to skip directly to <a href="#required-questions">the questions</a> and refer back
+here should you get stuck.</p>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Recursion<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h2 id="recursion">Recursion</h2>
+
+
+<p>A recursive function is a function that calls itself in its body,
+either directly or indirectly. Recursive functions have three important
+components:</p>
+
+<ol>
+  <li>Base case(s), the simplest possible form of the problem you're trying to solve.</li>
+  <li>Recursive case(s), where the function calls itself with a <em>simpler
+  argument</em> as part of the computation.</li>
+  <li>Using the recursive calls to solve the full problem.</li>
+</ol>
+
+<p>Let's look at the canonical example, <code>factorial</code>.</p>
+
+<blockquote><p>Factorial, denoted with the <code>!</code> operator, is defined as:</p>
+
+<pre><code>n! = n * (n&#x2d;1) * ... * 1</code></pre>
+
+<p>For example, <code>5! = 5 * 4 * 3 * 2 * 1 = 120</code></p></blockquote>
+
+<p>The recursive implementation for factorial is as follows:</p>
+
+<pre><code>def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n &#x2d; 1)</code></pre>
+
+<p>We know from its definition that 0! is 1. Since <code>n == 0</code> is the smallest number we
+can compute the factorial of, we use it as our base case.
+The recursive step also follows from the definition of factorial, i.e., <code>n! =
+n * (n&#x2d;1)!</code>.</p>
+
+<p>The next few questions in lab will have you writing recursive
+functions.  Here are some general tips:</p>
+
+<ul>
+  <li>Paradoxically, to write a recursive function, you must assume that the function
+  is fully functional before you finish writing it; this is called the
+  <em>recursive leap of faith</em>.</li>
+  <li>Consider how you can solve the current problem using the solution to
+  a simpler version of the problem. The amount of work done in a recursive function
+  can be deceptively little: remember to take the leap of faith and <em>trust the recursion</em>
+  to solve the slightly smaller problem without worrying about how.</li>
+  <li>Think about what the answer would be in the simplest possible
+  case(s). These will be your base cases - the stopping points for your
+  recursive calls. Make sure to consider the possibility that you're
+  missing base cases (this is a common way recursive solutions fail).</li>
+  <li>It may help to write an iterative version first.</li>
+</ul>
+
+<!-- <table class='table table-bordered'>
+
+<pre><code>&lt;tr&gt;
+    &lt;th&gt;Function Type:&lt;/th&gt;
+    &lt;th&gt;Recusive&lt;/th&gt;
+    &lt;th&gt;Iterative&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;Function&lt;/td&gt;
+    &lt;td&gt;&lt;pre&gt; def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n &#x2d; 1)&lt;pre&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;pre&gt; def factorial(n):
+    total = 1
+    while n &gt; 0:
+        total *= n
+        n &#x2d;= 1
+    return total
+    &lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;Ends calculations&lt;/td&gt;
+    &lt;td&gt;When it hits the base case&lt;/td&gt;
+    &lt;td&gt;When n !&gt; 0, it will end.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+    &lt;td&gt;Means of traversal&lt;/td&gt;
+    &lt;td&gt;&lt;code&gt;factorial(&lt;strong&gt;n &#x2d; 1&lt;/strong&gt;&lt;/code&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;code&gt;&lt;strong&gt;n &#x2d;= 1&lt;/strong&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;/tr&gt;</code></pre>
+
+</table> -->
+</div>
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Tree Recursion<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+<h2 id="tree-recursion">Tree Recursion</h2>
+
+
+<p>A tree recursive function is a recursive function that makes more than one call
+to itself, resulting in a tree-like series of calls.</p>
+
+<p>A classic example of a tree recursion function is finding the nth <a href="https://www.wikiwand.com/en/Fibonacci_number">Fibonacci
+number</a>:</p>
+
+<pre><code>def fib(n):
+    if n == 0 or n == 1:
+        return n
+    return fib(n &#x2d; 1) + fib(n &#x2d; 2)</code></pre>
+
+<p>Calling <code>fib(6)</code> results in the following call structure (where <code>f</code> is <code>fib</code>):</p>
+
+<p><img class="img-responsive center-block" src="https://upload.wikimedia.org/wikibooks/en/3/37/Algorithms-F6CallTree.png" alt="Fibonacci Tree" title="Fibonnaci Tree"></p>
+
+<p>Each <code>f(i)</code> node represents a recursive call to <code>fib</code>. Each recursive call
+makes another two recursive calls. <code>f(0)</code> and <code>f(1)</code> do not make any recursive
+calls because they are the base cases of the function. Because of these base
+cases, we are able to terminate the recursion and beginning accumulating the
+values.</p>
+
+<p>Generally, tree recursion is effective when you want to explore multiple
+possibilities or choices at a single step. In these types of problems, you make
+a recursive call for each choice or for a group of choices. Here are some
+examples:</p>
+
+<ul>
+  <li>Given a list of paid tasks and a limited amount of time, which tasks should you
+  choose to maximize your pay? This is actually a variation of the
+  <a href="https://en.wikipedia.org/wiki/Knapsack_problem">Knapsack</a> problem, which
+  focuses on finding some optimal combination of different items.</li>
+  <li>Suppose you are lost in a maze and see several different paths.  How do you
+  find your way out? This is an example of path finding, and is tree recursive
+  because at every step, you could have multiple directions to choose from that
+  could lead out of the maze.</li>
+  <li>Your dryer costs $2 per cycle and accepts all types of coins.  How many
+  different combinations of coins can you create to run the dryer? This is
+  similar to the
+  <a href="http://composingprograms.com/pages/17-recursive-functions.html#example-partitions">partitions</a>
+  problem from the textbook.
+  </div></li>
+</ul>
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        List Introduction<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+<h2 id="lists">Lists</h2>
+
+<p>Lists are Python data structures that can store multiple values. Each value
+can be any type and can even be another list! A list is written as a comma
+separated list of expressions within square brackets:</p>
+
+<pre><code>&gt;&gt;&gt; list_of_nums = [1, 2, 3, 4]
+&gt;&gt;&gt; list_of_bools = [True, True, False, False]
+&gt;&gt;&gt; nested_lists = [1, [2, 3], [4, [5]]]</code></pre>
+
+<p>Each element in a list is assigned an index. Lists are <em>zero-indexed</em>, meaning
+their indices start at <code>0</code> and increase in sequential order. To retrieve an element
+from a list, use list indexing:</p>
+
+<pre><code>&gt;&gt;&gt; lst = [6, 5, 4, 3, 2, 1]
+&gt;&gt;&gt; lst[0]
+6
+&gt;&gt;&gt; lst[3]
+3</code></pre>
+
+<p>Often times we need to know how long a list is when we're working with it. To find
+the length of a list, call the function <code>len</code> on it:</p>
+
+<pre><code>&gt;&gt;&gt; len([])
+0
+&gt;&gt;&gt; len([2, 4, 6, 8, 10])
+5</code></pre>
+
+<blockquote><p><strong>Tip:</strong> Recall that empty lists, <code>[]</code>, are false-y values. Therefore, you
+can use an if statement like the following if you only want to do operations on
+non-empty lists:</p>
+
+<pre><code>if lst:
+    # Do stuff with the elements of list</code></pre>
+
+<p>This is equivalent to:</p>
+
+<pre><code>if len(lst) &gt; 0:
+    # Do stuff</code></pre></blockquote>
+
+<p>You can also create a copy of some portion of the list using list slicing. To slice
+a list, use this syntax: <code>lst[&lt;start index&gt;:&lt;end index&gt;]</code>. This expression
+evaluates to a new list containing the elements of <code>lst</code> starting at and including
+the element at <code>&lt;start index&gt;</code> up to but not including the element at <code>end index</code>.</p>
+
+<pre><code>&gt;&gt;&gt; lst = [True, False, True, True, False]
+&gt;&gt;&gt; lst[1:4]
+[False, True, True]
+&gt;&gt;&gt; lst[:3]  # Start index defaults to 0
+[True, False, True]
+&gt;&gt;&gt; lst[3:]  # End index defaults to len(lst)
+[True, False]
+&gt;&gt;&gt; lst[:]  # Creates a copy of the whole list
+[True, False, True, True, False]</code></pre>
+
+</div>
+<br>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+<h2 id="lists-practice">Lists Practice</h2>
+
+
+<h3 class="question" id="q1">Q1: List Indexing</h3>
+
+<blockquote><p>Use Ok to test your knowledge with the following "List Indexing"
+questions:</p>
+
+<pre><code>python3 ok &#x2d;q list&#x2d;indexing &#x2d;u</code></pre></blockquote>
+
+<p>For each of the following lists, what is the list indexing expression that evaluates to
+<code>7</code>? For example, if <code>x = [7]</code>, then the answer would be <code>x[0]</code>. You can use the
+interpreter or Python Tutor to experiment with your answers. If the code would cause an error, type <code>Error</code>.</p>
+
+<pre><code>&gt;&gt;&gt; x = [1, 3, [5, 7], 9]
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x78;&#x5b;&#x32;&#x5d;&#x5b;&#x31;&#x5d;</div>
+&gt;&gt;&gt; x = [[3, [5, 7], 9]]
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x78;&#x5b;&#x30;&#x5d;&#x5b;&#x31;&#x5d;&#x5b;&#x31;&#x5d;</div></code></pre>
+        <button id='prompt-1' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<p>What would Python display? If you get stuck, try it out in the Python interpreter!</p>
+
+<pre><code>&gt;&gt;&gt; lst = [3, 2, 7, [84, 83, 82]]
+&gt;&gt;&gt; lst[4]
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x45;&#x72;&#x72;&#x6f;&#x72;</div>
+&gt;&gt;&gt; lst[3][0]
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x38;&#x34;</div></code></pre>
+        <button id='prompt-2' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+
+<h2 id="recursion">Recursion</h2>
+
+
+<h3 class="question" id="q2">Q2: Skip Add</h3>
+
+<p>Write a function <code>skip_add</code> that takes a single argument <code>n</code> and computes the
+sum of every other integer between <code>0</code> and <code>n</code>. Assume <code>n</code> is non-negative.</p>
+
+<solution>
+
+<pre><code>this_file = __file__
+
+def skip_add(n):
+    &quot;&quot;&quot; Takes a number n and returns n + n&#x2d;2 + n&#x2d;4 + n&#x2d;6 + ... + 0.
+
+    &gt;&gt;&gt; skip_add(5)  # 5 + 3 + 1 + 0
+    9
+    &gt;&gt;&gt; skip_add(10) # 10 + 8 + 6 + 4 + 2 + 0
+    30
+    &gt;&gt;&gt; # Do not use while/for loops!
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # ban iteration
+    &gt;&gt;&gt; check(this_file, &#x27;skip_add&#x27;,
+    ...       [&#x27;While&#x27;, &#x27;For&#x27;])
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q skip_add</code></pre>
+
+<h3 class="question" id="q3">Q3: Summation</h3>
+
+<p>Now, write a recursive implementation of <code>summation</code>, which takes a positive
+integer <code>n</code> and a function <code>term</code>. It applies <code>term</code> to every number from <code>1</code>
+to <code>n</code> including <code>n</code> and returns the sum of the results.</p>
+
+<solution>
+
+<pre><code>def summation(n, term):
+
+    &quot;&quot;&quot;Return the sum of the first n terms in the sequence defined by term.
+    Implement using recursion!
+
+    &gt;&gt;&gt; summation(5, lambda x: x * x * x) # 1^3 + 2^3 + 3^3 + 4^3 + 5^3
+    225
+    &gt;&gt;&gt; summation(9, lambda x: x + 1) # 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10
+    54
+    &gt;&gt;&gt; summation(5, lambda x: 2**x) # 2^1 + 2^2 + 2^3 + 2^4 + 2^5
+    62
+    &gt;&gt;&gt; # Do not use while/for loops!
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # ban iteration
+    &gt;&gt;&gt; check(this_file, &#x27;summation&#x27;,
+    ...       [&#x27;While&#x27;, &#x27;For&#x27;])
+    True
+    &quot;&quot;&quot;
+    assert n &gt;= 1
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q summation</code></pre>
+
+
+<h2 id="tree-recursion">Tree Recursion</h2>
+
+
+<h3 class="question" id="q4">Q4: Insect Combinatorics</h3>
+
+<p>Consider an insect in an <em>M</em> by <em>N</em> grid. The insect starts at the
+bottom left corner, <em>(0, 0)</em>, and wants to end up at the top right
+corner, <em>(M-1, N-1)</em>. The insect is only capable of moving right or
+up. Write a function <code>paths</code> that takes a grid length and width
+and returns the number of different paths the insect can take from the
+start to the goal. (There is a <a href="https://en.wikipedia.org/wiki/Closed-form_expression">closed-form solution</a> to this problem,
+but try to answer it procedurally using recursion.)</p>
+
+<p><img class="img-responsive center-block" src="assets/grid.jpg" alt="grid"></p>
+
+<p>For example, the 2 by 2 grid has a total of two ways for the insect to
+move from the start to the goal. For the 3 by 3 grid, the insect has 6
+diferent paths (only 3 are shown above).</p>
+
+<solution>
+
+<pre><code>def paths(m, n):
+    &quot;&quot;&quot;Return the number of paths from one corner of an
+    M by N grid to the opposite corner.
+
+    &gt;&gt;&gt; paths(2, 2)
+    2
+    &gt;&gt;&gt; paths(5, 7)
+    210
+    &gt;&gt;&gt; paths(117, 1)
+    1
+    &gt;&gt;&gt; paths(1, 157)
+    1
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q paths</code></pre>
+
+<h3 class="question" id="q5">Q5: Maximum Subsequence</h3>
+
+<p>A subsequence of a number is a series of (not necessarily contiguous) digits of the number.
+For example, 12345 has subsequences that include 123, 234, 124, 245, etc. Your task is to get
+the maximum subsequence below a certain length.</p>
+
+<solution>
+
+<pre><code>def max_subseq(n, t):
+    &quot;&quot;&quot;
+    Return the maximum subsequence of length at most t that can be found in the given number n.
+    For example, for n = 20125 and t = 3, we have that the subsequences are
+        2
+        0
+        1
+        2
+        5
+        20
+        21
+        22
+        25
+        01
+        02
+        05
+        12
+        15
+        25
+        201
+        202
+        205
+        212
+        215
+        225
+        012
+        015
+        025
+        125
+    and of these, the maxumum number is 225, so our answer is 225.
+
+    &gt;&gt;&gt; max_subseq(20125, 3)
+    225
+    &gt;&gt;&gt; max_subseq(20125, 5)
+    20125
+    &gt;&gt;&gt; max_subseq(20125, 6) # note that 20125 == 020125
+    20125
+    &gt;&gt;&gt; max_subseq(12345, 3)
+    345
+    &gt;&gt;&gt; max_subseq(12345, 0) # 0 is of length 0
+    0
+    &gt;&gt;&gt; max_subseq(12345, 1)
+    5
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+<p>There are two key insights for this problem:</p>
+
+<ul>
+  <li>You need to split into the cases where the ones digit is used and the one where it is not. In the case where it is, we want to reduce <code>t</code> since we used one of the digits, and in the case where it isn't we do not.</li>
+  <li>In the case where we are using the ones digit, you need to put the digit back onto the end, and the way to attach a digit <code>d</code> to the end of a number <code>n</code> is <code>10 * n + d</code>.
+  </solution></li>
+</ul>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q max_subseq</code></pre>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+
+<h1 id="optional-questions">Optional Questions</h1>
+
+
+<blockquote><p>While "Add Characters" is optional, it is good practice for the Cats project and is
+thus highly recommended!</p></blockquote>
+
+<h3 class="question" id="q6">Q6: Add Characters</h3>
+
+<p>Given two words, <code>w1</code> and <code>w2</code>, we say <code>w1</code> is a subsequence of <code>w2</code>
+if all the letters in <code>w1</code> appear in <code>w2</code> in the same order (but
+not necessarily all together). That is, you can add letters to any position in
+<code>w1</code> to get <code>w2</code>.
+For example, "sing" is a substring of "ab<strong>s</strong>orb<strong>ing</strong>" and "cat" is a substring of
+"<strong>c</strong>ontr<strong>a</strong>s<strong>t</strong>".</p>
+
+<p>Implement <code>add_chars</code>, which takes in <code>w1</code> and <code>w2</code>, where <code>w1</code> is a substring of <code>w2</code>. This means that <code>w1</code> is shorter than <code>w2</code>. It should
+return a string containing the characters you need to add to <code>w1</code> to get <code>w2</code>. <strong>Your solution
+must use recursion</strong>.</p>
+
+<p>In the example above, you need to add the characters "aborb" to "sing" to get "absorbing",
+and you need to add "ontrs" to "cat" to get "contrast".</p>
+
+<p>The letters in the string you return should be in the order you have to add them from left to right.
+If there are multiple characters in the <code>w2</code> that could correspond to characters in <code>w1</code>, use the
+leftmost one. For example, <code>add_words(&quot;coy&quot;, &quot;cacophony&quot;)</code> should return "acphon", not "caphon"
+because the first "c" in "coy" corresponds to the first "c" in "<strong>c</strong>ac<strong>o</strong>phon<strong>y</strong>".</p>
+
+<solution>
+
+<pre><code>def add_chars(w1, w2):
+    &quot;&quot;&quot;
+    Return a string containing the characters you need to add to w1 to get w2.
+
+    You may assume that w1 is a subsequence of w2.
+
+    &gt;&gt;&gt; add_chars(&quot;owl&quot;, &quot;howl&quot;)
+    &#x27;h&#x27;
+    &gt;&gt;&gt; add_chars(&quot;want&quot;, &quot;wanton&quot;)
+    &#x27;on&#x27;
+    &gt;&gt;&gt; add_chars(&quot;rat&quot;, &quot;radiate&quot;)
+    &#x27;diae&#x27;
+    &gt;&gt;&gt; add_chars(&quot;a&quot;, &quot;prepare&quot;)
+    &#x27;prepre&#x27;
+    &gt;&gt;&gt; add_chars(&quot;resin&quot;, &quot;recursion&quot;)
+    &#x27;curo&#x27;
+    &gt;&gt;&gt; add_chars(&quot;fin&quot;, &quot;effusion&quot;)
+    &#x27;efuso&#x27;
+    &gt;&gt;&gt; add_chars(&quot;coy&quot;, &quot;cacophony&quot;)
+    &#x27;acphon&#x27;
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # ban iteration and sets
+    &gt;&gt;&gt; check(LAB_SOURCE_FILE, &#x27;add_chars&#x27;,
+    ...       [&#x27;For&#x27;, &#x27;While&#x27;, &#x27;Set&#x27;, &#x27;SetComp&#x27;]) # Must use recursion
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q add_chars</code></pre>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#recursion">Recursion</a></li>
+    <li><a href="#tree-recursion">Tree Recursion</a></li>
+    <li><a href="#lists">Lists</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#lists-practice">Lists Practice</a></li>
+    <ul>
+      <li><a href="#q1">Q1: List Indexing</a></li>
+    </ul>
+    <li><a href="#recursion">Recursion</a></li>
+    <ul>
+      <li><a href="#q2">Q2: Skip Add</a></li>
+      <li><a href="#q3">Q3: Summation</a></li>
+    </ul>
+    <li><a href="#tree-recursion">Tree Recursion</a></li>
+    <ul>
+      <li><a href="#q4">Q4: Insect Combinatorics</a></li>
+      <li><a href="#q5">Q5: Maximum Subsequence</a></li>
+    </ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+  <li><a href="#optional-questions">Optional Questions</a></li>
+  <ul>
+    <li><a href="#q6">Q6: Add Characters</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

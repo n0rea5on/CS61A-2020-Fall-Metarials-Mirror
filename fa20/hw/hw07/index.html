@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link rel="stylesheet" type="text/css" href="/~cs61a/fa20/assets/css/hw.css">
+
+
+    <title>
+Homework 7 | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Homework 7: Scheme Lists
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hw07.zip" class="label label-outline">hw07.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><em>Due by 11:59pm on Thursday, November 12</em></p>
+
+
+
+
+
+<h2>Instructions</h2>
+
+<p>Download <a href="hw07.zip">hw07.zip</a>. Inside the archive, you will find a file called
+<a href="hw07.scm">hw07.scm</a>, along with a copy of the <code>ok</code> autograder.</p>
+
+<p><strong>Submission:</strong> When you are done, submit with <code>python3 ok
+  --submit</code>.  You may submit more than once before the deadline; only the
+final submission will be scored. Check that you have successfully submitted
+your code on <a href="https://okpy.org/">okpy.org</a>.  See <a
+  href="/~cs61a/fa20/lab/lab00#submitting-the-assignment">Lab 0</a> for more instructions on
+submitting assignments.</p>
+
+<p><strong>Using Ok:</strong> If you have any questions about using Ok, please
+refer to <a href="/~cs61a/fa20/articles/using-ok.html">this guide.</a>
+
+
+  <p><strong>Readings:</strong> You might find the following references
+  useful:</p>
+  <ul>
+  <li><a href="/~cs61a/fa20/articles/scheme-spec.html">Scheme Specification</a></li>
+  <li><a href="/~cs61a/fa20/articles/scheme-builtins.html">Scheme Built-in Procedure Reference</a></li>
+  <li><a href="http://composingprograms.com/pages/32-functional-programming.html">Section 3.2</a></li>
+  <li><a href="http://composingprograms.com/pages/35-interpreters-for-languages-with-abstraction.html">Section 3.5</a></li>
+</ul>
+  
+
+<p><strong>Grading:</strong> Homework is graded based on
+correctness. Each incorrect problem will decrease the total score by one point. There is a homework recovery policy as stated in the syllabus.
+<strong>This homework is out of 2 points.</strong>
+
+
+
+
+    
+<h1 id="scheme-editor">Scheme Editor</h1>
+
+
+
+<h2 id="how-to-launch">How to launch</h2>
+
+
+<p>In your <code>hw07</code> folder you will find a new editor. To run this editor, run <code>python3 editor</code>. This should pop up a window in your browser; if it does not, please navigate to <a href="localhost:31415">localhost:31415</a> and you should see it.</p>
+
+<p>Make sure to run <code>python3 ok</code> in a separate tab or window so that the editor keeps running.</p>
+
+
+<h2 id="features">Features</h2>
+
+
+<p>The <code>hw07.scm</code> file should already be open. You can edit this file and then run <code>Run</code> to run the code and get an interactive terminal or <code>Test</code> to run the <code>ok</code> tests.</p>
+
+<p><code>Environments</code> will help you diagram your code, and <code>Debug</code> works with environments so you can see where you are in it. We encourage you to try out all these features.</p>
+
+<p><code>Reformat</code> is incredibly useful for determining whether you have parenthesis based bugs in your code. You should be able to see after formatting if your code looks weird where the issue is.</p>
+
+<blockquote><p>By default, the interpreter uses Lisp-style formatting, where the parens are all put on the end of the last line</p>
+
+<pre><code>(define (f x)
+    (if (&gt; x 0)
+        x
+        (&#x2d; x)))</code></pre>
+
+<p>However, if you would prefer the close parens to be on their own lines as so</p>
+
+<pre><code>(define (f x)
+    (if (&gt; x 0)
+        x
+        (&#x2d; x)
+    )
+)</code></pre>
+
+<p>you can go to Settings and select the second option.</p></blockquote>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h3 id="assignment-hint-video">Assignment Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this assignment.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/2CY-hsUf18E"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h2 id="scheme-lists">Scheme Lists</h2>
+
+<h3 class="question" id="q1">Q1: Filter Lst</h3>
+
+<p>Write a procedure <code>filter&#x2d;lst</code>, which takes a predicate <code>fn</code> and a list <code>lst</code>, and
+returns a new list containing only elements of the list that satisfy the
+predicate. The output should contain the elements in the same order that they
+appeared in the original list.</p>
+
+<p><strong>Note:</strong> Make sure that you are not just calling the built-in <code>filter</code> function in Scheme - we are asking you to re-implement this!</p>
+
+<solution>
+
+<pre><code class="scheme">(define (filter&#x2d;lst fn lst)
+  'YOUR-CODE-HERE
+)
+
+;;; Tests
+(define (even? x)
+  (= (modulo x 2) 0))
+(filter&#x2d;lst even? &#x27;(0 1 1 2 3 5 8))
+; expect (0 2 8)</code></pre>
+
+
+
+</solution>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q filter_lst -u
+python3 ok -q filter_lst</code></pre>
+
+<h3 class="question" id="q2">Q2: Interleave</h3>
+
+<p>Implement the function interleave, which takes a two lists as arguments.
+interleave will return a new list that interleaves the elements of the two
+lists. Refer to the tests for sample input/output.</p>
+
+<solution>
+
+<pre><code class="scheme">(define (interleave first second)
+  'YOUR-CODE-HERE
+)
+
+(interleave (list 1 3 5) (list 2 4 6))
+; expect (1 2 3 4 5 6)
+
+(interleave (list 1 3 5) nil)
+; expect (1 3 5)
+
+(interleave (list 1 3 5) (list 2 4))
+; expect (1 2 3 4 5)</code></pre>
+
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q interleave</code></pre>
+
+<h3 class="question" id="q3">Q3: Accumulate</h3>
+
+<p>Fill in the definition for the procedure <code>accumulate</code>, which combines the first
+<code>n</code> natural numbers according to the following parameters:</p>
+
+<ol>
+  <li><code>combiner</code>: a function of two arguments</li>
+  <li><code>start</code>: a number with which to start combining</li>
+  <li><code>n</code>: the number of natural numbers to combine</li>
+  <li><code>term</code>: a function of one argument that computes the <em>n</em>th term of
+  a sequence</li>
+</ol>
+
+<p>For example, we can find the product of all the numbers from 1 to 5 by
+using the multiplication operator as the <code>combiner</code>, and starting our
+product at 1:</p>
+
+<pre><code class="scheme">scm&gt; (define (identity x) x)
+scm&gt; (accumulate * 1 5 identity)  ; 1 * 1 * 2 * 3 * 4 * 5
+120</code></pre>
+
+
+
+<p>We can also find the sum of the squares of the same numbers by using the
+addition operator as the <code>combiner</code> and <code>square</code> as the <code>term</code>:</p>
+
+<pre><code class="scheme">scm&gt; (define (square x) (* x x))
+scm&gt; (accumulate + 0 5 square)  ; 0 + 1^2 + 2^2 + 3^2 + 4^2 + 5^2
+55
+scm&gt; (accumulate + 5 5 square)  ; 5 + 1^2 + 2^2 + 3^2 + 4^2 + 5^2
+60</code></pre>
+
+
+
+<p>You may assume that the <code>combiner</code> will always be commutative: i.e. the order
+of arguments do not matter.</p>
+
+<solution>
+
+<pre><code class="scheme">(define (accumulate combiner start n term)
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q accumulate</code></pre>
+
+<!--
+
+-->
+<h3 class="question" id="q4">Q4: No Repeats</h3>
+
+<p>Implement <code>no&#x2d;repeats</code>, which takes a list of numbers <code>lst</code> as input and returns
+a list that has all of the unique elements of <code>lst</code> in the order that they first
+appear, but no repeats. For example, <code>(no&#x2d;repeats (list 5 4 5 4 2 2))</code>
+evaluates to <code>(5 4 2)</code>.</p>
+
+<p><em>Hints</em>: To test if two numbers are equal, use the <code>=</code> procedure. To test if
+two numbers are not equal, use the <code>not</code> procedure in combination with <code>=</code>.
+You may find it helpful to use the <code>filter&#x2d;lst</code> procedure with a helper <code>lambda</code> function to use as a filter.</p>
+
+<solution>
+
+<pre><code class="scheme">(define (no&#x2d;repeats lst)
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+</solution>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q no_repeats -u
+python3 ok -q no_repeats</code></pre>
+
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#scheme-editor">Scheme Editor</a></li>
+  <ul>
+    <li><a href="#how-to-launch">How to launch</a></li>
+    <li><a href="#features">Features</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#assignment-hint-video">Assignment Hint Video</a></li>
+  </ul>
+  <ul>
+    <li><a href="#scheme-lists">Scheme Lists</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Filter Lst</a></li>
+      <li><a href="#q2">Q2: Interleave</a></li>
+      <li><a href="#q3">Q3: Accumulate</a></li>
+      <li><a href="#q4">Q4: No Repeats</a></li>
+    </ul>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

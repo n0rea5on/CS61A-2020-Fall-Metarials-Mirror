@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 8: Linked Lists, Trees | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 8: Linked Lists, Trees
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab08.zip" class="label label-outline">lab08.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, October 20.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab08.zip">lab08.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h1 id="topics">Topics</h1>
+
+
+<p>Consult this section if you need a refresher on the material for this lab. It's
+okay to skip directly to <a href="#required-questions">the questions</a> and refer back
+here should you get stuck.</p>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Linked Lists<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h2 id="linked-lists">Linked Lists</h2>
+
+<p>We've learned that a Python list is one way to store sequential values. Another
+type of list is a linked list. A Python list stores all of its elements in a
+single object, and each element can be accessed by using its index. A linked
+list, on the other hand, is a recursive object that only stores two things: its
+first value and a reference to the rest of the list, which is another linked
+list.</p>
+
+<p>We can implement a class, <code>Link</code>, that represents a linked list object.  Each
+instance of <code>Link</code> has two instance attributes, <code>first</code> and <code>rest</code>.</p>
+
+<pre><code>class Link:
+    &quot;&quot;&quot;A linked list.
+
+    &gt;&gt;&gt; s = Link(1)
+    &gt;&gt;&gt; s.first
+    1
+    &gt;&gt;&gt; s.rest is Link.empty
+    True
+    &gt;&gt;&gt; s = Link(2, Link(3, Link(4)))
+    &gt;&gt;&gt; s.first = 5
+    &gt;&gt;&gt; s.rest.first = 6
+    &gt;&gt;&gt; s.rest.rest = Link.empty
+    &gt;&gt;&gt; s                                    # Displays the contents of repr(s)
+    Link(5, Link(6))
+    &gt;&gt;&gt; s.rest = Link(7, Link(Link(8, Link(9))))
+    &gt;&gt;&gt; s
+    Link(5, Link(7, Link(Link(8, Link(9)))))
+    &gt;&gt;&gt; print(s)                             # Prints str(s)
+    &lt;5 7 &lt;8 9&gt;&gt;
+    &quot;&quot;&quot;
+    empty = ()
+
+    def __init__(self, first, rest=empty):
+        assert rest is Link.empty or isinstance(rest, Link)
+        self.first = first
+        self.rest = rest
+
+    def __repr__(self):
+        if self.rest is not Link.empty:
+            rest_repr = &#x27;, &#x27; + repr(self.rest)
+        else:
+            rest_repr = &#x27;&#x27;
+        return &#x27;Link(&#x27; + repr(self.first) + rest_repr + &#x27;)&#x27;
+
+    def __str__(self):
+        string = &#x27;&lt;&#x27;
+        while self.rest is not Link.empty:
+            string += str(self.first) + &#x27; &#x27;
+            self = self.rest
+        return string + str(self.first) + &#x27;&gt;&#x27;</code></pre>
+
+<p>A valid linked list can be one of the following:</p>
+
+<ol>
+  <li>An empty linked list (<code>Link.empty</code>)</li>
+  <li>A <code>Link</code> object containing the first value of the linked list and a
+  reference to the rest of the linked list</li>
+</ol>
+
+<p>What makes a linked list recursive is that the <code>rest</code> attribute of a single
+<code>Link</code> instance is another linked list! In the big picture, each <code>Link</code>
+instance stores a single value of the list.  When multiple <code>Link</code>s are linked
+together through each instance's <code>rest</code> attribute, an entire sequence is
+formed.</p>
+
+<blockquote><p><em>Note</em>: This definition means that the <code>rest</code> attribute of any <code>Link</code>
+instance <em>must</em> be either <code>Link.empty</code> or another <code>Link</code> instance! This is
+enforced in <code>Link.__init__</code>, which raises an <code>AssertionError</code> if the value
+passed in for <code>rest</code> is neither of these things.</p></blockquote>
+
+<p>To check if a linked list is empty, compare it against the class attribute
+<code>Link.empty</code>. For example, the function below prints out whether or not the
+link it is handed is empty:</p>
+
+<pre><code>def test_empty(link):
+    if link is Link.empty:
+        print(&#x27;This linked list is empty!&#x27;)
+    else:
+        print(&#x27;This linked list is not empty!&#x27;)</code></pre>
+
+</div>
+
+<br>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Motivation<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+
+<h3 id="motivation-why-linked-lists">Motivation: Why linked lists</h3>
+
+
+<p>Since you are already familiar with Python's built-in lists, you might be
+wondering why we are teaching you another list representation. There are
+historical reasons, along with practical reasons. Later in the course, you'll
+be programming in Scheme, which is a programming language that uses linked
+lists for almost everything.</p>
+
+<p>For now, let's compare linked lists and Python lists by looking at two common
+sequence operations: inserting an item and indexing.</p>
+
+<p>Python's built-in list is like a sequence of containers with indices on them:</p>
+
+<p><img class="img-responsive center-block" src="assets/arraylist.png" alt="arraylist"></p>
+
+<p>Linked lists are a list of items pointing to their neighbors. Notice that
+there's no explicit index for each item.</p>
+
+<p><img class="img-responsive center-block" src="assets/linkedlist.png" alt="linkedlist"></p>
+
+<p>Suppose we want to add an item at the head of the list.</p>
+
+<ul>
+  <li>With Python's built-in list, if you want to put an item into the container
+  labeled with index 0, you must move <strong>all the items</strong> in the list into
+  its neighbor containers to make room for the first item;</li>
+</ul>
+
+<p><img class="img-responsive center-block" src="assets/arraylist_insert.png" alt="arraylist"></p>
+
+<ul>
+  <li>With a linked list, you tell Python that the neighbor of the new item is the
+  old beginning of the list.</li>
+</ul>
+
+<p><img class="img-responsive center-block" src="assets/linkedlist_insert.png" alt="arraylist"></p>
+
+<p>Now, let's take a look at indexing. Say we want the item at index 3 from a
+list.</p>
+
+<ul>
+  <li>In the built-in list, you can use Python list indexing, e.g. <code>lst[3]</code>, to
+  easily get the item at index 3.</li>
+  <li>In the linked list, you need to start at the first item and repeatedly follow
+  the <code>rest</code> attribute, e.g. <code>link.rest.rest.first</code>. How does this scale if the
+  index you were trying to access was very large?</li>
+</ul>
+
+<p>Can you think of situations
+where you would want to use one type of list over another? In this class, we
+aren't too worried about performance. However, in future computer science
+courses, you'll learn how to make performance tradeoffs in your programs
+by choosing your data structures carefully.</p>
+
+</div>
+
+<br>
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Trees<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+<h2 id="trees">Trees</h2>
+
+<p>Recall that a tree is a recursive abstract data type that has a <code>label</code> (the
+value stored in the root of the tree) and <code>branches</code> (a list of trees directly
+underneath the root).</p>
+
+<p>We saw one way to implement the tree ADT -- using constructor and selector
+functions that treat trees as lists. Another, more formal, way to implement the
+tree ADT is with a class. Here is part of the class definition for <code>Tree</code>,
+which can be found in <code>lab07.py</code>:</p>
+
+<pre><code>class Tree:
+    &quot;&quot;&quot;
+    &gt;&gt;&gt; t = Tree(3, [Tree(2, [Tree(5)]), Tree(4)])
+    &gt;&gt;&gt; t.label
+    3
+    &gt;&gt;&gt; t.branches[0].label
+    2
+    &gt;&gt;&gt; t.branches[1].is_leaf()
+    True
+    &quot;&quot;&quot;
+    def __init__(self, label, branches=[]):
+        for b in branches:
+            assert isinstance(b, Tree)
+        self.label = label
+        self.branches = list(branches)
+
+    def is_leaf(self):
+        return not self.branches</code></pre>
+
+<p>Even though this is a new implementation, everything we know about the tree ADT
+remains true.  That means that solving problems involving trees as objects uses
+the same techniques that we developed when first studying the tree ADT (e.g. we
+can still use recursion on the branches!).  The main difference, aside from
+syntax, is that tree objects are mutable.</p>
+
+<p>Here is a summary of the differences between the tree ADT implemented using
+functions and lists vs. implemented using a class:</p>
+
+
+
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+          
+  <tr>
+    <th>-</th>
+    <th>Tree constructor and selector functions</th>
+    <th>Tree class</th>
+  </tr>
+  <tr>
+    <td>Constructing a tree</td>
+    <td>To construct a tree given a <code>label</code> and a list of <code>branches</code>, we call <code>tree(label, branches)</code></td>
+    <td>To construct a tree object given a <code>label</code> and a list of <code>branches</code>, we call <code>Tree(label, branches)</code> (which calls the <code>Tree.__init__</code> method)</td>
+  </tr>
+  <tr>
+    <td>Label and branches</td>
+    <td>To get the label or branches of a tree <code>t</code>, we call <code>label(t)</code> or <code>branches(t)</code> respectively</td>
+    <td>To get the label or branches of a tree <code>t</code>, we access the instance attributes <code>t.label</code> or <code>t.branches</code> respectively</td>
+  </tr>
+  <tr>
+    <td>Mutability</td>
+    <td>The tree ADT is immutable because we cannot assign values to call expressions</td>
+    <td>The <code>label</code> and <code>branches</code> attributes of a <code>Tree</code> instance can be reassigned, mutating the tree</td>
+  </tr>
+  <tr>
+    <td>Checking if a tree is a leaf</td>
+    <td>To check whether a tree <code>t</code> is a leaf, we call the convenience function <code>is_leaf(t)</code></td>
+    <td>To check whether a tree <code>t</code> is a leaf, we call the bound method <code>t.is_leaf()</code>. This method can only be called on <code>Tree</code> objects.</td>
+  </tr>
+
+          </table>
+        </div>
+        
+
+
+
+</div>
+
+</alwaystoggle>
+<br>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+<h2 id="what-would-python-display">What Would Python Display?</h2>
+
+<h3 class="question" id="q1">Q1: WWPD: Linked Lists</h3>
+
+<p>Read over the <code>Link</code> class in <code>lab08.py</code>. Make sure you understand the
+doctests.</p>
+
+<blockquote><p>Use Ok to test your knowledge with the following "What Would Python Display?"
+questions:</p>
+
+<pre><code>python3 ok &#x2d;q link &#x2d;u</code></pre>
+
+<p>Enter <code>Function</code> if you believe the answer is <code>&lt;function ...&gt;</code>, <code>Error</code> if it
+errors, and <code>Nothing</code> if nothing is displayed.</p>
+
+<p>If you get stuck, try drawing out the box-and-pointer diagram for the linked
+list on a piece of paper or loading the <code>Link</code> class into the interpreter
+with <code>python3 &#x2d;i lab09.py</code>.</p></blockquote>
+
+<pre><code>&gt;&gt;&gt; from lab08 import *
+&gt;&gt;&gt; link = Link(1000)
+&gt;&gt;&gt; link.first
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x31;&#x30;&#x30;&#x30;</div>
+&gt;&gt;&gt; link.rest is Link.empty
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x54;&#x72;&#x75;&#x65;</div>
+&gt;&gt;&gt; link = Link(1000, 2000)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x41;&#x73;&#x73;&#x65;&#x72;&#x74;&#x69;&#x6f;&#x6e;&#x45;&#x72;&#x72;&#x6f;&#x72;</div>
+&gt;&gt;&gt; link = Link(1000, Link())
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x54;&#x79;&#x70;&#x65;&#x45;&#x72;&#x72;&#x6f;&#x72;</div></code></pre>
+        <button id='prompt-1' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; from lab08 import *
+&gt;&gt;&gt; link = Link(1, Link(2, Link(3)))
+&gt;&gt;&gt; link.first
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x31;</div>
+&gt;&gt;&gt; link.rest.first
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x32;</div>
+&gt;&gt;&gt; link.rest.rest.rest is Link.empty
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x54;&#x72;&#x75;&#x65;</div>
+&gt;&gt;&gt; link.first = 9001
+&gt;&gt;&gt; link.first
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x39;&#x30;&#x30;&#x31;</div>
+&gt;&gt;&gt; link.rest = link.rest.rest
+&gt;&gt;&gt; link.rest.first
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x33;</div>
+&gt;&gt;&gt; link = Link(1)
+&gt;&gt;&gt; link.rest = link
+&gt;&gt;&gt; link.rest.rest.rest.rest.first
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x31;</div>
+&gt;&gt;&gt; link = Link(2, Link(3, Link(4)))
+&gt;&gt;&gt; link2 = Link(1, link)
+&gt;&gt;&gt; link2.first
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x31;</div>
+&gt;&gt;&gt; link2.rest.first
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x32;</div></code></pre>
+        <button id='prompt-2' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; from lab08 import *
+&gt;&gt;&gt; link = Link(5, Link(6, Link(7)))
+&gt;&gt;&gt; link                  # Look at the __repr__ method of Link
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x4c;&#x69;&#x6e;&#x6b;&#x28;&#x35;&#x2c;&#x20;&#x4c;&#x69;&#x6e;&#x6b;&#x28;&#x36;&#x2c;&#x20;&#x4c;&#x69;&#x6e;&#x6b;&#x28;&#x37;&#x29;&#x29;&#x29;</div>
+&gt;&gt;&gt; print(link)          # Look at the __str__ method of Link
+<div class="alt prompt-3">______</div><div class="solution prompt-3">&#x3c;&#x35;&#x20;&#x36;&#x20;&#x37;&#x3e;</div></code></pre>
+        <button id='prompt-3' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+
+<h2 id="linked-lists">Linked Lists</h2>
+
+<h3 class="question" id="q2">Q2: Convert Link</h3>
+
+<p>Write a function <code>convert_link</code> that takes in a linked list and returns the
+sequence as a Python list. You may assume that the input list is shallow; none
+of the elements is another linked list.</p>
+
+<p>Try to find both an iterative and recursive solution for this problem!</p>
+
+<solution>
+
+<pre><code>def convert_link(link):
+    &quot;&quot;&quot;Takes a linked list and returns a Python list with the same elements.
+
+    &gt;&gt;&gt; link = Link(1, Link(2, Link(3, Link(4))))
+    &gt;&gt;&gt; convert_link(link)
+    [1, 2, 3, 4]
+    &gt;&gt;&gt; convert_link(Link.empty)
+    []
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q convert_link</code></pre>
+
+
+
+<h3 class="question" id="q3">Q3: Every Other</h3>
+
+<p>Implement <code>every_other</code>, which takes a linked list <code>s</code>. It mutates <code>s</code> such
+that all of the odd-indexed elements (using 0-based indexing) are removed from
+the list. For example:</p>
+
+<pre><code>&gt;&gt;&gt; s = Link(&#x27;a&#x27;, Link(&#x27;b&#x27;, Link(&#x27;c&#x27;, Link(&#x27;d&#x27;))))
+&gt;&gt;&gt; every_other(s)
+&gt;&gt;&gt; s.first
+&#x27;a&#x27;
+&gt;&gt;&gt; s.rest.first
+&#x27;c&#x27;
+&gt;&gt;&gt; s.rest.rest is Link.empty
+True</code></pre>
+
+<p>If <code>s</code> contains fewer than two elements, <code>s</code> remains unchanged.</p>
+
+<blockquote><p>Do not return anything! <code>every_other</code> should mutate the original list.</p></blockquote>
+
+<solution>
+
+<pre><code>def every_other(s):
+    &quot;&quot;&quot;Mutates a linked list so that all the odd&#x2d;indiced elements are removed
+    (using 0&#x2d;based indexing).
+
+    &gt;&gt;&gt; s = Link(1, Link(2, Link(3, Link(4))))
+    &gt;&gt;&gt; every_other(s)
+    &gt;&gt;&gt; s
+    Link(1, Link(3))
+    &gt;&gt;&gt; odd_length = Link(5, Link(3, Link(1)))
+    &gt;&gt;&gt; every_other(odd_length)
+    &gt;&gt;&gt; odd_length
+    Link(5, Link(1))
+    &gt;&gt;&gt; singleton = Link(4)
+    &gt;&gt;&gt; every_other(singleton)
+    &gt;&gt;&gt; singleton
+    Link(4)
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q every_other</code></pre>
+
+
+<h2 id="trees">Trees</h2>
+
+<h3 class="question" id="q4">Q4: Cumulative Mul</h3>
+
+<p>Write a function <code>cumulative_mul</code> that mutates the Tree <code>t</code> so that each node's
+label becomes the product of all labels in the subtree rooted at the node.</p>
+
+<solution>
+
+<pre><code>def cumulative_mul(t):
+    &quot;&quot;&quot;Mutates t so that each node&#x27;s label becomes the product of all labels in
+    the corresponding subtree rooted at t.
+
+    &gt;&gt;&gt; t = Tree(1, [Tree(3, [Tree(5)]), Tree(7)])
+    &gt;&gt;&gt; cumulative_mul(t)
+    &gt;&gt;&gt; t
+    Tree(105, [Tree(15, [Tree(5)]), Tree(7)])
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q cumulative_mul</code></pre>
+
+
+<h1 id="optional-problems">Optional Problems</h1>
+
+
+<h3 class="question" id="q5">Q5: Cycles</h3>
+
+<p>The <code>Link</code> class can represent lists with cycles.  That is, a list may
+contain itself as a sublist.</p>
+
+<pre><code>&gt;&gt;&gt; s = Link(1, Link(2, Link(3)))
+&gt;&gt;&gt; s.rest.rest.rest = s
+&gt;&gt;&gt; s.rest.rest.rest.rest.rest.first
+3</code></pre>
+
+<p>Implement <code>has_cycle</code>,that returns whether its argument, a <code>Link</code>
+instance, contains a cycle.</p>
+
+<blockquote><p><em>Hint</em>: Iterate through the linked list and try keeping track of which <code>Link</code>
+objects you've already seen.</p></blockquote>
+
+<solution>
+
+<pre><code>def has_cycle(link):
+    &quot;&quot;&quot;Return whether link contains a cycle.
+
+    &gt;&gt;&gt; s = Link(1, Link(2, Link(3)))
+    &gt;&gt;&gt; s.rest.rest.rest = s
+    &gt;&gt;&gt; has_cycle(s)
+    True
+    &gt;&gt;&gt; t = Link(1, Link(2, Link(3)))
+    &gt;&gt;&gt; has_cycle(t)
+    False
+    &gt;&gt;&gt; u = Link(2, Link(2, Link(2)))
+    &gt;&gt;&gt; has_cycle(u)
+    False
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q has_cycle</code></pre>
+
+<p>As an extra challenge, implement <code>has_cycle_constant</code> with only <a href="http://composingprograms.com/pages/28-efficiency.html#growth-categories">constant space</a>. (If you followed
+the hint above, you will use linear space.) The solution is short (less than 20
+lines of code), but requires a clever idea. Try to discover the solution
+yourself before asking around:</p>
+
+<solution>
+
+<pre><code>def has_cycle_constant(link):
+    &quot;&quot;&quot;Return whether link contains a cycle.
+
+    &gt;&gt;&gt; s = Link(1, Link(2, Link(3)))
+    &gt;&gt;&gt; s.rest.rest.rest = s
+    &gt;&gt;&gt; has_cycle_constant(s)
+    True
+    &gt;&gt;&gt; t = Link(1, Link(2, Link(3)))
+    &gt;&gt;&gt; has_cycle_constant(t)
+    False
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q has_cycle_constant</code></pre>
+
+<h3 class="question" id="q6">Q6: Reverse Other</h3>
+
+<p>Write a function <code>reverse_other</code> that mutates the tree such that <strong>labels</strong> on
+<em>every other</em> (odd-depth) level are reversed. For example,
+<code>Tree(1,[Tree(2, [Tree(4)]), Tree(3)])</code> becomes <code>Tree(1,[Tree(3, [Tree(4)]), Tree(2)])</code>.
+Notice that the nodes themselves are <em>not</em> reversed; only the labels are.</p>
+
+<solution>
+
+<pre><code>def reverse_other(t):
+    &quot;&quot;&quot;Mutates the tree such that nodes on every other (odd&#x2d;depth) level
+    have the labels of their branches all reversed.
+
+    &gt;&gt;&gt; t = Tree(1, [Tree(2), Tree(3), Tree(4)])
+    &gt;&gt;&gt; reverse_other(t)
+    &gt;&gt;&gt; t
+    Tree(1, [Tree(4), Tree(3), Tree(2)])
+    &gt;&gt;&gt; t = Tree(1, [Tree(2, [Tree(3, [Tree(4), Tree(5)]), Tree(6, [Tree(7)])]), Tree(8)])
+    &gt;&gt;&gt; reverse_other(t)
+    &gt;&gt;&gt; t
+    Tree(1, [Tree(8, [Tree(3, [Tree(5), Tree(4)]), Tree(6, [Tree(7)])]), Tree(2)])
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q reverse_other</code></pre>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#linked-lists">Linked Lists</a></li>
+    <ul>
+      <li><a href="#motivation-why-linked-lists">Motivation: Why linked lists</a></li>
+    </ul>
+    <li><a href="#trees">Trees</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#what-would-python-display">What Would Python Display?</a></li>
+    <ul>
+      <li><a href="#q1">Q1: WWPD: Linked Lists</a></li>
+    </ul>
+    <li><a href="#linked-lists">Linked Lists</a></li>
+    <ul>
+      <li><a href="#q2">Q2: Convert Link</a></li>
+      <li><a href="#q3">Q3: Every Other</a></li>
+    </ul>
+    <li><a href="#trees">Trees</a></li>
+    <ul>
+      <li><a href="#q4">Q4: Cumulative Mul</a></li>
+    </ul>
+  </ul>
+  <li><a href="#optional-problems">Optional Problems</a></li>
+  <ul>
+    <li><a href="#q5">Q5: Cycles</a></li>
+    <li><a href="#q6">Q6: Reverse Other</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

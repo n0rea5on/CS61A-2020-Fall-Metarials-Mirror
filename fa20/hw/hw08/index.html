@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link rel="stylesheet" type="text/css" href="/~cs61a/fa20/assets/css/hw.css">
+
+
+    <title>
+Homework 8 | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Homework 8: More Scheme
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hw08.zip" class="label label-outline">hw08.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><em>Due by 11:59pm on Thursday, November 19</em></p>
+
+
+
+
+
+<h2>Instructions</h2>
+
+<p>Download <a href="hw08.zip">hw08.zip</a>. Inside the archive, you will find a file called
+<a href="hw08.scm">hw08.scm</a>, along with a copy of the <code>ok</code> autograder.</p>
+
+<p><strong>Submission:</strong> When you are done, submit with <code>python3 ok
+  --submit</code>.  You may submit more than once before the deadline; only the
+final submission will be scored. Check that you have successfully submitted
+your code on <a href="https://okpy.org/">okpy.org</a>.  See <a
+  href="/~cs61a/fa20/lab/lab00#submitting-the-assignment">Lab 0</a> for more instructions on
+submitting assignments.</p>
+
+<p><strong>Using Ok:</strong> If you have any questions about using Ok, please
+refer to <a href="/~cs61a/fa20/articles/using-ok.html">this guide.</a>
+
+
+  <p><strong>Readings:</strong> You might find the following references
+  useful:</p>
+  <ul>
+  <li><a href="/~cs61a/fa20/articles/scheme-spec.html">Scheme Specification</a></li>
+  <li><a href="/~cs61a/fa20/articles/scheme-builtins.html">Scheme Built-in Procedure Reference</a></li>
+  <li><a href="http://composingprograms.com/pages/32-functional-programming.html">Section 3.2</a></li>
+  <li><a href="http://composingprograms.com/pages/35-interpreters-for-languages-with-abstraction.html">Section 3.5</a></li>
+</ul>
+  
+
+<p><strong>Grading:</strong> Homework is graded based on
+correctness. Each incorrect problem will decrease the total score by one point. There is a homework recovery policy as stated in the syllabus.
+<strong>This homework is out of 2 points.</strong>
+
+
+
+
+    
+<h1 id="scheme-editor">Scheme Editor</h1>
+
+
+
+<h2 id="how-to-launch">How to launch</h2>
+
+
+<p>In your <code>hw08</code> folder you will find a new editor. To run this editor, run <code>python3 editor</code>. This should pop up a window in your browser; if it does not, please navigate to <a href="localhost:31415">localhost:31415</a> and you should see it.</p>
+
+<p>Make sure to run <code>python3 ok</code> in a separate tab or window so that the editor keeps running.</p>
+
+
+<h2 id="features">Features</h2>
+
+
+<p>The <code>hw08.scm</code> file should already be open. You can edit this file and then run <code>Run</code> to run the code and get an interactive terminal or <code>Test</code> to run the <code>ok</code> tests.</p>
+
+<p><code>Environments</code> will help you diagram your code, and <code>Debug</code> works with environments so you can see where you are in it. We encourage you to try out all these features.</p>
+
+<p><code>Reformat</code> is incredibly useful for determining whether you have parenthesis based bugs in your code. You should be able to see after formatting if your code looks weird where the issue is.</p>
+
+<blockquote><p>By default, the interpreter uses Lisp-style formatting, where the parens are all put on the end of the last line</p>
+
+<pre><code>(define (f x)
+    (if (&gt; x 0)
+        x
+        (&#x2d; x)))</code></pre>
+
+<p>However, if you would prefer the close parens to be on their own lines as so</p>
+
+<pre><code>(define (f x)
+    (if (&gt; x 0)
+        x
+        (&#x2d; x)
+    )
+)</code></pre>
+
+<p>you can go to Settings and select the second option.</p></blockquote>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h3 id="assignment-hint-video">Assignment Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling problems 3-4 on this assignment.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/t5znmZvON3M"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+<h3 class="question" id="q1">Q1: WWSD: Quasiquote</h3>
+
+<blockquote><p>Use Ok to test your knowledge with the following "What Would Scheme Display?"
+questions:</p>
+
+<pre><code>python3 ok &#x2d;q wwsd&#x2d;quasiquote &#x2d;u</code></pre></blockquote>
+
+</question>
+
+<pre><code>scm&gt; &#x27;(1 x 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x31;&#x20;&#x78;&#x20;&#x33;&#x29;</div>
+scm&gt; (define x 2)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x78;</div>
+scm&gt; `(1 x 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x31;&#x20;&#x78;&#x20;&#x33;&#x29;</div>
+scm&gt; `(1 ,x 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x31;&#x20;&#x32;&#x20;&#x33;&#x29;</div>
+scm&gt; &#x27;(1 ,x 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x31;&#x20;&#x28;&#x75;&#x6e;&#x71;&#x75;&#x6f;&#x74;&#x65;&#x20;&#x78;&#x29;&#x20;&#x33;&#x29;</div>
+scm&gt; `(,1 x 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x31;&#x20;&#x78;&#x20;&#x33;&#x29;</div>
+scm&gt; `,(+ 1 x 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x36;</div>
+scm&gt; `(1 (,x) 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x31;&#x20;&#x28;&#x32;&#x29;&#x20;&#x33;&#x29;</div>
+scm&gt; `(1 ,(+ x 2) 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x31;&#x20;&#x34;&#x20;&#x33;&#x29;</div>
+scm&gt; (define y 3)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x79;</div>
+scm&gt; `(x ,(* y x) y)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x78;&#x20;&#x36;&#x20;&#x79;&#x29;</div>
+scm&gt; `(1 ,(cons x (list y 4)) 5)
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x28;&#x31;&#x20;&#x28;&#x32;&#x20;&#x33;&#x20;&#x34;&#x29;&#x20;&#x35;&#x29;</div></code></pre>
+        <button id='prompt-1' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+<h3 class="question" id="q2">Q2: WWSD: Eval and Apply</h3>
+
+<blockquote><p>How many calls to <code>scheme_eval</code> and <code>scheme_apply</code> would it take to evaluate each of these
+Scheme expressions? Use Ok to test your knowledge by writing the number of calls needed
+to evaluate each expression:</p>
+
+<pre><code>python3 ok &#x2d;q wwsd&#x2d;eval_apply &#x2d;u</code></pre></blockquote>
+
+</question>
+
+<pre><code>scm&gt; (+ 2 4 6 8) ; number of calls to scheme_eval
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x36;</div>
+scm&gt; (+ 2 4 6 8) ; number of calls to scheme_apply
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x31;</div>
+scm&gt; (+ 2 (* 4 (&#x2d; 6 8))) ; number of calls to scheme_eval
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x31;&#x30;</div>
+scm&gt; (+ 2 (* 4 (&#x2d; 6 8))) ; number of calls to scheme_apply
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x33;</div>
+scm&gt; (if #f (+ 2 3) (+ 1 2)) ; number of calls to scheme_eval
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x35;</div>
+scm&gt; (if #f (+ 2 3) (+ 1 2)) ; number of calls to scheme_apply
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x31;</div>
+scm&gt; (define (cube a) (* a a a)) ; number of calls to scheme_eval
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x31;</div>
+scm&gt; (define (cube a) (* a a a)) ; number of calls to scheme_apply
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x30;</div>
+scm&gt; (cube 3) ; number of calls to scheme_eval
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x38;</div>
+scm&gt; (cube 3) ; number of calls to scheme_apply
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x32;</div></code></pre>
+        <button id='prompt-2' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+
+<h2 id="symbolic-differentiation">Symbolic Differentiation</h2>
+
+
+<!-- code attachment won't work with blocks, it's just dumped at the end -->
+
+<p>The following problems develop a system for
+<a href="http://en.wikipedia.org/wiki/Table_of_derivatives#Elementary_rules_of_differentiation">symbolic differentiation</a>
+of algebraic expressions.  The <code>derive</code> Scheme procedure takes an
+algebraic expression and a variable and returns the derivative of the
+expression with respect to the variable. Symbolic differentiation is of
+special historical significance in Lisp. It was one of the motivating
+examples behind the development of the language. Differentiating is a
+recursive process that applies different rules to different kinds of
+expressions.</p>
+
+<pre><code class="scheme">; derive returns the derivative of EXPR with respect to VAR
+(define (derive expr var)
+  (cond ((number? expr) 0)
+        ((variable? expr) (if (same&#x2d;variable? expr var) 1 0))
+        ((sum? expr) (derive&#x2d;sum expr var))
+        ((product? expr) (derive&#x2d;product expr var))
+        ((exp? expr) (derive&#x2d;exp expr var))
+        (else &#x27;Error)))</code></pre>
+
+
+
+<p>To implement the system, we will use the following data abstraction.
+Sums and products are lists, and they are simplified on construction:</p>
+
+<pre><code class="scheme">; Variables are represented as symbols
+(define (variable? x) (symbol? x))
+(define (same&#x2d;variable? v1 v2)
+  (and (variable? v1) (variable? v2) (eq? v1 v2)))
+
+; Numbers are compared with =
+(define (=number? expr num)
+  (and (number? expr) (= expr num)))
+
+; Sums are represented as lists that start with +.
+(define (make&#x2d;sum a1 a2)
+  (cond ((=number? a1 0) a2)
+        ((=number? a2 0) a1)
+        ((and (number? a1) (number? a2)) (+ a1 a2))
+        (else (list &#x27;+ a1 a2))))
+(define (sum? x)
+  (and (list? x) (eq? (car x) &#x27;+)))
+(define (first&#x2d;operand s) (cadr s))
+(define (second&#x2d;operand s) (caddr s))
+
+; Products are represented as lists that start with *.
+(define (make&#x2d;product m1 m2)
+  (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+        ((=number? m1 1) m2)
+        ((=number? m2 1) m1)
+        ((and (number? m1) (number? m2)) (* m1 m2))
+        (else (list &#x27;* m1 m2))))
+(define (product? x)
+  (and (list? x) (eq? (car x) &#x27;*)))
+; You can access the operands from the expressions with
+; first&#x2d;operand and second&#x2d;operand
+(define (first&#x2d;operand p) (cadr p))
+(define (second&#x2d;operand p) (caddr p))</code></pre>
+
+
+
+<blockquote><p>Note that we will not test whether your solutions to this question correctly
+apply the <a href="https://en.wikipedia.org/wiki/Chain_rule">chain rule</a>. For more
+info, check out the <a href="#extensions">extensions</a> section.</p></blockquote>
+
+<h3 class="question" id="q3">Q3: Derive Sum</h3>
+
+<p>Implement <code>derive&#x2d;sum</code>, a procedure that differentiates a sum by
+summing the derivatives of the <code>first&#x2d;operand</code> and <code>second&#x2d;operand</code>.  Use data abstraction
+for a sum.</p>
+
+<blockquote><p><strong>Note:</strong> the formula for the derivative of a sum is <code>(f(x) + g(x))&#x27; = f&#x27;(x) + g&#x27;(x)</code></p></blockquote>
+
+<pre><code class="scheme">(define (derive&#x2d;sum expr var)
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+
+<p>The tests for this section aren't exhaustive, but tests for later parts will fully test it.</p>
+
+<blockquote><p>Before you start, check your understanding by running</p>
+
+<pre><code>python3 ok &#x2d;q derive&#x2d;sum &#x2d;u</code></pre>
+
+<p>To test your code, if you are in the local Scheme editor, hit <code>Test</code>. You can click on a case, press <code>Run</code>, and then use the <code>Debug</code> and <code>Environments</code> features to figure out why your code is not functioning correctly.</p>
+
+<p>You can also test your code from the terminal by running</p>
+
+<pre><code>python3 ok &#x2d;q derive&#x2d;sum</code></pre></blockquote>
+
+
+
+<h3 class="question" id="q4">Q4: Derive Product</h3>
+
+<blockquote><p><strong>Note:</strong> the formula for the derivative of a product is <code>(f(x) g(x))&#x27; = f&#x27;(x) g(x) + f(x) g&#x27;(x)</code></p></blockquote>
+
+<p>Implement <code>derive&#x2d;product</code>, which applies <a href="http://en.wikipedia.org/wiki/Product_rule">the product
+rule</a> to differentiate
+products. This means taking the first-operand and second-operand, and then
+summing the result of multiplying one by the derivative of the other.</p>
+
+<blockquote><p>The <code>ok</code> tests expect the terms of the result in a particular order.
+First, multiply the derivative of the first-operand by the second-operand. Then,
+multiply the first-operand by the derivative of the second-operand. Sum these two
+terms to form the derivative of the original product.
+In other words, <code>f&#x27; g + f g&#x27;</code>, not some other ordering.</p></blockquote>
+
+<pre><code class="scheme">(define (derive&#x2d;product expr var)
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+
+<blockquote><p>Before you start, check your understanding by running</p>
+
+<pre><code>python3 ok &#x2d;q derive&#x2d;product &#x2d;u</code></pre>
+
+<p>To test your code, if you are in the local Scheme editor, hit <code>Test</code>. You can click on a case, press <code>Run</code>, and then use the <code>Debug</code> and <code>Environments</code> features to figure out why your code is not functioning correctly.</p>
+
+<p>You can also test your code from the terminal by running</p>
+
+<pre><code>python3 ok &#x2d;q derive&#x2d;product</code></pre></blockquote>
+
+
+
+
+<h1 id="optional-questions">Optional Questions</h1>
+
+
+<h3 class="question" id="q5">Q5: Make Exp</h3>
+
+<p>Implement a data abstraction for exponentiation: a <code>base</code> raised to the
+power of an <code>exponent</code>. The <code>base</code> can be any expression, but assume that the
+<code>exponent</code> is a non-negative integer. You can simplify the cases when
+<code>exponent</code> is <code>0</code> or <code>1</code>, or when <code>base</code> is a number, by returning numbers from
+the constructor <code>make&#x2d;exp</code>.  In other cases, you can represent the exp as a
+triple <code>(^ base exponent)</code>.</p>
+
+<blockquote><p>You may want to use the built-in procedure <code>expt</code>, which takes two number
+arguments and raises the first to the power of the second.</p></blockquote>
+
+<pre><code class="scheme">; Exponentiations are represented as lists that start with ^.
+(define (make&#x2d;exp base exponent)
+  'YOUR-CODE-HERE
+)
+
+(define (exp? exp)
+  'YOUR-CODE-HERE
+)
+
+(define x^2 (make&#x2d;exp &#x27;x 2))
+(define x^3 (make&#x2d;exp &#x27;x 3))</code></pre>
+
+
+
+<blockquote><p>Before you start, check your understanding by running</p>
+
+<pre><code>python3 ok &#x2d;q make&#x2d;exp &#x2d;u</code></pre>
+
+<p>To test your code, if you are in the local Scheme editor, hit <code>Test</code>. You can click on a case, press <code>Run</code>, and then use the <code>Debug</code> and <code>Environments</code> features to figure out why your code is not functioning correctly.</p>
+
+<p>You can also test your code from the terminal by running</p>
+
+<pre><code>python3 ok &#x2d;q make&#x2d;exp</code></pre></blockquote>
+
+
+
+<h3 class="question" id="q6">Q6: Derive Exp</h3>
+
+<p>Implement <code>derive&#x2d;exp</code>, which uses the <a href="http://en.wikipedia.org/wiki/Power_rule">power
+rule</a> to derive exponents. Reduce
+the power of the exponent by one, and multiply the entire expression by
+the original exponent.</p>
+
+<blockquote><p><strong>Note:</strong> the formula for the derivative of an exponent is <code>[f(x)^(g(x))]&#x27; = f(x)^(g(x) &#x2d; 1) * g(x)</code>,
+if we ignore the chain rule, which we do for this problem</p></blockquote>
+
+<pre><code class="scheme">(define (derive&#x2d;exp exp var)
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+
+<blockquote><p>Before you start, check your understanding by running</p>
+
+<pre><code>python3 ok &#x2d;q derive&#x2d;exp &#x2d;u</code></pre>
+
+<p>To test your code, if you are in the local Scheme editor, hit <code>Test</code>. You can click on a case, press <code>Run</code>, and then use the <code>Debug</code> and <code>Environments</code> features to figure out why your code is not functioning correctly.</p>
+
+<p>You can also test your code from the terminal by running</p>
+
+<pre><code>python3 ok &#x2d;q derive&#x2d;exp</code></pre></blockquote>
+
+
+
+
+<h3 id="extensions">Extensions</h3>
+
+
+<p>There are many ways to extend this symbolic differentiation
+system. For example, you could simplify nested exponentiation expression such
+as <code>(^ (^ x 3) 2)</code>, products of exponents such as <code>(* (^ x 2) (^ x 3))</code>, and
+sums of products such as <code>(+ (* 2 x) (* 3 x))</code>. You could apply the <a href="https://en.wikipedia.org/wiki/Chain_rule">chain
+rule</a> when deriving exponents, so that
+expressions like <code>(derive &#x27;(^ (^ x y) 3) &#x27;x)</code> are handled correctly. Enjoy!</p>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#scheme-editor">Scheme Editor</a></li>
+  <ul>
+    <li><a href="#how-to-launch">How to launch</a></li>
+    <li><a href="#features">Features</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#assignment-hint-video">Assignment Hint Video</a></li>
+    <li><a href="#q1">Q1: WWSD: Quasiquote</a></li>
+    <li><a href="#q2">Q2: WWSD: Eval and Apply</a></li>
+  </ul>
+  <ul>
+    <li><a href="#symbolic-differentiation">Symbolic Differentiation</a></li>
+    <ul>
+      <li><a href="#q3">Q3: Derive Sum</a></li>
+      <li><a href="#q4">Q4: Derive Product</a></li>
+    </ul>
+  </ul>
+  <li><a href="#optional-questions">Optional Questions</a></li>
+  <ul>
+    <li><a href="#q5">Q5: Make Exp</a></li>
+    <li><a href="#q6">Q6: Derive Exp</a></li>
+    <li><a href="#extensions">Extensions</a></li>
+  </ul>
+  <ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

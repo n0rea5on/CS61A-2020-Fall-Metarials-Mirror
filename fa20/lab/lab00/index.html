@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 0: Getting Started | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 0: Getting Started
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab00.zip" class="label label-outline">lab00.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, September 1.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab00.zip">lab00.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h2 id="introduction">Introduction</h2>
+
+
+<p>This lab explains how to use your own computer to complete assignments for CS
+61A and introduces some of the basics of Python.</p>
+
+<p>If you need any help at any time through the lab, please feel free to come to
+<a href="https://cs61a.org/office-hours.html">office hours</a> or post on piazza.</p>
+
+<p>This lab looks really long, but it's mostly setup and learning how to use the
+essential tools for this class; these may seem a bit difficult now, but will quickly
+become second nature as we move further into the course.</p>
+
+<p>Here's a video that the Summer 2020 course staff made to guide you.</p>
+
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/YlothkvwsJo"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+
+
+<h2 id="setup">Setup</h2>
+
+
+
+<h3 id="register-for-an-account">Register for an account</h3>
+
+
+<blockquote><p>These accounts allow you to use instructional machines in the CS department,
+which can be useful if you do not have regular access to a computer. They are
+<strong>not required if you do not plan on remotely accessing the lab computers or printers</strong>.
+If you have a device to save your CS 61A folder, then you <strong>do not have to set up an account</strong>.</p></blockquote>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Signing up for a class account<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<p>Go to the <a href="https://acropolis.cs.berkeley.edu/~account/webacct/">EECS account site</a>
+to register for an instructional account. Login using your Berkeley CalNet ID
+and click the <code>Get a new account</code> button in the row for CS 61A. Your username
+will be of the form cs61a-xxx. Write down or download your account form so you
+don't forget it!</p>
+
+</div>
+<br>
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Logging into your class account<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+
+<h3 id="logging-into-your-class-account">Logging into your class account</h3>
+
+
+
+<h4 id="from-your-laptop">From your laptop</h4>
+
+
+<p>Most of the work in this class can be done without logging into your account.
+However, there may be times when you'll find working from an instructional
+account to be easier.</p>
+
+<p>Let's log in now. Open up your terminal and type in the following
+command:</p>
+
+<pre><code>ssh cs61a&#x2d;?@ashby.cs.berkeley.edu</code></pre>
+
+<p>where <code>?</code> is replaced with the rest of your username.</p>
+
+<blockquote><p>If you're interested, here's an explanation of what the command does:</p>
+
+<ol>
+  <li><code>ssh</code> is a <strong>s</strong>ecure <strong>sh</strong>ell (i.e. terminal) that connects to other
+  computers over a network.</li>
+  <li><code>cs61a&#x2d;?</code> is the username on the remote computer.</li>
+  <li><code>ashby.cs.berkeley.edu</code> is the domain name of the remote computer.
+  For our purposes it can be any of the <a href="http://inst.eecs.berkeley.edu/cgi-bin/clients.cgi?choice=13&string=">servers</a> that belong to Berkeley's CS department.</li>
+</ol></blockquote>
+
+<p>You can also watch this <a href="<a href='https://youtu.be/irwlU7esODA'> https://youtu.be/irwlU7esODA </a>">video</a> for help.</p>
+
+<p>The first time you attempt to <code>ssh</code> to a new server, the following message will
+appear:</p>
+
+<pre><code>The authenticity of host &#x27;ashby.cs.berkeley.edu&#x27; can&#x27;t be established.
+RSA key fingerprint is ...
+Are you sure you want to continue connecting (yes/no)?</code></pre>
+
+<p>Type yes. Your computer will remember the remote server, and won't ask you again.</p>
+
+<p>Once you confirm, you will be prompted for your password. If you haven't
+changed your password yet, use the password you were assigned when you
+registered for your account.</p>
+
+<blockquote><p>When you type your password, nothing will show up! This is a security
+feature, not a bug. Continue typing and press enter to log in.</p></blockquote>
+
+</div>
+<br>
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Changing your password<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+
+<h3 id="changing-your-password">Changing your password</h3>
+
+
+<p>The temporary password is not the easiest thing to remember. While
+still logged in, you can change your password by running this command
+and following the directions on the screen.</p>
+
+<pre><code>ssh update</code></pre>
+
+</div>
+<br>
+
+        <button id='toggle-4' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Registering your account<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-4">
+
+
+<h3 id="registering-your-account">Registering your account</h3>
+
+
+<p>The first time you log in to your class account, your terminal may ask
+you some registration questions about the following:</p>
+
+<ul>
+  <li>Last name</li>
+  <li>First name</li>
+  <li>Student ID</li>
+  <li>Email (please use the same email as above!)</li>
+  <li>Code name (we don't use this information, you can enter anything you
+  want)</li>
+</ul>
+
+<blockquote><p>If your terminal doesn't prompt you for this information the first
+time you log in, you can type <code>register</code> to begin the process. You
+don't need to do this again if you've already registered before.</p></blockquote>
+
+<p>If you find errors (e.g. you misspelled your name), fix them immediately by
+running the command:</p>
+
+<pre><code>re&#x2d;register</code></pre>
+
+</div>
+<br>
+
+        <button id='toggle-5' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Logging Out<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-5">
+
+
+<h3 id="logging-out">Logging out</h3>
+
+
+<p>Once you've registered your account and changed your password, you can
+log out by pressing <code>Ctrl&#x2d;D</code>, or with the command <code>exit</code>.</p>
+
+</div>
+
+
+<h3 id="install-a-terminal">Install a terminal</h3>
+
+
+<p>The terminal is a program that allows you to interact with your computer
+by entering commands. No matter what operating system you use (Windows,
+macOS, Linux), the terminal will be an essential tool for CS 61A.</p>
+
+
+<h4 id="macos-linux">macOS/Linux</h4>
+
+
+<p>If you're on a Mac or are using a form of Linux (such as Ubuntu), you already
+have a program called <code>Terminal</code> or something similar on your computer.  Open
+that up and you should be good to go.</p>
+
+
+<h4 id="windows">Windows</h4>
+
+
+<p><strong>You can just skip this step and use Windows PowerShell instead of Bash for the purposes of 61A.</strong>
+PowerShell comes pre-installed on Windows and requires no extra setup.
+You can simply launch it from the Start menu.
+Simple commands like <code>cd</code> and <code>ls</code> will work (<code>python</code> will work after the setup),
+which encompass most of the Bash commands you need for this course.</p>
+
+<p>Later courses will use Bash and use more sophisticated commands, though,
+so if you'd like to get familiar with that instead, you can install Git-Bash via either method below:</p>
+
+<ul>
+  <li><p><strong>Easy (automatic) method:</strong> <a href="assets/Install-Python-on-Windows.jse">Right-click here, click <em>Save link as...</em></a>, then save and run our automated installer, following the displayed instructions.
+  <strong>Note:</strong> If nothing happens when you run the installer, follow the anti-virus note below.
+  (<em>Advanced users:</em> If double-clicking doesn't work, you can also try <code>cscript &quot;Install&#x2d;Python&#x2d;on&#x2d;Windows.jse&quot;</code> from PowerShell or the Command Prompt.)
+  If this method <strong>succeeds</strong>, you can move on and <a href="#install-a-text-editor">install a text editor</a>; you now run Python inside Git-Bash.
+  (In fact, <em>only</em> inside Git-Bash. So this <em>won't</em> let you run <code>.py</code> files by double-clicking them.
+  But you shouldn't need to do that for this course.)
+  If this method <strong>fails</strong>, try the alternate method below.</p>
+
+  <blockquote><p><em>Anti-virus troubleshooting:</em> Your anti-malware scanner may mistakenly block this file.
+  In the case of Windows SmartScreen, you can bypass it as follows:
+  manually open the download folder, right-click the installer, select Properties,
+  <a href="https://winaero.com/blog/wp-content/uploads/2015/10/Windows-10-unblock-a-file.png"><strong>check the "Unblock" box</strong>, click OK</a>,
+  and run the installer again.
+  For Windows Defender, students have sometimes reported success by clicking "See Details", letting it scan the file, and then rebooting.
+  If your antivirus otherwise allows you, you can also try whitelisting the file.
+  In any case, if you don't find a workaround that works for you,
+  you can just use the manual installation method below.</p></blockquote></li>
+  <li><p><strong>Alternate (manual) method:</strong>
+  First, if you already tried the automatic installer above, make sure it's fully cleaned up:</p>
+
+  <ol>
+    <li>Look for <em>Git</em> as an installed program in "Add/Remove Programs", and, if it exists, uninstall it.</li>
+    <li>Once Git is no longer installed, if a <code>C:\Program Files\Git</code> folder still exists, delete that too.</li>
+  </ol>
+
+  <p>Now download and install <a href="https://git-scm.com/download/win">Git Bash</a>.
+  You can use the default options, <strong>with one exception</strong>:
+  Select <strong><em>Use Windows' default console window</em></strong> in the
+  <em>Configuring the terminal emulator to use with Git Bash</em> step.
+  <strong>This is very important! If you do not select this option, your terminal won't work with Python!</strong>
+  <img class="img-responsive center-block" src="assets/git-bash-options.png" alt="Git Bash configuration options"></p></li>
+</ul>
+
+<blockquote><p><em>If you're already using Git-Bash from outside this course and reinstalling it isn't an option:</em>
+Depending on whether you selected the MinTTY option when installing Git,
+it's possible that typing a command like <code>python</code> won't display anything on the screen.
+You can fix this by typing <code>winpty python</code> instead (or <code>winpty python3</code>, <code>winpty py &#x2d;3</code>, etc. as described below),
+but it will be painful, as you will have to remember to do this <em>every time</em> for the rest of the course!
+Hence, we recommend that you go back and reinstall Git-Bash with the recommended options if possible.</p></blockquote>
+
+<p>If everything succeeded, you are now able to launch a terminal on Windows by running Git-Bash.</p>
+
+<blockquote><p><em>SSL/TLS errors:</em> If you ran into connection security errors, you may need to update your system and/or
+enable TLS 1.2 (e.g. see <a href="https://support.microsoft.com/en-us/help/3140245">here</a> for Windows 7).
+You can check your TLS version by installing Python first, and running the following in <code>python3</code>:</p>
+
+<pre><code>from json import loads; from urllib.request import urlopen;
+loads(urlopen(&#x27;https://www.howsmyssl.com/a/check&#x27;).read().decode(&#x27;UTF&#x2d;8&#x27;))[&#x27;tls_version&#x27;]</code></pre>
+
+<p>If you don't see TLS 1.2 or later, that may be why you are encountering problems.
+If you're on Windows 10, though, the problem may be something else, and you may need to search/ask for help.</p></blockquote>
+
+
+<h3 id="install-python-3">Install Python 3</h3>
+
+
+<p>Python 3 is the primary programming language used in this course.
+Use the instructions below to install the Python 3 interpreter.
+(The instructions may feature older versions of Python 3, but the steps are similar.)</p>
+
+<p><strong><em>Note:</em></strong> If you already have an older version of Python installed, please make sure to download and install Python 3.8. You can check your Python version with <code>python ––version</code>.</p>
+
+
+<h4 id="linux">Linux</h4>
+
+
+<p>Run <code>sudo apt install python3</code> (Ubuntu), <code>sudo pacman &#x2d;S python3</code> (Arch),
+or the command for your distro.</p>
+
+
+<h4 id="macos">macOS</h4>
+
+<p>Download and install <a href="https://www.python.org/ftp/python/3.8.3/python-3.8.3-macosx10.9.pkg">Python 3 (64-bit)</a>.</p>
+
+<p>You may need to right-click the download icon and select "Open". After installing,
+please close and open your Terminal.</p>
+
+
+<h4 id="windows">Windows</h4>
+
+<p>If you used our automated installer successfully, skip to the next section—you should already have Python.</p>
+
+<p><strong>If you'll be using PowerShell, open the Microsoft Store and search for "python".</strong>
+Install Python 3.8 by the Python Software Foundation (this should be the first result). You can then
+skip the rest of this section.
+(Note: If you later decide to reinstall Python differently, <strong>uninstall it from the Microsoft Store first</strong>.)</p>
+
+<p>Otherwise, if you're installing manually,
+download &amp; run <a href="https://www.python.org/ftp/python/3.8.3/python-3.8.3-amd64.exe">Python 3 (the Windows x86-64 executable installer)</a> and
+<strong>make sure to check the "Add Python 3.x to PATH" box</strong>,
+which will allow you to execute the <code>python</code> command from your terminal.</p>
+
+<p>After installing, please close and open your terminal.</p>
+
+<p><img class="img-responsive center-block" src="assets/python-windows-install-path.png" alt="Windows PATH at setup"></p>
+
+
+<h4 id="other">Other</h4>
+
+
+<p><a href="https://www.python.org/downloads/">Download Python from the download page</a>.</p>
+
+
+<h3 id="install-a-text-editor">Install a text editor</h3>
+
+
+<p>The <strong>Python interpreter</strong> that you just installed allows you to <em>run</em> Python
+code. You will also need a <strong>text editor</strong>, where you will <em>write</em> Python code.</p>
+
+<p>There are many editors out there, each with its own set of features. <a href="https://code.visualstudio.com/">Visual
+Studio Code</a> and <a href="https://atom.io/">Atom</a> are the most popular choices among the
+course staff for writing Python, but you are free to use other text editors.</p>
+
+<blockquote><p><strong>Note</strong>: Please, please, <em>please</em> do not use word processors such as
+Microsoft Word to edit programs. Word processors can add extra content to
+documents that will confuse the interpreter.</p></blockquote>
+
+<p>For your reference, we've also written some guides on using popular text
+editors. After you're done with lab, you can take a look if you're interested:</p>
+
+<ul>
+  <li><a href="/~cs61a/fa20/articles/vscode.html">Visual Studio Code</a></li>
+  <li><a href="/~cs61a/fa20/articles/atom.html">Atom</a></li>
+  <li><a href="/~cs61a/fa20/articles/sublime.html">Sublime Text 3</a></li>
+  <li><a href="/~cs61a/fa20/articles/emacs.html">Emacs</a></li>
+  <li><a href="/~cs61a/fa20/articles/vim.html">Vim</a></li>
+</ul>
+
+
+<h2 id="using-the-terminal">Using the terminal</h2>
+
+
+<p>Let's check if everything was installed properly!</p>
+
+<p>First, open a terminal window.
+If you're on Windows, launch <em>Git-Bash</em> from the Start menu.
+(Or if you're using PowerShell, run that instead.)</p>
+
+<p><img class="img-responsive center-block" src="assets/terminal.png" alt="starting the terminal"></p>
+
+<p>When you first open your terminal, you will start in the "home directory".
+The <strong>home directory</strong> is represented by the <code>~</code> symbol, which you might see at the prompt.</p>
+
+<blockquote><p>Don't worry if your terminal window doesn't look exactly the same.
+The important part is that the prompt shows <code>$</code> (indicating Bash) or <code>PS</code> (PowerShell).
+If you see <code>C:\Users\Oski&gt;</code> but no <code>PS</code> before it, you're in the Command Prompt!
+Do <em>not</em> use that! Close it, and launch Git-Bash or PowerShell instead. (Do <em>not</em> launch Git-CMD.)</p></blockquote>
+
+<p>Try running <code>echo &quot;$HOME&quot;</code>. Verify that it displays the path to your home directory.</p>
+
+
+<h4 id="python-interpreter">Python Interpreter</h4>
+
+
+<p>We can use the terminal to check if your Python 3 interpreter was installed
+correctly. Try the following command:</p>
+
+<pre><code>python3</code></pre>
+
+<p>If the installation worked, you should see some text printed out about the
+interpreter followed by <code>&gt;&gt;&gt;</code> on its own line. This is where you can type in Python
+code. Try typing some expressions you saw in lecture, or just play around to see
+what happens! You can type <code>exit()</code> or <code>Ctrl&#x2d;D</code> to return to your command line.</p>
+
+<blockquote><p>Windows troubleshooting:</p>
+
+<ul>
+  <li>If the <code>python3</code> command doesn't run <em>at all</em>:
+  Try <code>python</code>, <code>py</code>, or <code>py &#x2d;3</code> instead.</li>
+  <li>If Python freezes (doesn't display anything at all):
+  You probably didn't select the <strong>"Use Windows' default console window"</strong> option when installing Git-Bash manually.
+  Try <code>winpty python</code>, or just uninstall Git-Bash and reinstall it with the correct options.</li>
+  <li>If you see <code>WindowsApps/python: Permission denied</code>:
+  Open Settings (or right-click the Desktop &amp; click Personalize), search for "App Execution Aliases" (or find it
+  by clicking Home→Apps→App execution aliases), and disable the entries that say "python".
+  (<a href="https://www.tenforums.com/tutorials/102096-manage-app-execution-aliases-windows-10-a.html">Screenshots here</a>.)
+  Alternatively, go to the <code>WindowsApps</code> folder whose path is shown and just rename <code>python.exe</code> and <code>python3.exe</code>
+  to something else, or delete them entirely if you are able to. Then try again.</li>
+  <li>If Python doesn't run <em>at all</em>, and you used our automated installer:
+  Go back and try installing using the manual method.</li>
+  <li>If Python doesn't run <em>at all</em>, and you installed manually:
+  Make sure you set up your "PATH" correctly as shown above.</li>
+  <li>If you mixed multiple versions of Python (e.g. 32-bit and 64-bit, or 3.6 and 3.8, etc.):
+  They may conflict. Occasionally, this becomes extremely difficult to fix—even for instructors.
+  Uninstall them one-by-one (the most recent one <em>first</em>), then reinstall only the latest 64-bit version.</li>
+  <li>If Git Bash shows an empty black screen:
+  You might have had Cygwin previously installed. You can try uninstalling Cygwin (recommended) and
+  following <a href="https://stackoverflow.com/a/30461913">this answer</a>, possibly uninstalling Git-Bash and/or Python
+  as well, and re-running the installer.</li>
+  <li>If you manually downloaded Python from its own home page and <em>don't see <code>64</code> in the file name</em>:
+  You probably got the 32-bit version. It might work. But if it doesn't, uninstall it before trying another method.
+  If you need to manually find the 64-bit version, look for a
+  <a href="https://www.python.org/downloads/windows/">recent stable <code>x86&#x2d;64 executable installer</code></a>.</li>
+</ul>
+
+<p>Ask for help if you get stuck!</p></blockquote>
+
+
+<h2 id="organizing-your-files">Organizing your files</h2>
+
+
+<p>In this section, you will learn how to manage files using terminal commands.</p>
+
+<blockquote><p>Make sure your prompt contains a <code>$</code> somewhere in it and does not begin with <code>&gt;&gt;&gt;</code>. If it begins with <code>&gt;&gt;&gt;</code> you are still in a Python shell, and you need to exit. See above for how.</p></blockquote>
+
+
+<h3 id="directories">Directories</h3>
+
+
+<p>The first command you'll use is <code>ls</code>. Try typing it in the terminal:</p>
+
+<pre><code>ls</code></pre>
+
+<p>The <code>ls</code> command <strong>l</strong>i<strong>s</strong>ts all the files and folders in the current
+directory. A <strong>directory</strong> is another name for a folder (such as the
+<code>Documents</code> folder). Since you're in the home directory right now, you
+should see the contents of your home directory.</p>
+
+<blockquote><p>If <code>ls</code> doesn't work, but <code>dir</code> does: <strong>stop</strong>!
+You've mistakenly opened the Windows Command Prompt!
+Exit it, and run <em>Git-Bash</em> instead.</p></blockquote>
+
+
+<h3 id="changing-directories">Changing directories</h3>
+
+
+<p>To move into another directory, use the <code>cd</code> command. Let's try moving into your
+Desktop directory. First, make sure you're in your home directory (check for the
+<code>~</code> on your command line) and use <code>ls</code> to see if the <code>Desktop</code> directory is present.
+Try typing the following command into your terminal, which should move you into
+that directory:</p>
+
+<pre><code>cd Desktop</code></pre>
+
+<p>Although, on some Windows accounts, your actual Desktop folder might actually be inside OneDrive:</p>
+
+<pre><code>cd OneDrive/Desktop</code></pre>
+
+<p>If you're <em>not</em> already in your home directory, try <code>cd ~/Desktop</code> instead (or <code>cd ~/OneDrive/Desktop</code>).</p>
+
+<p>If you still can't find your Desktop directory, ask for help on Piazza or in office hours.</p>
+
+<p>There are a few ways to return to the home directory:</p>
+
+<ul>
+  <li><code>cd ..</code> (two dots). The <code>..</code> means "the parent directory". In
+  this case, the parent directory of <code>cs61a</code> is your home
+  directory, so you can use <code>cd ..</code> to go up one directory.</li>
+  <li><code>cd ~</code> (the tilde). Remember that <code>~</code> means home directory, so
+  this command will always change to your home directory.</li>
+  <li><code>cd</code> (<code>cd</code> on its own). Typing just <code>cd</code> is a shortcut for typing <code>cd ~</code>.</li>
+</ul>
+
+<blockquote><p>You do not have to keep your files on your Desktop if you prefer otherwise.
+Where you keep your files locally will not affect your grade. Do whatever is
+easiest and most convenient for you!</p>
+
+<p><em>Windows PowerShell tip:</em> If you're using PowerShell, you can start it directly by holding Shift, right-clicking inside any folder, and selecting
+<a href="https://www.tenforums.com/attachments/tutorials/248020d1568908726-open-powershell-window-here-context-menu-add-windows-10-a-open_powershell_window_here_context_menu.png">"Open PowerShell Window here"</a>.
+It will automatically <code>cd</code> to that folder, so you'll have to run <code>cd ~</code> to change to your home directory.</p></blockquote>
+
+
+<h3 id="making-new-directories">Making new directories</h3>
+
+
+<p>The next command is called <code>mkdir</code>, which <strong>m</strong>a<strong>k</strong>es new
+<strong>dir</strong>ectories. Let's make a directory called <code>cs61a</code> on your Desktop to store
+all of the assignments for this class:</p>
+
+<pre><code>mkdir cs61a</code></pre>
+
+<p>A folder named <code>cs61a</code> will appear on your Desktop. You can verify this by
+using the <code>ls</code> command again or by simply checking your Desktop.</p>
+
+<p>At this point, let's create some more directories. First, make sure you are in
+the <code>~/Desktop/cs61a</code> directory. Then, create folders called <code>projects</code> and <code>lab</code>
+inside of your <code>cs61a</code> folder:</p>
+
+<pre><code>cd ~/Desktop/cs61a
+mkdir projects
+mkdir lab</code></pre>
+
+<p>Now if you list the contents of the directory (using <code>ls</code>), you'll see two
+folders, <code>projects</code> and <code>lab</code>.</p>
+
+<p><img class="img-responsive center-block" src="assets/terminal_commands.png" alt="cs61a directory"></p>
+
+
+<h3 id="downloading-the-assignment">Downloading the assignment</h3>
+
+
+<p>If you haven't already, download the zip archive, <a href="lab00.zip">lab00.zip</a>, which
+contains all the files that you'll need for this lab. Once you've done that, let's
+find the downloaded file. On most computers, <code>lab00.zip</code> is probably located in a
+directory called <code>Downloads</code> in your home directory. Use the <code>ls</code> command to
+check:</p>
+
+<pre><code>ls ~/Downloads</code></pre>
+
+<p>If you don't see <code>lab00.zip</code>, ask for help on Piazza or in office hours.</p>
+
+
+<h3 id="extracting-starter-files">Extracting starter files</h3>
+
+
+<p>You must expand the zip archive before you can work on the lab files.
+Different operating systems and different browsers have different ways of
+unzipping. If you don't know how, you can search online.</p>
+
+<blockquote><p>Using a terminal, you can unzip the zip file from the command line.
+First, <code>cd</code> into the directory that contains the zip file:</p>
+
+<pre><code>cd ~/Downloads</code></pre>
+
+<p>Now, run the <code>unzip</code> command (non-PowerShell) with the name of the zip file:</p>
+
+<pre><code>unzip lab00.zip</code></pre>
+
+<p>If you're using PowerShell 5 (already in Windows 10), you can instead run:</p>
+
+<pre><code>Expand&#x2d;Archive &#x2d;DestinationPath . &#x2d;Force lab00.zip</code></pre>
+
+<p>You might also be able to extract files without using the terminal by double
+clicking (or right-clicking) them in your OS's file explorer.</p></blockquote>
+
+<p>Once you unzip <code>lab00.zip</code>, you'll have a new folder called <code>lab00</code> which
+contains the following files (check it out with <code>cd</code> and <code>ls</code>):</p>
+
+<ul>
+  <li><code>lab00.py</code>: The template file you'll be adding your code to</li>
+  <li><code>ok</code>: A program used to test and submit assignments</li>
+  <li><code>lab00.ok</code>: A configuration file for <code>ok</code></li>
+</ul>
+
+
+<h3 id="moving-files">Moving files</h3>
+
+
+<p>Move the lab files to the lab folder you created earlier:</p>
+
+<pre><code>mv ~/Downloads/lab00 ~/Desktop/cs61a/lab</code></pre>
+
+<p>The <code>mv</code> command will <strong>m</strong>o<strong>v</strong>e the <code>~/Downloads/lab00</code> folder
+into the <code>~/Desktop/cs61a/lab</code> folder.</p>
+
+<p>Now, go to the <code>lab00</code> folder that you just moved. Try using <code>cd</code> to navigate
+your own way! If you get stuck, you can use the following command:</p>
+
+<pre><code>cd ~/Desktop/cs61a/lab/lab00</code></pre>
+
+
+<h3 id="summary">Summary</h3>
+
+
+<p>Here is a summary of the commands we just went over for your reference:</p>
+
+<ul>
+  <li><code>ls</code>: <strong>l</strong>i<strong>s</strong>ts all files in the current directory</li>
+  <li><code>cd &lt;path to directory&gt;</code>: <strong>c</strong>hange into the specified <strong>d</strong>irectory</li>
+  <li><code>mkdir &lt;directory name&gt;</code>: <strong>m</strong>a<strong>k</strong>e a new <strong>dir</strong>ectory with the given name</li>
+  <li><code>mv &lt;source path&gt; &lt;destination path&gt;</code>: <strong>m</strong>o<strong>v</strong>e the file at the given source to the
+  given destination</li>
+</ul>
+
+<p>Finally, you're ready to start editing the lab files! Don't worry if this seems
+complicated—it will get much easier over time. Just keep practicing!
+You can also take a look at our <a href="/~cs61a/fa20/articles/unix.html">UNIX tutorial</a> for a more
+detailed explanation of terminal commands.</p>
+
+
+<h2 id="python-basics">Python Basics</h2>
+
+
+
+<h3 id="expressions-and-statements">Expressions and statements</h3>
+
+
+<p>Programs are made up of expressions and statements. An <em>expression</em> is a piece
+of code that evaluates to some value and a <em>statement</em> is one or more lines of
+code that make something happen in a program.</p>
+
+<p>When you enter a Python expression into the interactive Python interpreter, its
+value will be displayed. As you read through the following examples, try out
+some similar expressions on your own Python interpreter, which you can start up
+by typing this in your terminal:</p>
+
+<pre><code>python3</code></pre>
+
+<blockquote class="help-windows">
+
+<p>Remember, if you are using Windows and the <code>python3</code> command doesn't work, try
+using <code>python</code> or <code>py</code>. See the <a href="#install-python-3">install Python 3</a> section
+for more info and ask for help if you get stuck!</p>
+
+</blockquote>
+
+<p>You'll be learning various types of expressions and statements in this course.
+For now, let's take a look at the ones you'll need to complete this lab.</p>
+
+
+<h3 id="primitive-expressions">Primitive expressions</h3>
+
+
+<p>Primitive expressions only take one step to evaluate. These include numbers and
+booleans, which just evaluate to themselves.</p>
+
+<pre><code>&gt;&gt;&gt; 3
+3
+&gt;&gt;&gt; 12.5
+12.5
+&gt;&gt;&gt; True
+True</code></pre>
+
+
+<h3 id="arithmetic-expressions">Arithmetic expressions</h3>
+
+
+<p>Numbers may be combined with mathematical operators to form compound
+expressions. In addition to the <code>+</code> operator (addition), the <code>&#x2d;</code> operator
+(subtraction), the <code>*</code> operator (multiplication) and the <code>**</code> operator
+(exponentiation),  there are three division-like operators to remember:</p>
+
+<ul>
+  <li>Floating point division (<code>/</code>): divides the first number number by the second,
+  evaluating to a number with a decimal point <em>even if the numbers divide
+  evenly</em>.</li>
+  <li>Floor division (<code>//</code>): divides the first number by the second and then rounds
+  down, evaluating to an integer.</li>
+  <li>Modulo (<code>%</code>): evaluates to the positive remainder left over from division.</li>
+</ul>
+
+<p>Parentheses may be used to group subexpressions together; the entire expression
+is evaluated in PEMDAS order.</p>
+
+<pre><code>&gt;&gt;&gt; 7 / 4
+1.75
+&gt;&gt;&gt; (2 + 6) / 4
+2.0
+&gt;&gt;&gt; 7 // 4        # Floor division (rounding down)
+1
+&gt;&gt;&gt; 7 % 4         # Modulus (remainder of 7 // 4)
+3</code></pre>
+
+
+<h3 id="assignment-statements">Assignment statements</h3>
+
+
+<p>An assignment statement consists of a name and an expression. It changes the
+state of the program by evaluating the expression to the right of the <code>=</code> sign
+and <em>binding</em> its value to the name on the left.</p>
+
+<pre><code>&gt;&gt;&gt; a = (100 + 50) // 2</code></pre>
+
+<p>Now, if we evaluate <code>a</code>, the interpreter will display the value 75.</p>
+
+<pre><code>&gt;&gt;&gt; a
+75</code></pre>
+
+
+<h2 id="doing-the-assignment">Doing the assignment</h2>
+
+
+
+<h3 id="unlocking-tests">Unlocking tests</h3>
+
+
+<p>One component of lab assignments is to predict how the Python interpreter will
+behave.</p>
+
+<blockquote><p>Enter the following in your terminal to begin this section:</p>
+
+<pre><code>python3 ok &#x2d;q python&#x2d;basics &#x2d;u</code></pre>
+
+<p>You will be prompted to enter the output of various statements/expressions.
+You must enter them correctly to move on, but there is no penalty for
+incorrect answers.</p>
+
+<p>The first time you run Ok, you will be prompted for your bCourses email.
+Please follow <a href="/~cs61a/fa20/articles/using-ok.html#signing-in-with-ok">these directions</a>.
+We use this information to associate your code with you when grading.</p></blockquote>
+
+<pre><code>&gt;&gt;&gt; 10 + 2
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x31;&#x32;</div>
+&gt;&gt;&gt; 7 / 2
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x33;&#x2e;&#x35;</div>
+&gt;&gt;&gt; 7 // 2
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x33;</div>
+&gt;&gt;&gt; 7 % 2		  # 7 modulo 2, equivalent to the remainder of 7 // 2
+<div class="alt prompt-1">______</div><div class="solution prompt-1">&#x31;</div></code></pre>
+        <button id='prompt-1' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+<pre><code>&gt;&gt;&gt; x = 20
+&gt;&gt;&gt; x + 2
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x32;&#x32;</div>
+&gt;&gt;&gt; x
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x32;&#x30;</div>
+&gt;&gt;&gt; y = 5
+&gt;&gt;&gt; y = y + 3
+&gt;&gt;&gt; y * 2
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x31;&#x36;</div>
+&gt;&gt;&gt; y = y // 4
+&gt;&gt;&gt; y + x
+<div class="alt prompt-2">______</div><div class="solution prompt-2">&#x32;&#x32;</div></code></pre>
+        <button id='prompt-2' class='btn btn-outline btn-lg solutiontoggle prompt'>
+        Toggle Solution<noscript> (enable JavaScript)</noscript>
+        </button>
+        
+
+
+<h3 id="understanding-problems">Understanding problems</h3>
+
+
+<p>Labs will also consist of function writing problems. Open up <code>lab00.py</code> in
+your text editor. You can type <code>open .</code> on MacOS or <code>start .</code> on Windows to
+open the current directory in your Finder/File Explorer. Then double click or
+right click to open the file in your text editor. You should see something like
+this:</p>
+
+<solution>
+
+<pre><code>def twenty_twenty():
+    &quot;&quot;&quot;Come up with the most creative expression that evaluates to 2020,
+    using only numbers and the +, *, and &#x2d; operators.
+
+    &gt;&gt;&gt; twenty_twenty()
+    2020
+    &quot;&quot;&quot;
+    return ______
+</code></pre>
+
+</solution>
+
+<p>The lines in the triple-quotes <code>&quot;&quot;&quot;</code> are called a <strong>docstring</strong>, which is a
+description of what the function is supposed to do. When writing code in 61A,
+you should always read the docstring!</p>
+
+<p>The lines that begin with <code>&gt;&gt;&gt;</code> are called <strong>doctests</strong>. Recall that when using the
+Python interpreter, you write Python expressions next to <code>&gt;&gt;&gt;</code> and the output is
+printed below that line. Doctests explain what the function does by showing actual
+Python code. It answers the question: "If we input this Python code, what should
+the expected output be?"</p>
+
+<p>In <code>twenty_twenty</code>,</p>
+
+<ul>
+  <li>The docstring tells you to "come up with the most creative expression that
+  evaluates to 2020," but that you can only use numbers and arithmetic operators
+  <code>+</code> (add), <code>*</code> (multiply), and <code>&#x2d;</code> (subtract).</li>
+  <li>The doctest checks that the function call <code>twenty_twenty()</code> should
+  return the number 2020.</li>
+</ul>
+
+<blockquote><p>You should not modify the docstring, unless you want to add your own tests!
+The only part of your assignments that you'll need to edit is the code.</p></blockquote>
+
+
+<h3 id="writing-code">Writing code</h3>
+
+
+<p>Once you understand what the question is asking, you're ready to start writing
+code! You should replace the underscores in <code>return ______</code> with an expression that
+evaluates to 2020.  What's the most creative expression you can come up with?</p>
+
+<blockquote><p>Don't forget to save your assignment after you edit it! In most text editors, you
+can save by navigating to File > Save or by pressing Command-S on MacOS or Ctrl-S on Windows.</p></blockquote>
+
+
+<h3 id="running-tests">Running tests</h3>
+
+
+<p>In CS 61A, we will use a program called <code>ok</code> to test our code. <code>ok</code> will be
+included in every assignment in this class.</p>
+
+<blockquote><p>For quickly generating ok commands, you can now use the <a href="https://links.cs61a.org/ok-help">ok command generator</a>.</p></blockquote>
+
+<p>Back to the terminal! Make sure you are in the <code>lab00</code> directory we created
+earlier (remember, the <code>cd</code> command lets you <a href="#changing-directories">change
+directories</a>).</p>
+
+<p>In that directory, you can type <code>ls</code> to verify that there are the following
+three files:</p>
+
+<ul>
+  <li><code>lab00.py</code>: the starter file you just edited</li>
+  <li><code>ok</code>: our testing program</li>
+  <li><code>lab00.ok</code>: a configuration file for Ok</li>
+</ul>
+
+<p>Now, let's test our code to make sure it works. You can run <code>ok</code> with this
+command:</p>
+
+<pre><code>python3 ok</code></pre>
+
+<blockquote class="help-windows">
+
+<p>Remember, if you are using Windows and the <code>python3</code> command doesn't work, try using just
+<code>python</code> or <code>py</code>. See the the <a href="#install-python-3">install Python 3</a> section for more
+info and ask for help if you get stuck!</p>
+
+</blockquote>
+
+<p>If you wrote your code correctly, you should see a successful test:</p>
+
+<pre><code>=====================================================================
+Assignment: Lab 0
+Ok, version v1.11.1
+=====================================================================
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Running tests
+
+&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;
+Test summary
+    1 test cases passed! No cases failed.</code></pre>
+
+<p>If you didn't pass the tests, <code>ok</code> will instead show you something like this:</p>
+
+<pre><code>&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;
+Doctests for twenty_twenty
+
+&gt;&gt;&gt; from lab00 import *
+&gt;&gt;&gt; twenty_twenty()
+2013
+
+# Error: expected
+#     2020
+# but got
+#     2013
+
+&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;
+Test summary
+    0 test cases passed before encountering first failed test case</code></pre>
+
+<p>Fix your code in your text editor until the test passes.</p>
+
+<blockquote><p>Every time you run Ok, Ok will try to back up your work. Don't worry if it
+says that the "Connection timed out." We won't use your backups for grading.</p>
+
+<p>While <code>ok</code> is the primary assignment "autograder" in CS 61A,
+you may find it useful at times to write some of your own
+tests in the form of <a href="#understand-the-question">doctests</a>.
+Then, you can try them out using the <code>&#x2d;m doctest</code>
+<a href="#appendix-useful-python-command-line-options">option for Python</a>).</p></blockquote>
+
+
+<h2 id="submitting-the-assignment">Submitting the assignment</h2>
+
+
+<p>Now that you have completed your first CS 61A assignment, it's time to turn it
+in. Note that it is <strong>not</strong> sufficient to receive credit for an assignment simply
+by running the autograder per the last section. You must follow these steps to
+submit and get points!</p>
+
+
+<h3 id="step-1-submit-with-ok">Step 1: Submit with <code>ok</code></h3>
+
+
+<p>In your terminal, make sure you are in the directory that contains <code>ok</code>. If
+you aren't there yet, you can use this command:</p>
+
+<pre><code>cd ~/Desktop/cs61a/lab/lab00</code></pre>
+
+<p>Next, use <code>ok</code> with the <code>&#x2d;&#x2d;submit</code> option:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p>This will prompt you for an email address if you haven't run Ok before.
+Please follow <a href="/~cs61a/fa20/articles/using-ok.html#signing-in-with-ok">these directions</a>,
+and refer to the troubleshooting steps on that page if you encounter issues.
+After that, Ok will print out a message like the following:</p>
+
+<pre><code>Submitting... 100% complete
+Submission successful for user: ...
+URL: https://okpy.org/...</code></pre>
+
+
+<h3 id="step-2-verify-your-submission">Step 2: Verify your submission</h3>
+
+
+<p>You can follow the link that Ok printed out to see your final submission, or you
+can go to <a href="https://okpy.org">okpy.org</a>. You will be able to view your
+submission after you log in.</p>
+
+<blockquote><p>Make sure you log in with the same email you provided when running <code>ok</code> from
+your terminal!</p></blockquote>
+
+<p>You should see a successful submission for Lab 0.</p>
+
+<p><strong>Congratulations</strong>, you just submitted your first CS 61A assignment!</p>
+
+<blockquote><p>More information on Ok is available <a href="/~cs61a/fa20/articles/using-ok.html">here</a>. You can also use the <code>&#x2d;&#x2d;help</code> flag:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;help</code></pre>
+
+<p>This flag works just like it does for UNIX commands we used earlier.</p></blockquote>
+
+
+<h2 id="appendix-useful-python-command-line-options">Appendix: Useful Python command line options</h2>
+
+<p>When running a Python file, you can use options on the command line
+to inspect your code further. Here are a few that will come in handy.
+If you want to learn more about other Python command-line options, take a look
+at the <a href="https://docs.python.org/3.4/using/cmdline.html">documentation</a>.</p>
+
+<ul>
+  <li><p>Using no command-line options will run the code in the file you
+  provide and return you to the command line.</p>
+
+<pre><code>python3 </code></pre></li>
+  <li><p><strong><code>&#x2d;i</code></strong>: The <code>&#x2d;i</code> option runs your Python script, then opens an interactive
+  session. In an interactive session, you run Python code line by line and get
+  immediate feedback instead of running an entire file all at once. To exit,
+  type <code>exit()</code> into the interpreter prompt. You can also use the keyboard
+  shortcut <code>Ctrl&#x2d;D</code> on Linux/Mac machines or <code>Ctrl&#x2d;Z  Enter</code> on Windows.</p>
+
+  <p>If you edit the Python file while running it interactively, you will need to
+  exit and restart the interpreter in order for those changes to take effect.</p>
+
+<pre><code>python3 &#x2d;i </code></pre></li>
+  <li><p><strong><code>&#x2d;m doctest</code></strong>: Runs doctests in a particular file. Doctests are
+  surrounded by triple quotes (<code>&quot;&quot;&quot;</code>) within functions.</p>
+
+  <p>Each test in the file consists of <code>&gt;&gt;&gt;</code> followed by some Python code and
+  the expected output (though the <code>&gt;&gt;&gt;</code> are not seen in the output of the
+  doctest command).</p>
+
+<pre><code> python3 &#x2d;m doctest </code></pre></li>
+</ul>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#setup">Setup</a></li>
+  <ul>
+    <li><a href="#register-for-an-account">Register for an account</a></li>
+    <li><a href="#logging-into-your-class-account">Logging into your class account</a></li>
+    <ul>
+      <li><a href="#from-your-laptop">From your laptop</a></li>
+    </ul>
+    <li><a href="#changing-your-password">Changing your password</a></li>
+    <li><a href="#registering-your-account">Registering your account</a></li>
+    <li><a href="#logging-out">Logging out</a></li>
+    <li><a href="#install-a-terminal">Install a terminal</a></li>
+    <ul>
+      <li><a href="#macos-linux">macOS/Linux</a></li>
+      <li><a href="#windows">Windows</a></li>
+    </ul>
+    <li><a href="#install-python-3">Install Python 3</a></li>
+    <ul>
+      <li><a href="#linux">Linux</a></li>
+      <li><a href="#macos">macOS</a></li>
+      <li><a href="#windows">Windows</a></li>
+      <li><a href="#other">Other</a></li>
+    </ul>
+    <li><a href="#install-a-text-editor">Install a text editor</a></li>
+  </ul>
+  <li><a href="#using-the-terminal">Using the terminal</a></li>
+  <ul>
+    <li><a href="#python-interpreter">Python Interpreter</a></li>
+  </ul>
+  <li><a href="#organizing-your-files">Organizing your files</a></li>
+  <ul>
+    <li><a href="#directories">Directories</a></li>
+    <li><a href="#changing-directories">Changing directories</a></li>
+    <li><a href="#making-new-directories">Making new directories</a></li>
+    <li><a href="#downloading-the-assignment">Downloading the assignment</a></li>
+    <li><a href="#extracting-starter-files">Extracting starter files</a></li>
+    <li><a href="#moving-files">Moving files</a></li>
+    <li><a href="#summary">Summary</a></li>
+  </ul>
+  <li><a href="#python-basics">Python Basics</a></li>
+  <ul>
+    <li><a href="#expressions-and-statements">Expressions and statements</a></li>
+    <li><a href="#primitive-expressions">Primitive expressions</a></li>
+    <li><a href="#arithmetic-expressions">Arithmetic expressions</a></li>
+    <li><a href="#assignment-statements">Assignment statements</a></li>
+  </ul>
+  <li><a href="#doing-the-assignment">Doing the assignment</a></li>
+  <ul>
+    <li><a href="#unlocking-tests">Unlocking tests</a></li>
+    <li><a href="#understanding-problems">Understanding problems</a></li>
+    <li><a href="#writing-code">Writing code</a></li>
+    <li><a href="#running-tests">Running tests</a></li>
+  </ul>
+  <li><a href="#submitting-the-assignment">Submitting the assignment</a></li>
+  <ul>
+    <li><a href="#step-1-submit-with-ok">Step 1: Submit with <code>ok</code></a></li>
+    <li><a href="#step-2-verify-your-submission">Step 2: Verify your submission</a></li>
+  </ul>
+  <li><a href="#appendix-useful-python-command-line-options">Appendix: Useful Python command line options</a></li>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

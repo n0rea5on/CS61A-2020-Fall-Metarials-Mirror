@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link href="/~cs61a/fa20/assets/css/project.css" rel="stylesheet" type="text/css">
+
+
+    <title>
+Optional Contest: Scheme Art | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Optional Contest: Scheme Art
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="scheme_contest.zip" class="label label-outline">scheme_contest.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+<div class="haiku">
+  <blockquote><cite>
+The output is art,<br>
+But what about its source code?<br>
+It's just as abstract.
+</cite></blockquote>
+</div>
+
+    
+<h2 id="instructions">Instructions</h2>
+
+
+<blockquote><p>This contest is completely optional!</p></blockquote>
+
+<p>Entries are due at 11:59pm on Monday, 11/30.</p>
+
+<p>Here are the steps to enter the contest:</p>
+
+<ol>
+  <li>Download <a href="scheme_contest.zip">scheme_contest.zip</a>.</li>
+  <li><p>From your Scheme project, copy all the Python files to the scheme_contest
+  directory. This should be:</p>
+
+  <ul>
+    <li><code>buffer.py</code></li>
+    <li><code>scheme_builtins.py</code></li>
+    <li><code>scheme_reader.py</code></li>
+    <li><code>scheme.py</code></li>
+    <li><code>ucb.py</code></li>
+  </ul></li>
+  <li>Copy the latest version of <code>scheme_tokens.py</code> into the scheme_contest directory. You can find this file here: <a href="https://cs61a.org/proj/scheme/scheme_tokens.py">scheme_tokens.py</a></li>
+  <li>Complete the <code>contest.scm</code> file (you can render your drawing with <code>python3
+  scheme.py contest.scm &#x2d;&#x2d;pillow&#x2d;turtle &#x2d;&#x2d;turtle&#x2d;save&#x2d;path output</code>). For more information on drawing graphics, you may
+  find the <a href="/~cs61a/fa20/articles/scheme-builtins.html#turtle-graphics">Scheme Built-in Reference</a>
+  to be helpful.</li>
+  <li>Upload <code>output.png</code> which was created by the previous command.</li>
+</ol>
+
+<p>In <code>contest.scm</code>, the <code>draw</code> procedure should draw your entry and then exit on
+click.</p>
+
+<p>All entries, including their source code, will be distributed to your fellow
+students for voting. Please <strong>do not include personal info in your submission.</strong></p>
+
+<p>You are allowed to work with one other partner for this contest. You should add
+your partner on Ok and make a single submission.</p>
+
+<blockquote><p><strong>Important:</strong> when you are ready to submit, follow <strong>both</strong> these steps:</p>
+
+<ul>
+  <li>Run <code>python3 ok &#x2d;&#x2d;submit</code> to submit your <code>contest.scm</code> file to Ok.</li>
+  <li>Fill out the <a href="http://links.cs61a.org/scheme-contest">contest form</a>. Make
+  sure the information here is correct, since we'll be using it to generate
+  your entry in the Scheme art gallery.</li>
+</ul>
+
+<p><strong>Troubleshooting:</strong> Did you complete Scheme Challenge Version, or are you experiencing errors when trying to render your artwork?
+If so, check out this piazza post: <a href="https://piazza.com/class/kdz4wzqnb6052o?cid=4028">troubleshooting</a></p></blockquote>
+
+
+<h2 id="contest-description">Contest Description</h2>
+
+
+<p>Create a visualization of an iterative or recursive process of your choosing,
+using turtle graphics. Your implementation must be written entirely in Scheme
+using the interpreter you have built. All computation must be done in Scheme.</p>
+
+<p>We will have two categories of submissions:</p>
+
+<ul>
+  <li><em>Featherweight</em>: Fewer than 512 Scheme tokens (including parentheses)</li>
+  <li><em>Heavyweight</em>: Fewer than 4096 Scheme tokens (including parentheses)</li>
+</ul>
+
+<p><strong>No single token may contain more than 50 characters.</strong> If your entry requires
+more tokens than are allowed in the heavyweight category, please contact the
+course staff for special permission to submit an even longer entry.</p>
+
+<p>Extra credit will be awarded as follows:</p>
+
+<ul>
+  <li>3 points to 1st place in each category</li>
+  <li>2 points to 2nd place in each category</li>
+  <li>1 points to 3rd place in each category</li>
+</ul>
+
+<p><strong>You can check the number of tokens in a Scheme file called <code>contest.scm</code> by
+running the following command using the latest version of
+<a href="https://cs61a.org/proj/scheme/scheme_tokens.py">scheme_tokens.py</a></strong>:</p>
+
+<pre><code>python3 scheme_tokens.py contest.scm</code></pre>
+
+<p>Entries (code and images) will be posted online, and winners will be selected
+by popular vote. The top three entries in each category will be announced on Piazza after voting is closed.</p>
+
+<p>To improve your chance of success, you are welcome to include a title and
+descriptive <a href="http://en.wikipedia.org/wiki/Haiku">haiku</a> in the comments of your
+entry, which will be included in the voting.</p>
+
+
+<h2 id="contest-rules">Contest Rules</h2>
+
+
+<p>Before submission, please ensure that your entry abides by these guidelines:</p>
+
+<ul>
+  <li>Entries must not contain tokens that contain more than 50 characters and must be submitted under the correct category (featherweight/heavyweight).</li>
+  <li>Entries must not contain any political content.</li>
+  <li>Entries must not contain any offensive, sexually explicit, or racially, ethically, or otherwise objectionable content.</li>
+  <li>Entries must not contain any personal information.</li>
+</ul>
+
+<p>We reserve the right to disqualify any entries that do not follow these guidelines.</p>
+
+
+<h2 id="past-entries">Past Entries</h2>
+
+
+<p>For inspiration, you can peruse these galleries of past entries.
+Please note that certain submissions may not follow the current guidelines.</p>
+
+<ul>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/su20/proj/scheme_gallery/">Summer 2020</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/sp20/proj/scheme_gallery/">Spring 2020</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/fa19/proj/scheme_gallery/">Fall 2019</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/su19/proj/scheme_gallery/">Summer 2019</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/sp19/proj/scheme_gallery/">Spring 2019</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/fa18/proj/scheme_gallery/">Fall 2018</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/su18/proj/scheme_gallery/">Summer 2018</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/sp18/proj/scheme_gallery/">Spring 2018</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/fa17/proj/scheme_gallery/">Fall 2017</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/su17/proj/scheme_gallery/">Summer 2017</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/sp17/proj/scheme_gallery/">Spring 2017</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/fa16/proj/scheme_gallery/">Fall 2016</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/su16/proj/scheme_gallery/">Summer 2016</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/sp16/proj/scheme_gallery/">Spring 2016</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/fa15/proj/scheme_gallery/">Fall 2015</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/sp15/proj/scheme-gallery/">Spring 2015</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/fa14/proj/scheme_gallery/">Fall 2014</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/sp14/proj/scheme_contest/scheme_contest.html">Spring 2014</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/fa13/proj/scheme_contest_gallery/scheme_contest_gallery.html">Fall 2013</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/sp13/projects/scheme_contest_gallery/scheme_contest.html">Spring 2013</a></li>
+  <li><a href="http://inst.eecs.berkeley.edu/~cs61a/fa12/projects/scheme_contest.html">Fall 2012</a></li>
+</ul>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#instructions">Instructions</a></li>
+  <li><a href="#contest-description">Contest Description</a></li>
+  <li><a href="#contest-rules">Contest Rules</a></li>
+  <li><a href="#past-entries">Past Entries</a></li>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

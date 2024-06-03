@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link href="/~cs61a/fa20/assets/css/project.css" rel="stylesheet" type="text/css">
+
+
+    <title>
+Project 1: The Game of Hog | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Project 1: The Game of Hog
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hog.zip" class="label label-outline">hog.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+<div class="haiku">
+  <blockquote><p><img class="img-responsive center-block" src="assets/icon.gif" alt="5-sided die"></p>
+
+<cite>
+  I know! I'll use my<br/>
+  Higher-order functions to<br/>
+  Order higher rolls.
+</cite></blockquote>
+</div>
+
+    
+
+<h2 id="introduction">Introduction</h2>
+
+
+<blockquote><p><strong>Important submission note:</strong> For full credit:</p>
+
+<ul>
+  <li>Submit with Phase 1 complete by <strong>Tuesday, September 8</strong> (worth 1 pt).</li>
+  <li>Submit with all phases complete by <strong>Friday, September 11</strong>.</li>
+</ul>
+
+<p>Although Phase 1 is due only a few days before the rest, you should not put
+off completing Phase 1. We recommend starting and finishing Phase 1 as soon as
+possible.</p>
+
+<p>The entire project can be completed with a partner.</p>
+
+<p>You can get 1 bonus point by submitting the entire project by
+<strong>Thursday, September 10</strong>.</p></blockquote>
+
+<p>In this project, you will develop a simulator and multiple strategies
+for the dice game Hog. You will need to use <em>control statements</em> and
+<em>higher-order functions</em> together, as described in Sections 1.2 through
+1.6 of <a href="http://composingprograms.com">Composing Programs</a>.</p>
+
+
+<h3 id="rules">Rules</h3>
+
+
+<p>In Hog, two players alternate turns trying to be the first to end a turn with
+at least 100 total points. On each turn, the current player chooses some number
+of dice to roll, up to 10. That player's score for the turn is the sum of the
+dice outcomes. However, a player who rolls too many dice risks:</p>
+
+<ul>
+  <li><strong>Pig Out</strong>. If any of the dice outcomes is a 1, the current player's score
+  for the turn is 1.</li>
+</ul>
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Examples<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<ul>
+  <li><em>Example 1</em>: The current player rolls 7 dice, 5 of which are 1's. They
+  score 1 point for the turn.</li>
+  <li><em>Example 2</em>: The current player rolls 4 dice, all of which are 3's. Since
+  Pig Out did not occur, they score 12 points for the turn.</li>
+</ul>
+
+</div>
+
+<p>In a normal game of Hog, those are all the rules. To spice up the game, we'll
+include some special rules:</p>
+
+<ul>
+  <li><strong>Free Bacon</strong>. A player who chooses to roll zero dice scores <code>k+3</code> points,
+  where <code>k</code> is the <code>n</code>th digit of pi after the decimal point, and <code>n</code> is the
+  total score of their opponent. As a special case, if the opponent's score is
+  <code>n = 0</code>, then <code>k = 3</code> (the digit of pi before the decimal point).</li>
+</ul>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Examples<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+<ul>
+  <li><em>Example 1</em>: The opponent has a score of 0, and the current player rolls
+  zero dice. The current player will receive <code>3 + 3 = 6</code> points.</li>
+  <li><em>Example 2</em>: The opponent has a score of 1, and the current player rolls
+  zero dice. The current player will receive <code>1 + 3 = 4</code> points.</li>
+  <li><em>Example 3</em>: The opponent has a score of 2, and the current player rolls
+  zero dice. The current player will receive <code>4 + 3 = 7</code> points.</li>
+  <li><em>Example 4</em>: The opponent has a score of 42, and the current player rolls
+  zero dice. The current player will receive <code>9 + 3 = 12</code> points.</li>
+</ul>
+
+</div>
+
+<ul>
+  <li><strong>Swine Align</strong>. After points for the turn are added to the current player's
+  score, if both players have a positive score and the Greatest Common Divisor
+  (GCD) of the current player's score and the opponent's score is at least 10,
+  take another turn.</li>
+</ul>
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Examples<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+<ul>
+  <li><em>Example 1</em>: At the end of the first player's turn, the players have scores
+  of 8 and 36. The GCD of the scores is 4, so the first player does not take
+  another turn due to swine align.</li>
+  <li><em>Example 2</em>: At the end of the first player's turn, the players have scores
+  of 20 and 30. The GCD of the scores is 10, so the first player takes an
+  extra turn.</li>
+  <li><em>Example 3</em>: At the end of the first player's turn, the players have scores
+  of 24 and 36. The GCD of the scores is 12, so the first player takes an
+  extra turn. The first player rolls a 12 and the scores are now 36 and 36.
+  The GCD of the scores is 36, so the first player takes yet another turn.</li>
+  <li><em>Example 4</em>: At the end of the first player's turn, the players have scores
+  of 15 and 0. Swine align only applies when both player scores are positive
+  (not zero), so the first player does not take another turn due to swine
+  align.</li>
+</ul>
+
+</div>
+
+<ul>
+  <li><strong>Pig Pass</strong>. After points for the turn are added to the current player's
+  score, if the current player's score is lower than the opponent's score and
+  the difference between them is less than 3, the current player takes another
+  turn.</li>
+</ul>
+
+
+        <button id='toggle-4' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Examples<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-4">
+
+<ul>
+  <li><em>Example 1</em>: At the end of the first player's turn, The opponent has a score
+  of 10 and the current player has a score of 11. Since 11 > 10, the current
+  player does not take another turn due to Pig Pass.</li>
+  <li><em>Example 2</em>: At the end of the first player's turn, The opponent has a score
+  of 10 and the current player has a score of 7. Because <code>10 &#x2d; 7 = 3 &gt;= 3</code>,
+  the current player does not take another turn due to Pig Passn.</li>
+  <li><em>Example 3</em>: At the end of the first player's turn, The opponent has a score
+  of 30 and the current player has a score of 28. Because <code>30 &#x2d; 28 = 2 &lt; 3</code>,
+  the current player takes another turn.</li>
+  <li><em>Example 4</em>: At the end of the first player's turn, The opponent has a score
+  of 30 and the current player has a score of 28. Like in Example 3, the
+  current player takes another turn. If the current player then rolls a 1 and
+  now has a score of 29, Pig Pass activates again and the current player takes
+  yet another turn.</li>
+</ul>
+
+</div>
+
+
+<h2 id="final-product">Final Product</h2>
+
+
+<p>Our staff solution to the project can be played at
+<a href="https://hog.cs61a.org">hog.cs61a.org</a> -- try it out! When you finish the
+project, you'll have implemented a significant part of this game yourself.</p>
+
+
+<h2 id="download-starter-files">Download starter files</h2>
+
+
+<p>To get started, download all of the project code as a <a href="hog.zip">zip archive</a>.
+Below is a list of all the files you will see in the archive. However, you only
+have to make changes to <code>hog.py</code>.</p>
+
+<ul>
+  <li><code>hog.py</code>: A starter implementation of Hog</li>
+  <li><code>dice.py</code>: Functions for rolling dice</li>
+  <li><code>hog_gui.py</code>: A graphical user interface (GUI) for Hog</li>
+  <li><code>ucb.py</code>: Utility functions for CS 61A</li>
+  <li><code>ok</code>: CS 61A autograder</li>
+  <li><code>tests</code>: A directory of tests used by <code>ok</code></li>
+  <li><code>gui_files</code>: A directory of various things used by the web GUI</li>
+</ul>
+
+
+
+
+<h2 id="logistics">Logistics</h2>
+
+
+
+<!-- <p>Remember that you can earn an additional bonus point by submitting the
+  project at least 24 hours before the deadline.</p> -->
+
+
+
+<p>The project is worth 25 points. 22 points are assigned for correctness, 1 point for
+submitting Part I by the checkpoint date, and 2 points for the overall
+<a href="https://cs61a.org//articles/composition.html">composition</a>.</p>
+
+
+<p>You will turn in the following files:</p>
+
+<ul>
+  <li><code>hog.py</code></li>
+</ul>
+
+<p>You do not need to modify or turn in any other files to complete the
+project. To submit the project, run the following command:</p>
+
+<pre><code>python3 ok --submit</code></pre>
+
+<p>You will be able to view your submissions on the <a
+  href="http://ok.cs61a.org">Ok dashboard</a>.</p>
+
+<p>For the functions that we ask you to complete, there may be some
+initial code that we provide. If you would rather not use that code,
+feel free to delete it and start from scratch. You may also add new
+function definitions as you see fit.</p>
+
+<p>However, please do <b>not</b> modify any other functions.  Doing so may
+result in your code failing our autograder tests. Also, please do not
+change any function signatures (names, argument order, or number of
+arguments).</p>
+
+
+
+<p>Throughout this project, you should be testing the correctness of your code.
+It is good practice to test often, so that it is easy to isolate any problems.
+However, you should not be testing <i>too</i> often, to allow yourself time to
+think through problems.</p>
+
+<p>We have provided an <b>autograder</b> called <code>ok</code> to help you
+with testing your code and tracking your progress. The first time you run the
+autograder, you will be asked to <b>log in with your Ok account using your web
+browser</b>. Please do so. Each time you run <code>ok</code>, it will back up
+your work and progress on our servers.</p>
+
+<p>The primary purpose of <code>ok</code> is to test your implementations.</p>
+
+<!-- <p>First, some of the test cases are <i>locked</i>. To unlock tests, run the
+following command from your terminal:</p>
+
+<pre><code>python3 ok -u</code></pre>
+
+<p>This command will start an interactive prompt that looks like:</p>
+
+<pre>
+=====================================================================
+Assignment: The Game of Hog
+Ok, version ...
+=====================================================================
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unlocking tests
+
+At each "? ", type what you would expect the output to be.
+Type exit() to quit
+
+---------------------------------------------------------------------
+Question 0 &gt; Suite 1 &gt; Case 1
+(cases remaining: 1)
+
+&gt;&gt;&gt; Code here
+?
+</pre>
+
+<p>At the <code>?</code>, you can type what you expect the output to be. If you
+are correct, then this test case will be available the next time you run the
+autograder.</p>
+
+<p>The idea is to understand <i>conceptually</i> what your program should do
+first, before you start writing any code.</p>
+
+<p>Once you have unlocked some tests and written some code, you can check the
+correctness of your program using the tests that you have unlocked:</p>
+
+<pre>python3 ok</pre>
+
+<p>Most of the time, you will want to focus on a particular question. Use the
+<code>-q</code> option as directed in the problems below.</p>  -->
+
+<!-- <p>Second, there may be some test cases that are <i>hidden</i>. These test cases are
+<b>not</b> run by the command:</p> -->
+
+<!--<pre>python3 ok</pre>-->
+
+<!-- <p>They are only run when you submit:</p> -->
+
+<!-- <pre>python3 ok --submit</pre> -->
+
+<!-- <p> We keep test cases hidden to ensure that you write your code with the intention
+of solving the question at hand, not purely to pass the given tests. The hidden
+tests will be run when you submit your project. You will receive an email with part of
+the autograder results after submitting. However, the autograder has a 15 minute
+cooldown period. If you submit before 15 minutes have passed, the autograder will
+not run.</p> -->
+
+<p>We recommend that you submit <b>after you finish each
+problem</b>. Only your last submission will be graded. It is also useful for us
+to have more backups of your code in case you run into a submission issue. <b>If you forget to submit, your last backup will be automatically converted to a submission. </b></p>
+
+<!--<p>After you run this command, you will receive an email (to the address-->
+<!--that you used to sign up for Ok) that has the output from all <i>failed</i>-->
+<!--unlocked tests, including hidden tests, along with your score at the bottom. You-->
+<!--can continue submitting until you pass all the tests. However, you will receive-->
+<!--<b>at most one email every half hour</b>.</p>-->
+
+<!--<p>This buffer period is meant for you and your partner to try and understand-->
+<!--where your error comes from, and take some time to think through your code. We-->
+<!--encourage you to do this for all projects.</p>-->
+
+<!---
+<p>If you are trying to debug a test failure, you can launch an interactive session
+after the test is run with:</p>
+
+<pre><code>python3 ok &#x2d;q 05 &#x2d;i</code></pre>
+
+<p>This will run the tests and launch an interactive session if a test does not
+pass.</p>
+
+<pre><code>=====================================================================
+Assignment: Project 1: Hog
+Ok, version ....
+=====================================================================
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Running tests
+
+&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;
+Question ... &gt; Suite ... &gt; Case ...
+
+&gt;&gt;&gt; the_test()
+"expected value"
+
+# Error: expected
+#     "expected value"
+# but got
+#     None
+
+# Interactive console. Type exit() to quit
+&gt;&gt;&gt;</code></pre>
+-->
+
+
+<!--- <p>The <code>tests</code> folder is used to store autograder tests, so
+<b>do not modify it</b>. You may lose all your unlocking progress if you
+do. If you need to get a fresh copy, you can download the
+<a href="hog.zip">zip archive</a> and copy it over, but you
+will need to start unlocking from scratch.</p> -->
+
+<p>If you do not want us to record a backup of your work or information about
+your progress, you can run
+
+<pre>python3 ok --local</pre>
+
+
+With this option, no information will be sent to our course
+servers.
+
+If you want to test your code interactively, you can run
+
+<pre> python3 ok -q [question number] -i </pre>
+
+with the appropriate question number (e.g. <code>01</code>) inserted.
+This will run the tests for that question until the first one you failed,
+then give you a chance to test the functions you wrote interactively.</p>
+
+<p>You can also use the debug printing feature in OK by writing
+
+<pre> print("DEBUG:", x) </pre>
+
+which will produce an output in your terminal without causing OK tests to fail
+with extra output.
+
+<h2 id="graphical-user-interface">Graphical User Interface</h2>
+
+
+<p>A <strong>graphical user interface</strong> (GUI, for short) is provided for you.
+At the moment, it doesn't work because you haven't implemented the
+game logic.  Once you complete the <code>play</code> function, you will be able
+to play a fully interactive version of Hog!</p>
+
+<p>Once you've done that, you can run the GUI from your terminal:</p>
+
+<pre><code>python3 hog_gui.py</code></pre>
+
+<p>The GUI is an <a href="https://github.com/Cal-CS-61A-Staff/hog-gui">open-source project hosted on Github</a>.</p>
+
+
+<h2 id="phase-1-simulator">Phase 1: Simulator</h2>
+
+
+<p>In the first phase, you will develop a simulator for the game of Hog.</p>
+
+
+<h3 id="problem-0-0-pt">Problem 0 (0 pt)</h3>
+
+
+<p>The <code>dice.py</code> file represents dice using non-pure zero-argument functions. These
+functions are non-pure because they may have different return values each time
+they are called. The documentation of <code>dice.py</code> describes the two different
+types of dice used in the project:</p>
+
+<ul>
+  <li>Dice can be fair, meaning that they produce each possible outcome with equal
+  probability. Example: <code>six_sided</code>.</li>
+  <li>For testing functions that use dice, deterministic test dice always cycle
+  through a fixed sequence of values that are passed as arguments to the
+  <code>make_test_dice</code> function.</li>
+</ul>
+
+<p>Before writing any code, read over the <code>dice.py</code> file and check your
+understanding by unlocking the following tests.</p>
+
+<pre><code class="hljs">python3 ok -q 00 -u</code></pre>
+
+<p>This should display a prompt that looks like this:</p>
+
+<pre><code>=====================================================================
+Assignment: Project 1: Hog
+Ok, version v1.5.2
+=====================================================================
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unlocking tests
+
+At each &quot;? &quot;, type what you would expect the output to be.
+Type exit() to quit
+
+&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;
+Question 0 &gt; Suite 1 &gt; Case 1
+(cases remaining: 1)
+
+&gt;&gt;&gt; test_dice = make_test_dice(4, 1, 2)
+&gt;&gt;&gt; test_dice()
+?</code></pre>
+
+<p>You should type in what you expect the output to be. To do so, you
+need to first figure out what <code>test_dice</code> will do, based on the
+description above.</p>
+
+<p>You can exit the unlocker by typing <code>exit()</code>. <strong>Typing Ctrl-C on Windows to exit
+out of the unlocker has been known to cause problems, so avoid doing so.</strong></p>
+
+
+        <button id='toggle-5' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-5">
+
+<h3 id="problem-0-hint-video">Problem 0 Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/skF68ta4-OY"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h3 id="problem-1-2-pt">Problem 1 (2 pt)</h3>
+
+
+<p>Implement the <code>roll_dice</code> function in <code>hog.py</code>. It takes two arguments: a
+positive integer called <code>num_rolls</code> giving the number of dice to roll and a
+<code>dice</code> function. It returns the number of points scored by rolling the dice that
+number of times in a turn: either the sum of the outcomes or 1 (<em>Pig Out</em>).</p>
+
+<blockquote><p>The Pig Out rule:</p></blockquote>
+
+<ul>
+  <li><p><strong>Pig Out</strong>. If any of the dice outcomes is a 1, the current player's score
+  for the turn is 1.</p>
+
+  
+        <button id='toggle-6' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Examples<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-6">
+
+  <ul>
+    <li><em>Example 1</em>: The current player rolls 7 dice, 5 of which are 1's. They
+    score 1 point for the turn.</li>
+    <li><em>Example 2</em>: The current player rolls 4 dice, all of which are 3's. Since
+    Pig Out did not occur, they score 12 points for the turn.</li>
+  </ul>
+
+  </div></li>
+</ul>
+
+<p>To obtain a single outcome of a dice roll, call <code>dice()</code>. You should call
+<code>dice()</code> exactly <code>num_rolls</code> times in the body of <code>roll_dice</code>. <strong>Remember to call
+<code>dice()</code> exactly <code>num_rolls</code> times even if *Pig Out* happens in the middle of
+rolling.</strong> In this way, you correctly simulate rolling all the dice together.</p>
+
+<p><strong>Understand the problem</strong>:</p>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the
+question. <strong>Note: you will not be able to test your code using OK until you
+unlock the test cases for the corresponding question</strong>.</p>
+
+<pre><code>python3 ok &#x2d;q 01 &#x2d;u</code></pre>
+
+<p><strong>Write code and check your work</strong>:</p>
+
+<p>Once you are done unlocking, begin implementing your solution. You can check
+your correctness with:</p>
+
+<pre><code>python3 ok &#x2d;q 01</code></pre>
+
+
+        <button id='toggle-7' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-7">
+
+<h3 id="problem-1-hint-video">Problem 1 Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/cDBAo6OLTyA"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+        <button id='toggle-8' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Debugging Tips<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-8">
+
+<p>If the tests don't pass, it's time to debug. You can observe the behavior of
+your function using Python directly. First, start the Python interpreter and
+load the <code>hog.py</code> file.</p>
+
+<pre><code>python3 &#x2d;i hog.py</code></pre>
+
+<p>Then, you can call your <code>roll_dice</code> function on any number of dice you want.
+The <code>roll_dice</code> function has a <a href="http://composingprograms.com/pages/14-designing-functions.html#default-argument-values">default argument value</a> for <code>dice</code> that is
+a random six-sided dice function. Therefore, the following call to <code>roll_dice</code>
+simulates rolling four fair six-sided dice.</p>
+
+<pre><code>&gt;&gt;&gt; roll_dice(4)</code></pre>
+
+<p>You will find that the previous expression may have a different result each time
+you call it, since it is simulating random dice rolls. You can also use test dice
+that fix the outcomes of the dice in advance. For example, rolling twice when you
+know that the dice will come up 3 and 4 should give a total outcome of 7.</p>
+
+<pre><code>&gt;&gt;&gt; fixed_dice = make_test_dice(3, 4)
+&gt;&gt;&gt; roll_dice(2, fixed_dice)
+7</code></pre>
+
+<blockquote><p>On most systems, you can evaluate the same expression again by pressing the up
+arrow, then pressing enter or return. To evaluate earlier commands, press the
+up arrow repeatedly.</p>
+
+<p>If you find a problem, you need to change your <code>hog.py</code> file, save it, quit
+Python, start Python again, and then start evaluating expressions. Pressing
+the up arrow should give you access to your previous expressions, even after
+restarting Python.</p></blockquote>
+
+<p>Continue debugging your code and running the <code>ok</code> tests until they all pass. You
+should follow this same procedure of understanding the problem, implementing a
+solution, testing, and debugging for all the problems in this project.</p>
+
+<blockquote><p>One more debugging tip: to start the interactive interpreter automatically
+upon failing an <code>ok</code> test, use <code>&#x2d;i</code>. For example, <code>python3 ok &#x2d;q 01 &#x2d;i</code> will
+run the tests for question 1, then start an interactive interpreter with
+<code>hog.py</code> loaded if a test fails.</p></blockquote>
+
+</div>
+
+
+<h3 id="problem-2-1-pt">Problem 2 (1 pt)</h3>
+
+
+<p>Implement <code>free_bacon</code>, which takes the opponent's current <code>score</code> and returns
+the number of points scored by rolling 0 dice. Assume that <code>score</code> is less than
+100.</p>
+
+<blockquote><p>The Free Bacon rule:</p></blockquote>
+
+<ul>
+  <li><p><strong>Free Bacon</strong>. A player who chooses to roll zero dice scores <code>k+3</code> points,
+   where <code>k</code> is the <code>n</code>th digit of pi after the decimal point, and <code>n</code> is the
+   total score of their opponent. As a special case, if the opponent's score is
+   <code>n = 0</code>, then <code>k = 3</code> (the digit of pi before the decimal point).</p>
+
+  
+        <button id='toggle-9' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Examples<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-9">
+
+  <ul>
+    <li><em>Example 1</em>: The opponent has a score of 0, and the current player rolls
+    zero dice. The current player will receive <code>3 + 3 = 6</code> points.</li>
+    <li><em>Example 2</em>: The opponent has a score of 1, and the current player rolls
+    zero dice. The current player will receive <code>1 + 3 = 4</code> points.</li>
+    <li><em>Example 3</em>: The opponent has a score of 2, and the current player rolls
+    zero dice. The current player will receive <code>4 + 3 = 7</code> points.</li>
+    <li><em>Example 4</em>: The opponent has a score of 42, and the current player rolls
+    zero dice. The current player will receive <code>9 + 3 = 12</code> points.</li>
+  </ul>
+
+  </div></li>
+</ul>
+
+<p>The provided code includes the <code>FIRST_101_DIGITS_OF_PI</code> as an integer, which is
+stored locally as <code>pi</code>. One way to solve this problem is to trim <code>pi</code> until it
+has only <code>score+1</code> digits, then return 3 more than the last digit of <code>pi</code>.</p>
+
+<p><strong>Hint:</strong> An integer <code>n</code> has <code>k+1</code> digits if <code>n</code> is less than <code>pow(10, k+1)</code> but
+greater than or equal to <code>pow(10, k)</code>.</p>
+
+<p>You are allowed to implement this function in any way you want. You don't have
+to follow this recommended method or use the provided starter code. However,
+<strong>You may not use for loops or square brackets <code>[</code> <code>]</code> in your implementation, since we
+haven't covered those yet.</strong></p>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 02 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 02</code></pre>
+
+<p>You can also test <code>free_bacon</code> interactively by entering <code>python3 &#x2d;i hog.py</code> in
+the terminal and then calling <code>free_bacon</code> with various inputs.</p>
+
+
+        <button id='toggle-10' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-10">
+
+<h3 id="problem-2-hint-video">Problem 2 Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/s4hM5HqMA2c"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h3 id="problem-3-2-pt">Problem 3 (2 pt)</h3>
+
+
+<p>Implement the <code>take_turn</code> function, which returns the number of points scored
+for a turn by rolling the given <code>dice</code> <code>num_rolls</code> times.</p>
+
+<p>Your implementation of <code>take_turn</code> should call both <code>roll_dice</code> and <code>free_bacon</code>
+when possible.</p>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 03 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 03</code></pre>
+
+
+        <button id='toggle-11' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-11">
+
+<h3 id="problem-3-hint-video">Problem 3 Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/Rg_MMYioXEM"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h3 id="problem-4a-1-pt">Problem 4a (1 pt)</h3>
+
+
+<p>Implement <code>swine_align</code>, which takes the current player and opponent scores and
+returns whether the current player will take another turn due to Swine Align.
+<strong>Note:</strong> In the special case where one score is 0, return <code>False</code>.</p>
+
+<blockquote><p>The Swine Align rule:</p></blockquote>
+
+<ul>
+  <li><p><strong>Swine Align</strong>. After points for the turn are added to the current player's
+  score, if both players have a positive score and the Greatest Common Divisor
+  (GCD) of the current player's score and the opponent's score is at least 10,
+  take another turn.</p>
+
+  
+        <button id='toggle-12' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Examples<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-12">
+
+  <ul>
+    <li><em>Example 1</em>: At the end of the first player's turn, the players have scores
+    of 8 and 36. The GCD of the scores is 4, so the first player does not take
+    another turn due to swine align.</li>
+    <li><em>Example 2</em>: At the end of the first player's turn, the players have scores
+    of 20 and 30. The GCD of the scores is 10, so the first player takes an
+    extra turn.</li>
+    <li><em>Example 3</em>: At the end of the first player's turn, the players have scores
+    of 24 and 36. The GCD of the scores is 12, so the first player takes an
+    extra turn. The first player rolls a 12 and the scores are now 36 and 36.
+    The GCD of the scores is 36, so the first player takes yet another turn.</li>
+    <li><em>Example 4</em>: At the end of the first player's turn, the players have scores
+    of 15 and 0. Swine align only applies when both player scores are positive
+    (not zero), so the first player does not take another turn due to swine
+    align.</li>
+  </ul>
+
+  </div></li>
+</ul>
+
+<blockquote><p><strong>Hint</strong>: The expression <code>n % d == 0</code> is true if and only if <code>n</code> is a multiple
+of <code>d</code>.</p></blockquote>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 04a -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 04a</code></pre>
+
+
+        <button id='toggle-13' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-13">
+
+<h3 id="problem-4a-hint-video">Problem 4a Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/tCHw2Dn8Ruc"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h3 id="problem-4b-1-pt">Problem 4b (1 pt)</h3>
+
+
+<p>Implement <code>pig_pass</code>, which takes the current player and opponent scores and
+returns whether the current player will take an extra turn due to Pig Pass.</p>
+
+<blockquote><p>The Pig Pass rule:</p></blockquote>
+
+<ul>
+  <li><p><strong>Pig Pass</strong>. After points for the turn are added to the current player's
+  score, if the current player's score is lower than the opponent's score and
+  the difference between them is less than 3, the current player takes another
+  turn.</p>
+
+  
+        <button id='toggle-14' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Examples<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-14">
+
+  <ul>
+    <li><em>Example 1</em>: At the end of the first player's turn, The opponent has a score
+    of 10 and the current player has a score of 11. Since 11 > 10, the current
+    player does not take another turn due to Pig Pass.</li>
+    <li><em>Example 2</em>: At the end of the first player's turn, The opponent has a score
+    of 10 and the current player has a score of 7. Because <code>10 &#x2d; 7 = 3 &gt;= 3</code>,
+    the current player does not take another turn due to Pig Passn.</li>
+    <li><em>Example 3</em>: At the end of the first player's turn, The opponent has a score
+    of 30 and the current player has a score of 28. Because <code>30 &#x2d; 28 = 2 &lt; 3</code>,
+    the current player takes another turn.</li>
+    <li><em>Example 4</em>: At the end of the first player's turn, The opponent has a score
+    of 30 and the current player has a score of 28. Like in Example 3, the
+    current player takes another turn. If the current player then rolls a 1 and
+    now has a score of 29, Pig Pass activates again and the current player takes
+    yet another turn.</li>
+  </ul>
+
+  </div></li>
+</ul>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 04b -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 04b</code></pre>
+
+
+        <button id='toggle-15' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-15">
+
+<h3 id="problem-4b-hint-video">Problem 4b Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/oYDbmJvun_M"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h3 id="problem-5-3-pt">Problem 5 (3 pt)</h3>
+
+
+<p>Implement the <code>play</code> function, which simulates a full game of Hog. Players
+alternate turns rolling dice until one of the players reaches the <code>goal</code> score.</p>
+
+<p>To determine how many dice are rolled each turn, each player uses their
+respective strategy (Player 0 uses <code>strategy0</code> and Player 1 uses <code>strategy1</code>). A
+<em>strategy</em> is a function that, given a player's score and their opponent's
+score, returns the number of dice that the current player will roll in the turn.
+<strong>Only call a strategy function once per turn (or risk breaking the GUI).</strong>
+Don't worry about implementing strategies yet. You'll do that in Phase 3.</p>
+
+<p>When the game ends, <code>play</code> returns the final total scores of both players, with
+Player 0's score first and Player 1's score second.</p>
+
+<p>Hints:</p>
+
+<ul>
+  <li>You should call the functions you have implemented already.</li>
+  <li>Call <code>take_turn</code> with three arguments. Only call <code>take_turn</code> once per turn.</li>
+  <li>Call <code>extra_turn</code> to determine if the current player will take another turn,
+  either due to Swine Align or Pig Pass.</li>
+  <li>You can get the number of the other player (either 0 or 1) by calling the
+  provided function <code>other</code>.</li>
+  <li>You can ignore the <code>say</code> argument to the <code>play</code> function for now. You will use
+  it in Phase 2 of the project.</li>
+</ul>
+
+<p><strong>Rules Clarification</strong>: A player can take more than two consecutive turns. For
+example, if the score after their first turn is 10 vs 20, they go again due to
+Swine Align. If they score 8 points and now the score is 18 vs 20, they go a
+third time due to Pig Pass. If they score 12 points and now the score is 30 vs
+20, they go a fourth time in a row.</p>
+
+<p><strong>Note</strong>: It's not mathematically possible for Swine Align and Pig Pass to be
+active simultaneously.</p>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 05 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 05</code></pre>
+
+<p>Once you are finished, you will be able to play a graphical version of
+the game. We have provided a file called <code>hog_gui.py</code> that
+you can run from the terminal:</p>
+
+<pre><code>python3 hog_gui.py</code></pre>
+
+<p>The GUI relies on your implementation, so if you have any bugs in your
+code, they will be reflected in the GUI. This means you can also use
+the GUI as a debugging tool; however, it's better to run the tests
+first.</p>
+
+<p><strong>Note:</strong> The hog gui now works! To get an updated version, re-download the zip file from this webpage and drag over the new copies of <code>hog_gui.py</code> and <code>gui_files/</code>.</p>
+
+<p>Make sure to submit your work so far before the checkpoint deadline:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p>Check to make sure that you did all the problems in Phase 1:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;score</code></pre>
+
+
+        <button id='toggle-16' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-16">
+
+<h3 id="problem-5-hint-video">Problem 5 Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/P2UhBrv-bSM"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+<p>Congratulations! You have finished Phase 1 of this project!</p>
+
+
+<h2 id="phase-2-commentary">Phase 2: Commentary</h2>
+
+
+<p>In the second phase, you will implement commentary functions that print remarks
+about the game after each turn, such as, <code>&quot;22 points! That&#x27;s the biggest gain yet
+for Player 1.&quot;</code></p>
+
+<p>A commentary function takes two arguments, Player 0's current score and Player
+1's current score. It can print out commentary based on either or both current
+scores and any other information in its parent environment. Since commentary can
+differ from turn to turn depending on the current point situation in the game, a
+commentary function always returns another commentary function to be called on
+the next turn. The only side effect of a commentary function should be to print.</p>
+
+
+<h3 id="commentary-examples">Commentary examples</h3>
+
+
+<p>The function <code>say_scores</code> in <code>hog.py</code> is an example of a commentary function
+that simply announces both players' scores. Note that <code>say_scores</code> returns
+itself, meaning that the same commentary function will be called each turn.</p>
+
+<pre><code>def say_scores(score0, score1):
+    &quot;&quot;&quot;A commentary function that announces the score for each player.&quot;&quot;&quot;
+    print(&quot;Player 0 now has&quot;, score0, &quot;and Player 1 now has&quot;, score1)
+    return say_scores</code></pre>
+
+<p>The function <code>announce_lead_changes</code> is an example of a higher-order function
+that returns a commentary function that tracks lead changes. A different
+commentary function will be called each turn.</p>
+
+<pre><code>def announce_lead_changes(last_leader=None):
+    &quot;&quot;&quot;Return a commentary function that announces lead changes.
+
+    &gt;&gt;&gt; f0 = announce_lead_changes()
+    &gt;&gt;&gt; f1 = f0(5, 0)
+    Player 0 takes the lead by 5
+    &gt;&gt;&gt; f2 = f1(5, 12)
+    Player 1 takes the lead by 7
+    &gt;&gt;&gt; f3 = f2(8, 12)
+    &gt;&gt;&gt; f4 = f3(8, 13)
+    &gt;&gt;&gt; f5 = f4(15, 13)
+    Player 0 takes the lead by 2
+    &quot;&quot;&quot;
+    def say(score0, score1):
+        if score0 &gt; score1:
+            leader = 0
+        elif score1 &gt; score0:
+            leader = 1
+        else:
+            leader = None
+        if leader != None and leader != last_leader:
+            print(&#x27;Player&#x27;, leader, &#x27;takes the lead by&#x27;, abs(score0 &#x2d; score1))
+        return announce_lead_changes(leader)
+    return say</code></pre>
+
+<p>You should also understand the function <code>both</code>, which takes two commentary
+functions (<code>f</code> and <code>g</code>) and returns a <em>new</em> commentary function. This returned
+commentary function returns <em>another</em> commentary function which calls the functions
+returned by calling <code>f</code> and <code>g</code>, in that order.</p>
+
+<pre><code>def both(f, g):
+    &quot;&quot;&quot;Return a commentary function that says what f says, then what g says.
+
+    NOTE: the following game is not possible under the rules, it&#x27;s just
+    an example for the sake of the doctest
+
+    &gt;&gt;&gt; h0 = both(say_scores, announce_lead_changes())
+    &gt;&gt;&gt; h1 = h0(10, 0)
+    Player 0 now has 10 and Player 1 now has 0
+    Player 0 takes the lead by 10
+    &gt;&gt;&gt; h2 = h1(10, 8)
+    Player 0 now has 10 and Player 1 now has 8
+    &gt;&gt;&gt; h3 = h2(10, 17)
+    Player 0 now has 10 and Player 1 now has 17
+    Player 1 takes the lead by 7
+    &quot;&quot;&quot;
+    def say(score0, score1):
+        return both(f(score0, score1), g(score0, score1))
+    return say</code></pre>
+
+
+        <button id='toggle-17' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-17">
+
+<h3 id="phase-2-hint-video">Phase 2 Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/QLBpKsmGyYo"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h3 id="problem-6-2-pt">Problem 6 (2 pt)</h3>
+
+
+<p>Update your <code>play</code> function so that a commentary function is called at the end
+of each turn. The return value of calling a commentary function gives you the
+commentary function to call on the next turn.</p>
+
+<p>For example, <code>say(score0, score1)</code> should be called at the end of the first
+turn. Its return value (another commentary function) should be called at the end
+of the second turn. Each consecutive turn, call the function that was returned
+by the call to the previous turn's commentary function.</p>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 06 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 06</code></pre>
+
+
+<h3 id="problem-7-3-pt">Problem 7 (3 pt)</h3>
+
+
+<p>Implement the <code>announce_highest</code> function, which is a higher-order function that
+returns a commentary function. This commentary function announces whenever a
+particular player gains more points in a turn than ever before. E.g.,
+<code>announce_highest(1)</code> ignores Player 0 entirely and just print information about
+Player 1. (So does its return value; another commentary function about only
+Player 1.) To compute the gain, it must compare the score from last turn (<code>last_score</code>) to the
+score from this turn for the player of interest, which is designated by the
+<code>who</code> argument. This function must also keep track of the highest gain for the
+player so far, which is store as <code>running_high</code>.</p>
+
+<p>The way in which <code>announce_highest</code> announces is very specific, and your
+implementation should match the doctests provided. Don't worry about singular
+versus plural when announcing point gains; you should simply use "point(s)" for
+both cases.</p>
+
+<blockquote><p><strong>Hint:</strong> The <code>announce_lead_changes</code> function provided to you is an example of
+how to keep track of information using commentary functions. If you are stuck,
+first make sure you understand how <code>announce_lead_changes</code> works.</p></blockquote>
+
+<br>
+
+<blockquote><p><strong>Hint.</strong> If you're getting a <code>local variable [var] reference before assignment</code> error:</p>
+
+<p>This happens because in Python, you aren't normally allowed to modify
+variables defined in parent frames. Instead of reassigning <code>[var]</code>, the
+interpreter thinks you're trying to define a new variable within the current
+frame. We'll learn about how to work around this in a future lecture, but it
+is not required for this problem.</p>
+
+<p>To fix this, you have two options:</p>
+
+<p>1) Rather than reassigning <code>[var]</code> to its new value, create a new variable to
+   hold that new value. Use that new variable in future calculations.</p>
+
+<p>2) For this problem specifically, avoid this issue entirely by not using
+   assignment statements at all. Instead, pass new values in as arguments to
+   a call to <code>announce_highest</code>.</p></blockquote>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 07 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 07</code></pre>
+
+<p>When you are done, you will see commentary in the GUI:</p>
+
+<pre><code>python3 hog_gui.py</code></pre>
+
+<p>The commentary in the GUI is generated by passing the following function as the
+<code>say</code> argument to <code>play</code>.</p>
+
+<pre><code>both(announce_highest(0), both(announce_highest(1), announce_lead_changes()))</code></pre>
+
+<p>Great work! You just finished Phase 2 of the project!</p>
+
+
+<h2 id="phase-3-strategies">Phase 3: Strategies</h2>
+
+
+<p>In the third phase, you will experiment with ways to improve upon the basic
+strategy of always rolling a fixed number of dice. First, you need to develop
+some tools to evaluate strategies.</p>
+
+
+        <button id='toggle-18' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-18">
+
+<h3 id="phase-3-hint-video">Phase 3 Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling the problems on this phase of Hog.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/uzw1DicMDy8"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h3 id="problem-8-2-pt">Problem 8 (2 pt)</h3>
+
+
+<p>Implement the <code>make_averaged</code> function, which is a higher-order function that
+takes a function <code>original_function</code> as an argument. It returns another function that takes
+the same number of arguments as <code>original_function</code> (the function originally passed into
+<code>make_averaged</code>). This returned function differs from the input function in that
+it returns the average value of repeatedly calling <code>original_function</code> on the same arguments.
+This function should call <code>original_function</code> a total of <code>trials_count</code> times and return the
+average of the results.</p>
+
+<p>To implement this function, you need a new piece of Python syntax! You
+must write a function that accepts an arbitrary number of arguments,
+then calls another function using exactly those arguments. Here's how
+it works.</p>
+
+<p>Instead of listing formal parameters for a function, you can write <code>*args</code>. To
+call another function using exactly those arguments, you call it again with
+<code>*args</code>. For example,</p>
+
+<pre><code>&gt;&gt;&gt; def printed(f):
+...     def print_and_return(*args):
+...         result = f(*args)
+...         print(&#x27;Result:&#x27;, result)
+...         return result
+...     return print_and_return
+&gt;&gt;&gt; printed_pow = printed(pow)
+&gt;&gt;&gt; printed_pow(2, 8)
+Result: 256
+256
+&gt;&gt;&gt; printed_abs = printed(abs)
+&gt;&gt;&gt; printed_abs(&#x2d;10)
+Result: 10
+10</code></pre>
+
+<p>Read the docstring for <code>make_averaged</code> carefully to understand how it
+is meant to work.</p>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 08 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 08</code></pre>
+
+
+<h3 id="problem-9-2-pt">Problem 9 (2 pt)</h3>
+
+
+<p>Implement the <code>max_scoring_num_rolls</code> function, which runs an experiment to
+determine the number of rolls (from 1 to 10) that gives the maximum average
+score for a turn.  Your implementation should use <code>make_averaged</code> and
+<code>roll_dice</code>.</p>
+
+<p>If two numbers of rolls are tied for the maximum average score, return the
+lower number. For example, if both 3 and 6 achieve a maximum average score,
+return 3.</p>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 09 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 09</code></pre>
+
+<p>To run this experiment on randomized dice, call <code>run_experiments</code> using
+the <code>&#x2d;r</code> option:</p>
+
+<pre><code>python3 hog.py &#x2d;r</code></pre>
+
+<p><strong>Running experiments</strong> For the remainder of this project, you can change the
+implementation of <code>run_experiments</code> as you wish.  By calling
+<code>average_win_rate</code>, you can evaluate various Hog strategies. For example,
+change the first <code>if False:</code> to <code>if True:</code> in order to evaluate
+<code>always_roll(8)</code> against the baseline strategy of <code>always_roll(6)</code>.</p>
+
+<p>Some of the experiments may take up to a minute to run. You can always reduce
+the number of trials in your call to <code>make_averaged</code> to speed up experiments.</p>
+
+<p>Running experiments won't affect your score on the project.</p>
+
+
+<h3 id="problem-10-1-pt">Problem 10 (1 pt)</h3>
+
+
+<p>A strategy can try to take advantage of the <em>Free Bacon</em> rule by rolling 0 when
+it is most beneficial to do so. Implement <code>bacon_strategy</code>, which returns 0
+whenever rolling 0 would give <strong>at least</strong> <code>cutoff</code> points and returns
+<code>num_rolls</code> otherwise.</p>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 10 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 10</code></pre>
+
+<p>Once you have implemented this strategy, change <code>run_experiments</code> to evaluate
+your new strategy against the baseline. Is it better than just rolling 4?</p>
+
+
+<h3 id="problem-11-2-pt">Problem 11 (2 pt)</h3>
+
+
+<p>A strategy can also take advantage of the <em>Pig Pass</em> and <em>Swine Align</em> rules.
+The extra turn strategy always rolls 0 if doing so triggers an extra turn. In
+other cases, it rolls 0 if rolling 0 would give <strong>at least</strong> <code>cutoff</code> points.
+Otherwise, the strategy rolls <code>num_rolls</code>.</p>
+
+<blockquote><p><strong>Hint</strong>: You can use the function <code>bacon_strategy</code> you defined in Problem 10</p></blockquote>
+
+<p>Before writing any code, unlock the tests to verify your understanding of the question.</p>
+<pre><code class="hljs">python3 ok -q 11 -u</code></pre>
+<p>Once you are done unlocking, begin implementing your solution. You can check your correctness with:</p>
+<pre><code class="hljs">python3 ok -q 11</code></pre>
+
+<p>Once you have implemented this strategy, update <code>run_experiments</code> to evaluate
+your new strategy against the baseline.  You should find that it gives a
+significant edge over <code>always_roll(4)</code>.</p>
+
+
+<h3 id="optional-problem-12-0-pt">Optional: Problem 12 (0 pt)</h3>
+
+
+<p>Implement <code>final_strategy</code>, which combines these ideas and any other ideas you
+have to achieve a high win rate against the <code>always_roll(4)</code> strategy. Some
+suggestions:</p>
+
+<ul>
+  <li><code>extra_turn_strategy</code> is a good default strategy to start with.</li>
+  <li>There's no point in scoring more than 100. Check whether you can win by
+  rolling 0, 1 or 2 dice. If you are in the lead, you might take fewer risks.</li>
+  <li>Try to force extra turns.</li>
+  <li>Choose the <code>num_rolls</code> and <code>cutoff</code> arguments carefully.</li>
+  <li>Take the action that is most likely to win the game.</li>
+</ul>
+
+<p>You can check that your final strategy is valid by running Ok.</p>
+
+<pre><code class="hljs">python3 ok -q 12</code></pre>
+
+<blockquote><p>Note: <code>calc.py</code> does not currently work. We're fixing a bug with the server and
+will make it work soon.</p></blockquote>
+
+<p>You will also eventually be able to check your exact final win rate by running</p>
+
+<pre><code>python3 calc.py</code></pre>
+
+<p>This should pop up a window asking for you to confirm your identity, and then
+it will print out a win rate for your final strategy.</p>
+
+<p>At this point, run the entire autograder to see if there are any tests
+that don't pass.</p>
+
+<pre><code>python3 ok</code></pre>
+
+<p>Once you are satisfied, submit to Ok to complete the project.</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<p><strong>If you have a partner, make sure to add them to the submission on okpy.org.</strong></p>
+
+<p>Check to make sure that you did all the problems by running</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;score</code></pre>
+
+<p>You can also play against your final strategy with the graphical user
+interface:</p>
+
+<pre><code>python3 hog_gui.py</code></pre>
+
+<p>The GUI will alternate which player is controlled by you.</p>
+
+<p>Congratulations, you have reached the end of your first CS 61A project! If you
+haven't already, relax and enjoy a few games of Hog with a friend.</p>
+
+<div>
+    <script>
+        const scriptTag = document.currentScript;
+        window.addEventListener("load", async () => {
+            const parentNode = scriptTag.parentNode;
+            let pos = parentNode.nextElementSibling;
+
+            const path = pos.innerText;
+
+            pos = pos.nextElementSibling;
+            pos.previousElementSibling.remove();
+
+            const probe = await fetch(path);
+
+            if (!probe.ok) {
+                // section should not be displayed yet
+
+                // iterate until a section is found
+                while (pos && !pos.tagName.startsWith("H")) {
+                    pos = pos.nextElementSibling;
+                }
+
+                if (!pos) {
+                    // no section to delete
+                    return;
+                }
+
+                // the tag to look for indicating a new section
+                const level = pos.tagName;
+                const name = pos.id;
+
+                // remove links
+                for (const link of document.querySelectorAll(`a[href="#${name}"]`)) {
+                    if (link.parentElement.nextElementSibling && link.parentElement.nextElementSibling.tagName
+                        === "UL") {
+                        link.parentElement.nextElementSibling.remove(); // remove child links
+                    }
+                    link.parentElement.remove();
+                }
+
+                // remove header
+                pos = pos.nextElementSibling;
+                pos.previousElementSibling.remove();
+
+                // keep destroying siblings until another section at the same level is hit
+                while (pos && (pos.tagName.startsWith("h") || pos.tagName === "P") && pos.tagName !==
+                level) {
+                    pos = pos.nextElementSibling;
+                    pos.previousElementSibling.remove();
+                }
+            }
+
+            // self-destruct
+            scriptTag.parentNode.remove();
+        });
+    </script>
+</div>
+
+<p>/proj/hog_contest</p>
+
+
+<h2 id="hog-strategy-contest">Hog Strategy Contest</h2>
+
+
+<p>If you're interested, you can take your implementation of Hog one step further by participating in the Hog Contest, where you play your <code>final_strategy</code> against those of other students. The winning strategies will receive extra credit and will be recognized in future semesters!</p>
+
+<p>To see more, read the <a href="/~cs61a/fa20/proj/hog_contest">contest description</a>. Or simply check out the <a href="https://hog-contest.cs61a.org">leaderboard</a>.</p>
+
+<script>
+/*
+This code is duplicated in lab-check-in.html. Doesn't work if we move it to a separate
+file because of JQuery document ready concurrency issues.
+*/
+$(function() {
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+});
+</script>
+
+<script>
+$("#cats_typing").hover(
+  function() {
+    $("#cats_typing").attr("src", "images/cats_typing.gif");
+  },
+  function() {
+    $("#cats_typing").attr("src", "images/cats_typing_still.gif");
+  }
+);
+</script>
+
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#introduction">Introduction</a></li>
+  <ul>
+    <li><a href="#rules">Rules</a></li>
+  </ul>
+  <li><a href="#final-product">Final Product</a></li>
+  <li><a href="#download-starter-files">Download starter files</a></li>
+  <li><a href="#logistics">Logistics</a></li>
+  <li><a href="#graphical-user-interface">Graphical User Interface</a></li>
+  <li><a href="#phase-1-simulator">Phase 1: Simulator</a></li>
+  <ul>
+    <li><a href="#problem-0-0-pt">Problem 0 (0 pt)</a></li>
+    <li><a href="#problem-0-hint-video">Problem 0 Hint Video</a></li>
+    <li><a href="#problem-1-2-pt">Problem 1 (2 pt)</a></li>
+    <li><a href="#problem-1-hint-video">Problem 1 Hint Video</a></li>
+    <li><a href="#problem-2-1-pt">Problem 2 (1 pt)</a></li>
+    <li><a href="#problem-2-hint-video">Problem 2 Hint Video</a></li>
+    <li><a href="#problem-3-2-pt">Problem 3 (2 pt)</a></li>
+    <li><a href="#problem-3-hint-video">Problem 3 Hint Video</a></li>
+    <li><a href="#problem-4a-1-pt">Problem 4a (1 pt)</a></li>
+    <li><a href="#problem-4a-hint-video">Problem 4a Hint Video</a></li>
+    <li><a href="#problem-4b-1-pt">Problem 4b (1 pt)</a></li>
+    <li><a href="#problem-4b-hint-video">Problem 4b Hint Video</a></li>
+    <li><a href="#problem-5-3-pt">Problem 5 (3 pt)</a></li>
+    <li><a href="#problem-5-hint-video">Problem 5 Hint Video</a></li>
+  </ul>
+  <li><a href="#phase-2-commentary">Phase 2: Commentary</a></li>
+  <ul>
+    <li><a href="#commentary-examples">Commentary examples</a></li>
+    <li><a href="#phase-2-hint-video">Phase 2 Hint Video</a></li>
+    <li><a href="#problem-6-2-pt">Problem 6 (2 pt)</a></li>
+    <li><a href="#problem-7-3-pt">Problem 7 (3 pt)</a></li>
+  </ul>
+  <li><a href="#phase-3-strategies">Phase 3: Strategies</a></li>
+  <ul>
+    <li><a href="#phase-3-hint-video">Phase 3 Hint Video</a></li>
+    <li><a href="#problem-8-2-pt">Problem 8 (2 pt)</a></li>
+    <li><a href="#problem-9-2-pt">Problem 9 (2 pt)</a></li>
+    <li><a href="#problem-10-1-pt">Problem 10 (1 pt)</a></li>
+    <li><a href="#problem-11-2-pt">Problem 11 (2 pt)</a></li>
+    <li><a href="#optional-problem-12-0-pt">Optional: Problem 12 (0 pt)</a></li>
+  </ul>
+  <li><a href="#hog-strategy-contest">Hog Strategy Contest</a></li>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

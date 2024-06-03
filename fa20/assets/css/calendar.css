@@ -1,0 +1,40 @@
+.fc {
+  font-family: "Roboto", sans-serif;
+}
+
+.section-info {
+  font-size: 14px;
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 20px;
+  padding: 10px;
+  margin: auto;
+  line-height: normal;
+}
+
+.fc-event {
+  font-size: 0.8em;
+  padding: 1px;
+  margin: 2px;
+  border: none;
+}
+
+.fc-title {
+  font-weight: bold;
+}
+
+.fc-location {
+  font-size: 0.85em;
+}
+
+.fc-time-grid .fc-slats .fc-minor td {
+  border: none;
+}
+
+.fc-time-grid .fc-slats td {
+  height: 2em;
+}
+
+.fc-ltr .fc-time-grid .fc-event-container {
+  margin: 0;
+}

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link rel="stylesheet" type="text/css" href="/~cs61a/fa20/assets/css/hw.css">
+
+
+    <title>
+Homework 5 | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Homework 5: Object-Oriented Programming, Linked Lists, Trees
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hw05.zip" class="label label-outline">hw05.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><em>Due by 11:59pm on Monday, October 26</em></p>
+
+
+
+
+
+<h2>Instructions</h2>
+
+<p>Download <a href="hw05.zip">hw05.zip</a>. Inside the archive, you will find a file called
+<a href="hw05.py">hw05.py</a>, along with a copy of the <code>ok</code> autograder.</p>
+
+<p><strong>Submission:</strong> When you are done, submit with <code>python3 ok
+  --submit</code>.  You may submit more than once before the deadline; only the
+final submission will be scored. Check that you have successfully submitted
+your code on <a href="https://okpy.org/">okpy.org</a>.  See <a
+  href="/~cs61a/fa20/lab/lab00#submitting-the-assignment">Lab 0</a> for more instructions on
+submitting assignments.</p>
+
+<p><strong>Using Ok:</strong> If you have any questions about using Ok, please
+refer to <a href="/~cs61a/fa20/articles/using-ok.html">this guide.</a>
+
+
+  <p><strong>Readings:</strong> You might find the following references
+  useful:</p>
+  <ul>
+  <li><a href="http://composingprograms.com/pages/25-object-oriented-programming.html">Section 2.5</a></li>
+  <li><a href="http://composingprograms.com/pages/29-recursive-objects.html">Section 2.9</a></li>
+</ul>
+  
+
+<p><strong>Grading:</strong> Homework is graded based on
+correctness. Each incorrect problem will decrease the total score by one point. There is a homework recovery policy as stated in the syllabus.
+<strong>This homework is out of 2 points.</strong>
+
+
+
+
+    
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+<h2 id="oop">OOP</h2>
+
+
+<h3 class="question" id="q1">Q1: Vending Machine</h3>
+
+<p>Create a class called <code>VendingMachine</code> that represents a vending
+machine for some product. A <code>VendingMachine</code> object returns strings
+describing its interactions.</p>
+
+<p>Fill in the <code>VendingMachine</code> class, adding attributes and methods as
+appropriate, such that its behavior matches the following doctests:</p>
+
+<solution>
+
+<pre><code>class VendingMachine:
+    &quot;&quot;&quot;A vending machine that vends some product for some price.
+
+    &gt;&gt;&gt; v = VendingMachine(&#x27;candy&#x27;, 10)
+    &gt;&gt;&gt; v.vend()
+    &#x27;Inventory empty. Restocking required.&#x27;
+    &gt;&gt;&gt; v.add_funds(15)
+    &#x27;Inventory empty. Restocking required. Here is your $15.&#x27;
+    &gt;&gt;&gt; v.restock(2)
+    &#x27;Current candy stock: 2&#x27;
+    &gt;&gt;&gt; v.vend()
+    &#x27;You must add $10 more funds.&#x27;
+    &gt;&gt;&gt; v.add_funds(7)
+    &#x27;Current balance: $7&#x27;
+    &gt;&gt;&gt; v.vend()
+    &#x27;You must add $3 more funds.&#x27;
+    &gt;&gt;&gt; v.add_funds(5)
+    &#x27;Current balance: $12&#x27;
+    &gt;&gt;&gt; v.vend()
+    &#x27;Here is your candy and $2 change.&#x27;
+    &gt;&gt;&gt; v.add_funds(10)
+    &#x27;Current balance: $10&#x27;
+    &gt;&gt;&gt; v.vend()
+    &#x27;Here is your candy.&#x27;
+    &gt;&gt;&gt; v.add_funds(15)
+    &#x27;Inventory empty. Restocking required. Here is your $15.&#x27;
+
+    &gt;&gt;&gt; w = VendingMachine(&#x27;soda&#x27;, 2)
+    &gt;&gt;&gt; w.restock(3)
+    &#x27;Current soda stock: 3&#x27;
+    &gt;&gt;&gt; w.restock(3)
+    &#x27;Current soda stock: 6&#x27;
+    &gt;&gt;&gt; w.add_funds(2)
+    &#x27;Current balance: $2&#x27;
+    &gt;&gt;&gt; w.vend()
+    &#x27;Here is your soda.&#x27;
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<blockquote><p>You may find <a href="https://docs.python.org/2/library/stdtypes.html#str.format">Python string formatting
+syntax</a> useful.
+A quick example:</p></blockquote>
+
+<pre><code>&gt;&gt;&gt; ten, twenty, thirty = 10, &#x27;twenty&#x27;, [30]
+&gt;&gt;&gt; &#x27;{0} plus {1} is {2}&#x27;.format(ten, twenty, thirty)
+&#x27;10 plus twenty is [30]&#x27;</code></pre>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q VendingMachine</code></pre>
+
+
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/Mm4JYM7ce14"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div>
+
+<h3 class="question" id="q2">Q2: Mint</h3>
+
+<p>Complete the <code>Mint</code> and <code>Coin</code> classes so that the coins created by a mint have
+the correct year and worth.</p>
+
+<ul>
+  <li>Each <code>Mint</code> instance has a <code>year</code> stamp. The <code>update</code> method sets the
+  <code>year</code> stamp to the <code>current_year</code> class attribute of the <code>Mint</code> class.</li>
+  <li>The <code>create</code> method takes a subclass of <code>Coin</code> and returns an instance of
+  that class stamped with the <code>mint</code>'s year (which may be different from
+  <code>Mint.current_year</code> if it has not been updated.)</li>
+  <li>A <code>Coin</code>'s <code>worth</code> method returns the <code>cents</code> value of the coin plus one
+  extra cent for each year of age beyond 50. A coin's age can be determined
+  by subtracting the coin's year from the <code>current_year</code> class attribute of
+  the <code>Mint</code> class.</li>
+</ul>
+
+<solution>
+
+<pre><code>class Mint:
+    &quot;&quot;&quot;A mint creates coins by stamping on years.
+
+    The update method sets the mint&#x27;s stamp to Mint.current_year.
+
+    &gt;&gt;&gt; mint = Mint()
+    &gt;&gt;&gt; mint.year
+    2020
+    &gt;&gt;&gt; dime = mint.create(Dime)
+    &gt;&gt;&gt; dime.year
+    2020
+    &gt;&gt;&gt; Mint.current_year = 2100  # Time passes
+    &gt;&gt;&gt; nickel = mint.create(Nickel)
+    &gt;&gt;&gt; nickel.year     # The mint has not updated its stamp yet
+    2020
+    &gt;&gt;&gt; nickel.worth()  # 5 cents + (80 &#x2d; 50 years)
+    35
+    &gt;&gt;&gt; mint.update()   # The mint&#x27;s year is updated to 2100
+    &gt;&gt;&gt; Mint.current_year = 2175     # More time passes
+    &gt;&gt;&gt; mint.create(Dime).worth()    # 10 cents + (75 &#x2d; 50 years)
+    35
+    &gt;&gt;&gt; Mint().create(Dime).worth()  # A new mint has the current year
+    10
+    &gt;&gt;&gt; dime.worth()     # 10 cents + (155 &#x2d; 50 years)
+    115
+    &gt;&gt;&gt; Dime.cents = 20  # Upgrade all dimes!
+    &gt;&gt;&gt; dime.worth()     # 20 cents + (155 &#x2d; 50 years)
+    125
+    &quot;&quot;&quot;
+    current_year = 2020
+
+    def __init__(self):
+        self.update()
+
+    def create(self, kind):
+        "*** YOUR CODE HERE ***"
+
+    def update(self):
+        "*** YOUR CODE HERE ***"
+
+class Coin:
+    def __init__(self, year):
+        self.year = year
+
+    def worth(self):
+        "*** YOUR CODE HERE ***"
+
+class Nickel(Coin):
+    cents = 5
+
+class Dime(Coin):
+    cents = 10</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q Mint</code></pre>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/Rr7vccA2QGs"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div>
+
+
+<h2 id="linked-lists">Linked Lists</h2>
+
+
+<h3 class="question" id="q3">Q3: Store Digits</h3>
+
+<p>Write a function <code>store_digits</code> that takes in an integer <code>n</code> and returns
+a linked list where each element of the list is a digit of <code>n</code>.</p>
+
+<blockquote><p>Note: do not use any string manipulation functions like <code>str</code> and <code>reversed</code></p></blockquote>
+
+<solution>
+
+<pre><code>def store_digits(n):
+    &quot;&quot;&quot;Stores the digits of a positive number n in a linked list.
+
+    &gt;&gt;&gt; s = store_digits(1)
+    &gt;&gt;&gt; s
+    Link(1)
+    &gt;&gt;&gt; store_digits(2345)
+    Link(2, Link(3, Link(4, Link(5))))
+    &gt;&gt;&gt; store_digits(876)
+    Link(8, Link(7, Link(6)))
+    &gt;&gt;&gt; # a check for restricted functions
+    &gt;&gt;&gt; import inspect, re
+    &gt;&gt;&gt; cleaned = re.sub(r&quot;#.*\\n&quot;, &#x27;&#x27;, re.sub(r&#x27;&quot;{3}[\s\S]*?&quot;{3}&#x27;, &#x27;&#x27;, inspect.getsource(store_digits)))
+    &gt;&gt;&gt; print(&quot;Do not use str or reversed!&quot;) if any([r in cleaned for r in [&quot;str&quot;, &quot;reversed&quot;]]) else None
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q store_digits</code></pre>
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/tTIC2oiyQPA"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div>
+
+
+<h1 id="extra-questions">Extra Questions</h1>
+
+
+
+<h2 id="trees">Trees</h2>
+
+
+<h3 class="question" id="q4">Q4: Is BST</h3>
+
+<p>Write a function <code>is_bst</code>, which takes a Tree <code>t</code> and returns <code>True</code> if, and
+only if, <code>t</code> is a valid binary search tree, which means that:</p>
+
+<ul>
+  <li>Each node has at most two children (a leaf is automatically a valid binary
+  search tree)</li>
+  <li>The children are valid binary search trees</li>
+  <li>For every node, the entries in that node's left child are less than or equal
+  to the label of the node</li>
+  <li>For every node, the entries in that node's right child are greater than the
+  label of the node</li>
+</ul>
+
+<p>An example of a BST is:</p>
+
+<p><img class="img-responsive center-block" src="https://miro.medium.com/max/1424/1*F8MmBnUQyOA8-Rajg69nSQ.png" alt="bst"></p>
+
+<p>Note that, if a node has only one child, that child could be considered either
+the left or right child. You should take this into consideration.</p>
+
+<p><em>Hint:</em> It may be helpful to write helper functions <code>bst_min</code> and <code>bst_max</code> that
+return the minimum and maximum, respectively, of a Tree if it is a valid binary
+search tree.</p>
+
+<solution>
+
+<pre><code>def is_bst(t):
+    &quot;&quot;&quot;Returns True if the Tree t has the structure of a valid BST.
+
+    &gt;&gt;&gt; t1 = Tree(6, [Tree(2, [Tree(1), Tree(4)]), Tree(7, [Tree(7), Tree(8)])])
+    &gt;&gt;&gt; is_bst(t1)
+    True
+    &gt;&gt;&gt; t2 = Tree(8, [Tree(2, [Tree(9), Tree(1)]), Tree(3, [Tree(6)]), Tree(5)])
+    &gt;&gt;&gt; is_bst(t2)
+    False
+    &gt;&gt;&gt; t3 = Tree(6, [Tree(2, [Tree(4), Tree(1)]), Tree(7, [Tree(7), Tree(8)])])
+    &gt;&gt;&gt; is_bst(t3)
+    False
+    &gt;&gt;&gt; t4 = Tree(1, [Tree(2, [Tree(3, [Tree(4)])])])
+    &gt;&gt;&gt; is_bst(t4)
+    True
+    &gt;&gt;&gt; t5 = Tree(1, [Tree(0, [Tree(&#x2d;1, [Tree(&#x2d;2)])])])
+    &gt;&gt;&gt; is_bst(t5)
+    True
+    &gt;&gt;&gt; t6 = Tree(1, [Tree(4, [Tree(2, [Tree(3)])])])
+    &gt;&gt;&gt; is_bst(t6)
+    True
+    &gt;&gt;&gt; t7 = Tree(2, [Tree(1, [Tree(5)]), Tree(4)])
+    &gt;&gt;&gt; is_bst(t7)
+    False
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<!--
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/doxVXOrn4AQ"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+-->
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q is_bst</code></pre>
+
+<h3 class="question" id="q5">Q5: Preorder</h3>
+
+<p>Define the function <code>preorder</code>, which takes in a tree as an argument and
+returns a list of all the entries in the tree in the order that
+<code>print_tree</code> would print them.</p>
+
+<p>The following diagram shows the order that the nodes would get printed,
+with the arrows representing function calls.</p>
+
+<p><img class="img-responsive center-block" src="assets/preorder.png" alt="preorder"></p>
+
+<blockquote><p><em>Note</em>: This ordering of the nodes in a tree is called a preorder traversal.</p></blockquote>
+
+<solution>
+
+<pre><code>def preorder(t):
+    &quot;&quot;&quot;Return a list of the entries in this tree in the order that they
+    would be visited by a preorder traversal (see problem description).
+
+    &gt;&gt;&gt; numbers = Tree(1, [Tree(2), Tree(3, [Tree(4), Tree(5)]), Tree(6, [Tree(7)])])
+    &gt;&gt;&gt; preorder(numbers)
+    [1, 2, 3, 4, 5, 6, 7]
+    &gt;&gt;&gt; preorder(Tree(2, [Tree(4, [Tree(6)])]))
+    [2, 4, 6]
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q preorder</code></pre>
+
+
+<h2 id="generators-trees">Generators/Trees</h2>
+
+
+<h3 class="question" id="q6">Q6: Yield Paths</h3>
+
+<p>Define a generator function <code>path_yielder</code> which takes in a Tree <code>t</code>, a value
+<code>value</code>, and returns a generator object which yields each path from the root of <code>t</code>
+to a node that has label <code>value</code>.</p>
+
+<p><code>t</code> is implemented with a class, not as the function-based ADT.</p>
+
+<p>Each path should be represented as a list of the labels along that path in the
+tree. You may yield the paths in any order.</p>
+
+<p>We have provided a (partial) skeleton for you. You do not need to use this skeleton,
+but if your implementation diverges significantly from it, you might
+want to think about how you can get it to fit the skeleton.</p>
+
+<pre><code>def path_yielder(t, value):
+    &quot;&quot;&quot;Yields all possible paths from the root of t to a node with the label value
+    as a list.
+
+    &gt;&gt;&gt; t1 = Tree(1, [Tree(2, [Tree(3), Tree(4, [Tree(6)]), Tree(5)]), Tree(5)])
+    &gt;&gt;&gt; print(t1)
+    1
+      2
+        3
+        4
+          6
+        5
+      5
+    &gt;&gt;&gt; next(path_yielder(t1, 6))
+    [1, 2, 4, 6]
+    &gt;&gt;&gt; path_to_5 = path_yielder(t1, 5)
+    &gt;&gt;&gt; sorted(list(path_to_5))
+    [[1, 2, 5], [1, 5]]
+
+    &gt;&gt;&gt; t2 = Tree(0, [Tree(2, [t1])])
+    &gt;&gt;&gt; print(t2)
+    0
+      2
+        1
+          2
+            3
+            4
+              6
+            5
+          5
+    &gt;&gt;&gt; path_to_2 = path_yielder(t2, 2)
+    &gt;&gt;&gt; sorted(list(path_to_2))
+    [[0, 2], [0, 2, 1, 2]]
+    &quot;&quot;&quot;
+
+    "*** YOUR CODE HERE ***"
+
+    for _______________ in _________________:
+        for _______________ in _________________:
+
+            "*** YOUR CODE HERE ***"
+</code></pre>
+
+<blockquote><p>Hint: If you're having trouble getting started, think about how you'd approach this
+problem if it wasn't a generator function. What would your recursive calls be?
+With a generator function, what happens if you make a "recursive call" within its body?</p></blockquote>
+
+<!-- 
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/43rVEl9ev7M"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+-->
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q path_yielder</code></pre>
+
+
+
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#instructions">Instructions</a></li>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#oop">OOP</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Vending Machine</a></li>
+      <li><a href="#q2">Q2: Mint</a></li>
+    </ul>
+    <li><a href="#linked-lists">Linked Lists</a></li>
+    <ul>
+      <li><a href="#q3">Q3: Store Digits</a></li>
+    </ul>
+  </ul>
+  <li><a href="#extra-questions">Extra Questions</a></li>
+  <ul>
+    <li><a href="#trees">Trees</a></li>
+    <ul>
+      <li><a href="#q4">Q4: Is BST</a></li>
+      <li><a href="#q5">Q5: Preorder</a></li>
+    </ul>
+    <li><a href="#generators-trees">Generators/Trees</a></li>
+    <ul>
+      <li><a href="#q6">Q6: Yield Paths</a></li>
+    </ul>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

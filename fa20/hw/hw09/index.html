@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link rel="stylesheet" type="text/css" href="/~cs61a/fa20/assets/css/hw.css">
+
+
+    <title>
+Homework 9 | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Homework 9: SQL
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hw09.zip" class="label label-outline">hw09.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><em>Due by 11:59pm on Thursday, December 3</em></p>
+
+
+
+
+
+<h2>Instructions</h2>
+
+<p>Download <a href="hw09.zip">hw09.zip</a>.</p>
+
+<p><strong>Submission:</strong> When you are done, submit with <code>python3 ok
+  --submit</code>.  You may submit more than once before the deadline; only the
+final submission will be scored. Check that you have successfully submitted
+your code on <a href="https://okpy.org/">okpy.org</a>.  See <a
+  href="/~cs61a/fa20/lab/lab00#submitting-the-assignment">Lab 0</a> for more instructions on
+submitting assignments.</p>
+
+<p><strong>Using Ok:</strong> If you have any questions about using Ok, please
+refer to <a href="/~cs61a/fa20/articles/using-ok.html">this guide.</a>
+
+
+  <p><strong>Readings:</strong> You might find the following references
+  useful:</p>
+  <ul>
+  <li><a href="http://composingprograms.com/pages/43-declarative-programming.html">Section 4.3 - Declarative Programming</a></li>
+</ul>
+  
+
+<p><strong>Grading:</strong> Homework is graded based on
+correctness. Each incorrect problem will decrease the total score by one point. There is a homework recovery policy as stated in the syllabus.
+<strong>This homework is out of 2 points.</strong>
+
+
+
+
+    
+<h2 id="usage">Usage</h2>
+
+
+<p>First, check that a file named <code>sqlite_shell.py</code> exists alongside the assignment files.
+If you don't see it, or if you encounter problems with it, scroll down to the Troubleshooting
+section to see how to download an official precompiled SQLite binary before proceeding.</p>
+
+<p>You can start an interactive SQLite session in your Terminal or Git Bash with
+the following command:</p>
+
+<pre><code>python3 sqlite_shell.py</code></pre>
+
+<p>While the interpreter is running, you can type <code>.help</code> to see some of the
+commands you can run.</p>
+
+<p>To exit out of the SQLite interpreter, type <code>.exit</code> or <code>.quit</code> or press
+<code>Ctrl&#x2d;C</code>.  Remember that if you see <code>...&gt;</code> after pressing enter, you probably
+forgot a <code>;</code>.</p>
+
+<p>You can also run all the statements in a <code>.sql</code> file by doing the following:</p>
+
+<ol>
+  <li><p>Runs your code and then exits SQLite immediately afterwards.</p>
+
+<pre><code>python3 sqlite_shell.py &lt; lab12.sql</code></pre></li>
+  <li><p>Runs your code and then opens an interactive SQLite session, which is
+  similar to running Python code with the interactive <code>&#x2d;i</code> flag.</p>
+
+<pre><code>python3 sqlite_shell.py &#x2d;&#x2d;init lab12.sql</code></pre></li>
+</ol>
+
+<p>To complete this homework assignment, you will need to use SQLite version
+3.8.3 or greater.</p>
+
+<p>To check your progress, you can run <code>sqlite3</code> directly by running:</p>
+
+<pre><code>python3 sqlite_shell.py &#x2d;&#x2d;init hw09.sql</code></pre>
+
+<p>You should also check your work using <code>ok</code>:</p>
+
+<pre><code>python3 ok</code></pre>
+
+
+<h1 id="questions">Questions</h1>
+
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Hint Video<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h3 id="assignment-hint-video">Assignment Hint Video</h3>
+
+<p>This video provides some helpful direction for tackling problems on this assignment.
+<br>
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/UEvDZhS07QY"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+</div></p>
+
+
+<h2 id="sql">SQL</h2>
+
+
+
+<h3 id="dog-data">Dog Data</h3>
+
+
+<p>In each question below, you will define a new table based on the following
+tables.</p>
+
+<pre><code>CREATE TABLE parents AS
+  SELECT &quot;abraham&quot; AS parent, &quot;barack&quot; AS child UNION
+  SELECT &quot;abraham&quot;          , &quot;clinton&quot;         UNION
+  SELECT &quot;delano&quot;           , &quot;herbert&quot;         UNION
+  SELECT &quot;fillmore&quot;         , &quot;abraham&quot;         UNION
+  SELECT &quot;fillmore&quot;         , &quot;delano&quot;          UNION
+  SELECT &quot;fillmore&quot;         , &quot;grover&quot;          UNION
+  SELECT &quot;eisenhower&quot;       , &quot;fillmore&quot;;
+
+CREATE TABLE dogs AS
+  SELECT &quot;abraham&quot; AS name, &quot;long&quot; AS fur, 26 AS height UNION
+  SELECT &quot;barack&quot;         , &quot;short&quot;      , 52           UNION
+  SELECT &quot;clinton&quot;        , &quot;long&quot;       , 47           UNION
+  SELECT &quot;delano&quot;         , &quot;long&quot;       , 46           UNION
+  SELECT &quot;eisenhower&quot;     , &quot;short&quot;      , 35           UNION
+  SELECT &quot;fillmore&quot;       , &quot;curly&quot;      , 32           UNION
+  SELECT &quot;grover&quot;         , &quot;short&quot;      , 28           UNION
+  SELECT &quot;herbert&quot;        , &quot;curly&quot;      , 31;
+
+CREATE TABLE sizes AS
+  SELECT &quot;toy&quot; AS size, 24 AS min, 28 AS max UNION
+  SELECT &quot;mini&quot;       , 28       , 35        UNION
+  SELECT &quot;medium&quot;     , 35       , 45        UNION
+  SELECT &quot;standard&quot;   , 45       , 60;</code></pre>
+
+<p>Your tables should still perform correctly even if the values in these tables
+change. For example, if you are asked to list all dogs with a name that starts
+with h, you should write:</p>
+
+<pre><code>SELECT name FROM dogs WHERE &quot;h&quot; &lt;= name AND name &lt; &quot;i&quot;;</code></pre>
+
+<p>Instead of assuming that the <code>dogs</code> table has only the data above and writing</p>
+
+<pre><code>SELECT &quot;herbert&quot;;</code></pre>
+
+<p>The former query would still be correct if the name <code>grover</code> were changed to
+<code>hoover</code> or a row was added with the name <code>harry</code>.</p>
+
+<h3 class="question" id="q1">Q1: Size of Dogs</h3>
+The Fédération Cynologique Internationale classifies a standard poodle as over
+45 cm and up to 60 cm. The <code>sizes</code> table describes this and other such
+classifications, where a dog must be over the <code>min</code> and less than or equal to
+the <code>max</code> in <code>height</code> to qualify as a <code>size</code>.
+
+<p>Create a <code>size_of_dogs</code> table with two columns, one for each dog's <code>name</code> and
+another for its <code>size</code>.</p>
+
+<pre><code>&#x2d;&#x2d; The size of each dog
+CREATE TABLE size_of_dogs AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+<p>The output should look like the following:</p>
+
+<pre><code>sqlite&gt; select * from size_of_dogs;
+abraham|toy
+barack|standard
+clinton|standard
+delano|standard
+eisenhower|mini
+fillmore|mini
+grover|toy
+herbert|mini</code></pre>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q size_of_dogs</code></pre>
+
+<!--
+            <iframe width="560" height="315" src="https://youtube.com/embed/d9EPid-MJes"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>-->
+
+
+
+<h3 class="question" id="q2">Q2: By Parent Height</h3>
+Create a table <code>by_parent_height</code> that has a column of the names of all dogs that have
+a <code>parent</code>, ordered by the height of the parent from tallest parent to shortest
+parent.
+
+<pre><code>&#x2d;&#x2d; All dogs with parents ordered by decreasing height of their parent
+CREATE TABLE by_parent_height AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+<p>For example, <code>fillmore</code> has a parent (<code>eisenhower</code>) with height 35, and so
+should appear before <code>grover</code> who has a parent (<code>fillmore</code>) with height 32.
+The names of dogs with parents of the same height should appear together in any
+order. For example, <code>barack</code> and <code>clinton</code> should both appear at the end, but
+either one can come before the other.</p>
+
+<pre><code>sqlite&gt; select * from by_parent_height;
+herbert
+fillmore
+abraham
+delano
+grover
+barack
+clinton</code></pre>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q by_parent_height</code></pre>
+<!--
+            <iframe width="560" height="315" src="https://youtube.com/embed/wRRI2tn4zdo"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>-->
+
+
+
+<h3 class="question" id="q3">Q3: Sentences</h3>
+There are two pairs of siblings that have the same size. Create a table that
+contains a row with a string for each of these pairs.  Each string should be a
+sentence describing the siblings by their size.
+
+<pre><code>&#x2d;&#x2d; Filling out this helper table is optional
+CREATE TABLE siblings AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+
+&#x2d;&#x2d; Sentences about siblings that are the same size
+CREATE TABLE sentences AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+<p>Each sibling pair should appear only once in the output, and siblings should be
+listed in alphabetical order (e.g. <code>&quot;barack plus clinton...&quot;</code> instead of
+<code>&quot;clinton plus barack...&quot;</code>), as follows:</p>
+
+<pre><code>sqlite&gt; select * from sentences;
+The two siblings, barack plus clinton have the same size: standard
+The two siblings, abraham plus grover have the same size: toy</code></pre>
+
+<blockquote><p><em>Hint</em>: First, create a helper table containing each pair of siblings. This
+will make comparing the sizes of siblings when constructing the main table
+easier.</p>
+
+<p><strong>Hint</strong>: If you join a table with itself, use <code>AS</code> within the <code>FROM</code> clause to
+give each table an alias.</p>
+
+<p><strong>Hint</strong>: In order to concatenate two strings into one, use the <code>||</code> operator.</p></blockquote>
+
+<!--
+            <iframe width="560" height="315" src="https://youtube.com/embed/DiS4IzSohkc"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>-->
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q sentences</code></pre>
+
+
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+
+<h1 id="troubleshooting-advanced-sqlite">Troubleshooting/Advanced SQLite</h1>
+
+
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+
+<p>Python already comes with a built-in SQLite database engine to process SQL.
+However, it doesn't come with a "shell" to let you interact with it from the terminal.
+Because of this, until now, you have been using a simplified SQLite shell written by us.
+However, you may find the shell is old, buggy, or lacking in features.
+In that case, you may want to download and use the official SQLite executable.</p>
+
+<p>If running <code>python3 sqlite_shell.py</code> didn't work, you can download a precompiled sqlite directly by following the following instructions and then use <code>sqlite3</code> and <code>./sqlite3</code> instead of <code>python3 sqlite_shell.py</code> based on which is specified for your platform.</p>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Setup<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+Another way to start using SQLite is to download a precompiled
+binary from the <a href="http://www.sqlite.org/download.html">SQLite website</a>.
+The latest version of SQLite at the time of writing is 3.28.0, but you
+can check for additional updates on the website.
+
+<p>However, before proceeding, please remove (or rename) any SQLite executables
+(<code>sqlite3</code>, <code>sqlite_shell.py</code>, and the like)
+from the current folder, or they may conflict with the official one you download below.
+Similarly, if you wish to switch back later,
+please remove or rename the one you downloaded and restore the files you removed.</p>
+
+
+<h3 id="windows">Windows</h3>
+
+
+<ol>
+  <li>Visit the download page linked above and navigate to the section
+  Precompiled Binaries for Windows. Click on the link
+  <strong>sqlite-tools-win32-x86-*.zip</strong> to download the binary.</li>
+  <li>Unzip the file. There should be a <code>sqlite3.exe</code> file in the
+  directory after extraction.</li>
+  <li><p>Navigate to the folder containing the <code>sqlite3.exe</code> file and check
+  that the version is at least 3.8.3:</p>
+
+<pre><code>$ cd path/to/sqlite
+$ ./sqlite3 &#x2d;&#x2d;version
+3.12.1 2016&#x2d;04&#x2d;08 15:09:49 fe7d3b75fe1bde41511b323925af8ae1b910bc4d</code></pre></li>
+</ol>
+
+
+<h3 id="macos-yosemite-10-10-or-newer">macOS Yosemite (10.10) or newer</h3>
+
+
+<p>SQLite comes pre-installed. Check that you have a version that's greater than 3.8.3:</p>
+
+<pre><code>    $ sqlite3
+    SQLite version 3.8.10.2</code></pre>
+
+
+<h3 id="mac-os-x-mavericks-10-9-or-older">Mac OS X Mavericks (10.9) or older</h3>
+
+
+<p>SQLite comes pre-installed, but it is the wrong version.</p>
+
+<ol>
+  <li>Visit the download page linked above and navigate to the section
+  <strong>Precompiled Binaries for Mac OS X (x86)</strong>. Click on
+  the link <strong>sqlite-tools-osx-x86-*.zip</strong> to download the
+  binary.</li>
+  <li>Unzip the file. There should be a <code>sqlite3</code> file in the directory
+  after extraction.</li>
+  <li><p>Navigate to the folder containing the <code>sqlite3</code> file and check that
+  the version is at least 3.8.3:</p>
+
+<pre><code>$ cd path/to/sqlite
+$ ./sqlite3 &#x2d;&#x2d;version
+3.12.1 2016&#x2d;04&#x2d;08 15:09:49 fe7d3b75fe1bde41511b323925af8ae1b910bc4d</code></pre></li>
+</ol>
+
+
+<h3 id="ubuntu">Ubuntu</h3>
+
+
+<p>The easiest way to use SQLite on Ubuntu is to install it straight from
+the native repositories (the version will be slightly behind the most
+recent release):</p>
+
+<pre><code>$ sudo apt install sqlite3
+$ sqlite3 &#x2d;&#x2d;version
+3.8.6 2014&#x2d;08&#x2d;15 11:46:33 9491ba7d738528f168657adb43a198238abde19e</code></pre>
+
+</div>
+
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#usage">Usage</a></li>
+  <li><a href="#questions">Questions</a></li>
+  <ul>
+    <li><a href="#assignment-hint-video">Assignment Hint Video</a></li>
+  </ul>
+  <ul>
+    <li><a href="#sql">SQL</a></li>
+    <ul>
+      <li><a href="#dog-data">Dog Data</a></li>
+      <li><a href="#q1">Q1: Size of Dogs</a></li>
+      <li><a href="#q2">Q2: By Parent Height</a></li>
+      <li><a href="#q3">Q3: Sentences</a></li>
+    </ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+  <li><a href="#troubleshooting-advanced-sqlite">Troubleshooting/Advanced SQLite</a></li>
+  <ul>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <ul>
+      <li><a href="#windows">Windows</a></li>
+      <li><a href="#macos-yosemite-10-10-or-newer">macOS Yosemite (10.10) or newer</a></li>
+      <li><a href="#mac-os-x-mavericks-10-9-or-older">Mac OS X Mavericks (10.9) or older</a></li>
+      <li><a href="#ubuntu">Ubuntu</a></li>
+    </ul>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

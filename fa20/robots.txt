@@ -1,0 +1,4 @@
+# CS61A.org
+
+User-agent: *
+Disallow: /hw/solutions/

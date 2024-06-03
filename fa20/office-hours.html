@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.9.1/fullcalendar.min.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/calendar.css">
+
+
+    <title>
+Office Hours | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<header>
+  <h1>Office Hours</h1>
+
+    <p>Weekly support schedule.</p>
+
+    <p>For weekly fixed office hours, join the online queue at <a
+    href='https://oh.cs61a.org/'>oh.cs61a.org</a> and make a ticket during the
+    scheduled office hours times below.
+
+    You can also make an OH appointment (varying times, not shown in calendar
+    below) at <a
+    href='https://oh.cs61a.org/appointments'>oh.cs61a.org/appointments</a>.
+    Office hours are a great place to get individualized help from staff for any
+    general or assignment-specific questions. </p>
+
+    <!-- <p> Though there will be a queue and staff helping with one-on-one debugging (just like during regular office hours), the value of parties is that you get an opportunity to work with students who are working on the same assignment question as you are while you're waiting.  We strongly encourage collaboration during parties, but please don't break any academic dishonesty rules! More details about specific parties will be released closer to their respective dates on piazza. </p> -->
+    <!-- <p>
+      <b>Regular office hours</b> and events (<b>Mon-Thu</b>) are located in:
+      <ul>
+        <li><a href='http://www.berkeley.edu/map?morgan'><b>109 Morgan Hall</b></a> if before 6pm.</li>
+        <li><a href='http://www.berkeley.edu/map?cory'><b>Cory Hall</b></a> if after 6pm. (Room number can be found in the calendar events below.)</li>
+      </ul>
+      These office hours are great for any general or assignment-specific questions.
+    </p> -->
+
+    <!-- <p>
+      Office hours are shared by the staff, and we use an <a href='https://oh.cs61a.org/'>office hours queue</a> which you can check before you come to office hours to see if it is crowded.
+      Some staff will be attending regularly as indicated on the schedule, and others rotating based on expected demand.
+      If you need <i>one-on-one help</i> with your own GSI, you may want to contact your GSI to find a time to meet with them.
+    </p> -->
+<!--     <p>
+      <b>Conceptual office hours</b> are held on <b>Friday</b> in <b>400 Cory</b>. In these office hours we will not provide guidance on homework or projects, but you are encouraged to show up for extra help understanding any of the concepts covered in class. Feel free to bring in any questions you find confusing, as long as they are not taken from current assignments.
+    </p> -->
+<!--     <p>
+      <b>Instructor office hours</b> are held in Professor DeNero's office at 781 Soda and <a href='https://berkeley.zoom.us/j/9107739913'>online</a>. The zoom code is 9107739913. -->
+    <!-- <p>
+      Online office hours are held TBD. Sign up through the
+      <a href='https://online.cs61a.org'>online office hours queue</a> during those times.
+    </p> -->
+    <!-- <p>
+      <b>Drop-in tutoring</b> is also provided by various student organizations, including
+      <a href='https://upe.berkeley.edu/officehours/'>UPE</a> (the Computer Science
+      honor society), <a href='https://hkn.eecs.berkeley.edu/tutor/'>HKN</a> (the
+      EECS honor society), and the
+      <a href='http://engineering.berkeley.edu/student-services/academic-support/tutoring-schedule#ac888'>College of Engineering</a>.
+    </p> -->
+</header>
+
+<div id='office-hours'></div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.9.1/fullcalendar.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.9.1/gcal.js"></script>
+    <script type="text/javascript" src="/~cs61a/fa20/assets/js/config.js"></script>
+    <script type="text/javascript" src="/~cs61a/fa20/assets/js/calendar.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 11: Interpreters | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 11: Interpreters
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab11.zip" class="label label-outline">lab11.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, November 10.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab11.zip">lab11.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h1 id="topics">Topics</h1>
+
+<p>Consult this section if you need a refresher on the material for this lab. It's
+okay to skip directly to <a href="#required-questions">the questions</a> and refer back
+here should you get stuck.</p>
+
+
+<h2 id="interpreters">Interpreters</h2>
+
+
+<p>An interpreter is a program that allows you to interact
+with the computer in a certain language. It understands the
+expressions that you type in through that language, and performs
+the corresponding actions in some way, usually using an underlying
+language.</p>
+
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/8BHhZWBAlug"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+
+<p>In Project 4, you will use Python to implement an interpreter for
+Scheme. The Python interpreter that you've been using all semester is written
+(mostly) in the C programming language. The computer itself uses hardware to
+interpret machine code (a series of ones and zeros that represent basic
+operations like adding numbers, loading information from memory, etc).</p>
+
+<p>When we talk about an interpreter, there are two languages at work:</p>
+
+<ol>
+  <li><strong>The language being interpreted/implemented.</strong> In this lab, you will
+  implement the PyCombinator language.</li>
+  <li><strong>The underlying implementation language.</strong> In this lab, you will use Python
+  to implement the PyCombinator language.</li>
+</ol>
+
+<p>Note that the underlying language need not be different from the implemented
+language. In fact, in this lab we are going to implement a smaller version of
+Python (PyCombinator) using Python! This idea is called Metacircular Evaluation.</p>
+
+<p>Many interpreters use a Read-Eval-Print Loop (REPL). This loop waits for user
+input, and then processes it in three steps:</p>
+
+<ul>
+  <li><p><strong>Read:</strong> The interpreter takes the user input (a string) and passes it
+  through a lexer and parser.</p>
+
+  <ul>
+    <li>The <em>lexer</em> turns the user input string into atomic pieces (tokens) that
+    are like "words" of the implemented language.</li>
+    <li><p>The <em>parser</em> takes the tokens and organizes them into data structures
+    that the underlying language can understand.</p>
+
+    
+            <iframe width="560" height="315" src="https://youtube.com/embed/Fimpv8yzAWY"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></li>
+  </ul></li>
+  <li><p><strong>Eval:</strong> Mutual recursion between eval and apply evaluate the expression to
+  obtain a value.</p>
+
+  <ul>
+    <li><em>Eval</em> takes an expression and evaluates it according to the rules of the
+    language. Evaluating a call expression involves calling <code>apply</code> to apply
+    an evaluated operator to its evaluated operands.</li>
+    <li><p><em>Apply</em> takes an evaluated operator, i.e., a function, and applies it to
+    the call expression's arguments. Apply may call <code>eval</code> to do more work in
+    the body of the function, so <code>eval</code> and <code>apply</code> are <em>mutually recursive</em>.</p>
+
+    
+            <iframe width="560" height="315" src="https://youtube.com/embed/gB2dtI8MzII"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></li>
+  </ul></li>
+  <li><strong>Print:</strong> Display the result of evaluating the user input.</li>
+</ul>
+
+<p>Here's how all the pieces fit together:</p>
+
+<pre><code>         +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d; Loop &#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+
+         |                                                 |
+         |  +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+   +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+   +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+   +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+ |
+Input &#x2d;&#x2d;&#x2d;+&#x2d;&gt;| Lexer |&#x2d;&#x2d;&gt;| Parser |&#x2d;&#x2d;&gt;| Eval  |&#x2d;&#x2d;&gt;| Print |&#x2d;+&#x2d;&#x2d;&gt; Output
+         |  +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+   +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+   +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+   +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+ |
+         |                              ^  |               |
+         |                              |  v               |
+         ^                           +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+             v
+         |                           | Apply |             |
+         |    REPL                   +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+             |
+         +&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;&#x2d;+</code></pre>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+<h2 id="pycombinator-interpreter">PyCombinator Interpreter</h2>
+
+
+<p>Today we will build <strong>PyCombinator</strong>, our own basic Python interpreter. By the
+end of this lab, you will be able to use a bunch of primitives such as <code>add</code>,
+<code>mul</code>, and <code>sub</code>, and even more excitingly, we will be able to create and call
+lambda functions -- all through your own homemade interpreter!</p>
+
+<p>You will implement some of the key parts that will allow us to evaluate the
+following commands and more:</p>
+
+<pre><code>&gt; add(3, 4)
+7
+&gt; mul(4, 5)
+20
+&gt; sub(2, 3)
+&#x2d;1
+&gt; (lambda: 4)()
+4
+&gt; (lambda x, y: add(y, x))(3, 5)
+8
+&gt; (lambda x: lambda y: mul(x, y))(3)(4)
+12
+&gt; (lambda f: f(0))(lambda x: pow(2, x))
+1</code></pre>
+
+<p>You can find the Read-Eval-Print Loop code for our interpreter in <code>repl.py</code>.
+Here is an overview of each of the REPL components:</p>
+
+<ul>
+  <li><p><strong>Read:</strong> The function <code>read</code> in <code>reader.py</code> calls the following two functions
+  to parse user input.</p>
+
+  <ul>
+    <li>The <em>lexer</em> is the function <code>tokenize</code> in <code>reader.py</code> which splits the
+    user input string into tokens.</li>
+    <li>The <em>parser</em> is the function <code>read_expr</code> in <code>reader.py</code> which parses the
+    tokens and turns expressions into instances of subclasses of the class
+    <code>Expr</code> in <code>expr.py</code>, e.g. <code>CallExpr</code>.</li>
+  </ul></li>
+  <li><p><strong>Eval:</strong> Expressions (represented as <code>Expr</code> objects) are evaluated to obtain
+  values (represented as <code>Value</code> objects, also in <code>expr.py</code>).</p>
+
+  <ul>
+    <li><em>Eval</em>: Each type of expression has its own <code>eval</code> method which is
+    called to evaluate it.</li>
+    <li><em>Apply</em>: Call expressions are evaluated by calling the operator's <code>apply</code>
+    method on the arguments. For lambda procedures, <code>apply</code> calls <code>eval</code> to
+    evaluate the body of the function.</li>
+  </ul></li>
+  <li><strong>Print:</strong> The <code>__str__</code> representation of the obtained value is printed.</li>
+</ul>
+
+<p>In this lab, you will only be implementing the <em>Eval</em> and <em>Apply</em> steps in
+<code>expr.py</code>.</p>
+
+<p>You can start the PyCombinator interpreter by running the following command:</p>
+
+<pre><code>python3 repl.py</code></pre>
+
+<p>Try entering a literal (e.g. <code>4</code>) or a lambda expression, (e.g. <code>lambda x, y:
+add(x, y)</code>) to see what they evaluate to.</p>
+
+<p>You can also try entering some names. You can see the entire list of names
+that we can use in PyCombinator at the bottom of <code>expr.py</code>. Note that our set
+of primitives doesn't include the operators <code>+</code>, <code>&#x2d;</code>, <code>*</code>, <code>/</code> -- these are
+replaced by <code>add</code>, <code>sub</code>, etc.</p>
+
+<p>Right now, any names (e.g. <code>add</code>) and call expressions (e.g. <code>add(2, 3)</code>) will
+output <code>None</code>.  It's your job to implement <code>Name.eval</code> and <code>CallExpr.eval</code> so
+that we can look up names and call functions in our interpreter!</p>
+
+<p>You don't have to understand how the read component of our interpreter is
+implemented, but if you want a better idea of how user input is read and
+transformed into Python code, you can use the <code>&#x2d;&#x2d;read</code> flag when running the
+interpreter:</p>
+
+<pre><code>$ python3 repl.py &#x2d;&#x2d;read
+&gt; add
+Name(&#x27;add&#x27;)
+&gt; 3
+Literal(3)
+&gt; lambda x: mul(x, x)
+LambdaExpr([&#x27;x&#x27;], CallExpr(Name(&#x27;mul&#x27;), [Name(&#x27;x&#x27;), Name(&#x27;x&#x27;)]))
+&gt; add(2, 3)
+CallExpr(Name(&#x27;add&#x27;), [Literal(2), Literal(3)])</code></pre>
+
+<p>To exit the interpreter, type Ctrl-C or Ctrl-D.</p>
+
+<p>For this lab, you will be writing code in <code>expr.py</code>.</p>
+
+<h3 class="question" id="q1">Q1: Prologue</h3>
+
+<p>Before we write any code, let's try to understand the parts of the interpreter
+that are already written.</p>
+
+<p>Here is the breakdown of our implementation:</p>
+
+<ul>
+  <li><code>repl.py</code> contains the logic for the REPL loop, which repeatedly reads
+  expressions as user input, evaluates them, and prints out their values (you
+  don't have to completely understand all the code in this file).</li>
+  <li><code>reader.py</code> contains our interpreter's reader. The function <code>read</code> calls the
+  functions <code>tokenize</code> and <code>read_expr</code> to turn an expression string into an
+  <code>Expr</code> object (you don't have to completely understand all the code in this
+  file).</li>
+  <li><code>expr.py</code> contains our interpreter's representation of expressions and
+  values. The subclasses of <code>Expr</code> and <code>Value</code> encapsulate all the types of
+  expressions and values in the PyCombinator language. The global environment,
+  a dictionary containing the bindings for primitive functions, is also defined
+  at the bottom of this file.</li>
+</ul>
+
+<blockquote><p>Use Ok to test your understanding of the reader. It will be helpful to refer
+to <code>reader.py</code> to answer these questions.</p>
+
+<pre><code>python3 ok &#x2d;q prologue_reader &#x2d;u</code></pre>
+
+<p>Use Ok to test your understanding of the <code>Expr</code> and <code>Value</code> objects. It will
+be helpful to refer to <code>expr.py</code> to answer these questions.</p>
+
+<pre><code>python3 ok &#x2d;q prologue_expr &#x2d;u</code></pre></blockquote>
+
+<h3 class="question" id="q2">Q2: Evaluating Names</h3>
+
+<p>The first type of PyCombinator expression that we want to evaluate are names.
+In our program, a name is an instance of the <code>Name</code> class. Each instance has a
+<code>var_name</code> attribute which is the name of the variable -- e.g. <code>&quot;x&quot;</code>.</p>
+
+<p>Recall that the value of a name depends on the current environment. In our
+implementation, an environment is represented by a dictionary that maps
+variable names (strings) to their values (instances of the <code>Value</code> class).</p>
+
+<p>The method <code>Name.eval</code> takes in the current environment as the parameter <code>env</code>
+and returns the value bound to the <code>Name</code>'s <code>var_name</code> in this environment.
+Implement it as follows:</p>
+
+<ul>
+  <li>If the name exists in the current environment, look it up and return the
+  value it is bound to.</li>
+  <li>If the name does not exist in the current environment, return <code>None</code></li>
+</ul>
+
+<p>You will add code to the file <code>expr.py</code>.
+<solution></p>
+
+<pre><code>def eval(self, env):
+    &quot;&quot;&quot;
+    &gt;&gt;&gt; env = {
+    ...     &#x27;a&#x27;: Number(1),
+    ...     &#x27;b&#x27;: LambdaFunction([], Literal(0), {})
+    ... }
+    &gt;&gt;&gt; Name(&#x27;a&#x27;).eval(env)
+    Number(1)
+    &gt;&gt;&gt; Name(&#x27;b&#x27;).eval(env)
+    LambdaFunction([], Literal(0), {})
+    &gt;&gt;&gt; print(Name(&#x27;c&#x27;).eval(env))
+    None
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q Name.eval</code></pre>
+
+<p>Now that you have implemented the evaluation of names, you can look up names in
+the global environment like <code>add</code> and <code>sub</code> (see the full list of primitive
+math operators in <code>global_env</code> at the bottom of <code>expr.py</code>). You can also try
+looking up undefined names to see how the <code>NameError</code> is displayed!</p>
+
+<pre><code>$ python3 repl.py
+&gt; add
+&lt;primitive function add&gt;</code></pre>
+
+<p>Unfortunately, you still cannot call these functions. We'll fix that next!</p>
+
+<h3 class="question" id="q3">Q3: Evaluating Call Expressions</h3>
+
+<p>Now, let's add logic for evaluating call expressions, such as <code>add(2, 3)</code>.
+Remember that a call expression consists of an operator and 0 or more operands.</p>
+
+<p>In our implementation, a call expression is represented as a <code>CallExpr</code>
+instance.  Each instance of the <code>CallExpr</code> class has the attributes <code>operator</code>
+and <code>operands</code>.  <code>operator</code> is an instance of <code>Expr</code>, and, since a call
+expression can have multiple operands, <code>operands</code> is a <em>list</em> of <code>Expr</code>
+instances.</p>
+
+<p>For example, in the <code>CallExpr</code> instance representing <code>add(3, 4)</code>:</p>
+
+<ul>
+  <li><code>self.operator</code> would be <code>Name(&#x27;add&#x27;)</code></li>
+  <li><code>self.operands</code> would be the list <code>[Literal(3), Literal(4)]</code></li>
+</ul>
+
+<p>In <code>CallExpr.eval</code>, implement the three steps to evaluate a call expression:</p>
+
+<ol>
+  <li>Evaluate the <em>operator</em> in the current environment.</li>
+  <li>Evaluate the <em>operand(s)</em> in the current environment.</li>
+  <li>Apply the value of the operator, a function, to the value(s) of the
+  operand(s).</li>
+</ol>
+
+<blockquote><p><strong>Hint:</strong> Since the operator and operands are all instances of <code>Expr</code>, you
+can evaluate them by calling their <code>eval</code> methods. Also, you can apply a
+function (an instance of <code>PrimitiveFunction</code> or <code>LambdaFunction</code>) by calling
+its <code>apply</code> method, which takes in a list of arguments (<code>Value</code> instances).</p></blockquote>
+
+<p>You will add code to the file <code>expr.py</code>.</p>
+
+<solution>
+
+<pre><code>def eval(self, env):
+    &quot;&quot;&quot;
+    &gt;&gt;&gt; from reader import read
+    &gt;&gt;&gt; new_env = global_env.copy()
+    &gt;&gt;&gt; new_env.update({&#x27;a&#x27;: Number(1), &#x27;b&#x27;: Number(2)})
+    &gt;&gt;&gt; add = CallExpr(Name(&#x27;add&#x27;), [Literal(3), Name(&#x27;a&#x27;)])
+    &gt;&gt;&gt; add.eval(new_env)
+    Number(4)
+    &gt;&gt;&gt; new_env[&#x27;a&#x27;] = Number(5)
+    &gt;&gt;&gt; add.eval(new_env)
+    Number(8)
+    &gt;&gt;&gt; read(&#x27;max(b, a, 4, &#x2d;1)&#x27;).eval(new_env)
+    Number(5)
+    &gt;&gt;&gt; read(&#x27;add(mul(3, 4), b)&#x27;).eval(new_env)
+    Number(14)
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q CallExpr.eval</code></pre>
+
+<p>Now that you have implemented the evaluation of call expressions, we can use
+our interpreter for simple expressions like <code>sub(3, 4)</code> and <code>add(mul(4, 5), 4)</code>.
+Open your interpreter to do some cool math:</p>
+
+<pre><code>$ python3 repl.py</code></pre>
+
+
+<h1 id="optional-questions">Optional Questions</h1>
+
+
+<h3 class="question" id="q4">Q4: Applying Lambda Functions</h3>
+
+<p>We can do some basic math now, but it would be a bit more fun if we could also
+call our own user-defined functions. So let's make sure that we can do that!</p>
+
+<p>A lambda function is represented as an instance of the <code>LambdaFunction</code> class.
+If you look in <code>LambdaFunction.__init__</code>, you will see that each lambda function
+has three instance attributes: <code>parameters</code>, <code>body</code> and <code>parent</code>. As an example,
+consider the lambda function <code>lambda f, x: f(x)</code>. For the corresponding
+<code>LambdaFunction</code> instance, we would have the following attributes:</p>
+
+<ul>
+  <li><code>parameters</code> -- a list of strings, e.g. <code>[&#x27;f&#x27;, &#x27;x&#x27;]</code></li>
+  <li><code>body</code> -- an <code>Expr</code>, e.g. <code>CallExpr(Name(&#x27;f&#x27;), [Name(&#x27;x&#x27;)])</code></li>
+  <li><code>parent</code> -- the parent environment in which we want to look up our variables.
+  Notice that this is the environment the lambda function was defined in.
+  <code>LambdaFunction</code>s are created in the <code>LambdaExpr.eval</code> method, and the current
+  environment then becomes this <code>LambdaFunction</code>'s parent environment.</li>
+</ul>
+
+<p>If you try entering a lambda expression into your interpreter now, you should
+see that it outputs a lambda function. However, if you try to call a lambda
+function, e.g. <code>(lambda x: x)(3)</code> it will output <code>None</code>.</p>
+
+<p>You are now going to implement the <code>LambdaFunction.apply</code> method so that we can
+call our lambda functions! This function takes a list <code>arguments</code> which
+contains the argument <code>Value</code>s that are passed to the function. When evaluating
+the lambda function, you will want to make sure that the lambda function's
+formal parameters are correctly bound to the arguments it is passed. To do
+this, you will have to modify the environment you evaluate the function body
+in.</p>
+
+<p>There are three steps to applying a <code>LambdaFunction</code>:</p>
+
+<ol>
+  <li>Make a copy of the parent environment. You can make a copy of a dictionary <code>d</code>
+  with <code>d.copy()</code>.</li>
+  <li>Update the copy with the <code>parameters</code> of the <code>LambdaFunction</code> and the
+  <code>arguments</code> passed into the method.</li>
+  <li>Evaluate the <code>body</code> using the newly created environment.</li>
+</ol>
+
+<blockquote><p><em>Hint:</em> You may find the built-in <code>zip</code> function useful to pair up the
+parameter names with the argument values.</p></blockquote>
+
+<solution>
+
+<pre><code>def apply(self, arguments):
+    &quot;&quot;&quot;
+    &gt;&gt;&gt; from reader import read
+    &gt;&gt;&gt; add_lambda = read(&#x27;lambda x, y: add(x, y)&#x27;).eval(global_env)
+    &gt;&gt;&gt; add_lambda.apply([Number(1), Number(2)])
+    Number(3)
+    &gt;&gt;&gt; add_lambda.apply([Number(3), Number(4)])
+    Number(7)
+    &gt;&gt;&gt; sub_lambda = read(&#x27;lambda add: sub(10, add)&#x27;).eval(global_env)
+    &gt;&gt;&gt; sub_lambda.apply([Number(8)])
+    Number(2)
+    &gt;&gt;&gt; add_lambda.apply([Number(8), Number(10)]) # Make sure you made a copy of env
+    Number(18)
+    &gt;&gt;&gt; read(&#x27;(lambda x: lambda y: add(x, y))(3)(4)&#x27;).eval(global_env)
+    Number(7)
+    &gt;&gt;&gt; read(&#x27;(lambda x: x(x))(lambda y: 4)&#x27;).eval(global_env)
+    Number(4)
+    &quot;&quot;&quot;
+    if len(self.parameters) != len(arguments):
+        raise TypeError(&quot;Oof! Cannot apply number {} to arguments {}&quot;.format(
+            comma_separated(self.parameters), comma_separated(arguments)))
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q LambdaFunction.apply</code></pre>
+
+<p>After you finish, you should try out your new feature! Open your interpreter
+and try creating and calling your own lambda functions. Since functions are
+values in our interpreter, you can have some fun with higher order functions,
+too!</p>
+
+<pre><code>$ python3 repl.py
+&gt; (lambda x: add(x, 3))(1)
+4
+&gt; (lambda f, x: f(f(x)))(lambda y: mul(y, 2), 3)
+12</code></pre>
+
+<h3 class="question" id="q5">Q5: Handling Exceptions</h3>
+
+<p>The interpreter we have so far is pretty cool. It seems to be working, right?
+Actually, there is one case we haven't covered. Can you think of a very simple
+calculation that is undefined (maybe involving division)? Try to see what happens
+if you try to compute it using your interpreter (using <code>floordiv</code> or <code>truediv</code> since
+we don't have a standard <code>div</code> operator in PyCombinator). It's pretty ugly, right?
+We get a long error message and exit our interpreter -- but really, we want to handle
+this elegantly.</p>
+
+<p>Try opening up the interpreter again and see what happens if you do something
+ill defined like <code>add(3, x)</code>. We just get a nice error message saying that <code>x</code>
+is not defined, and we can then continue using our interpreter. This is because
+our code handles the <code>NameError</code> exception, preventing it from crashing our
+program. Let's talk about how to handle exceptions:</p>
+
+<p>In lecture, you learned how to raise exceptions. But it's also important to
+catch exceptions when necessary. Instead of letting the exception propagate back
+to the user and crash the program, we can catch it using a <code>try/except</code> block
+and allow the program to continue.</p>
+
+<pre><code>try:
+    &lt;try suite&gt;
+except &lt;ExceptionType 0&gt; as e:
+    &lt;except suite 0&gt;
+except &lt;ExceptionType 1&gt; as e:
+    &lt;except suite 1&gt;
+...</code></pre>
+
+<p>We put the code that might raise an exception in the <code>&lt;try suite&gt;</code>. If an
+exception is raised, then the program will look at what type of exception was
+raised and look for a corresponding <code>&lt;except suite&gt;</code>. You can have as many
+except suites as you want.</p>
+
+<pre><code>try:
+    1 + &#x27;hello&#x27;
+except NameError as e:
+    print(&#x27;hi&#x27;)  # NameError except suite
+except TypeError as e:
+    print(&#x27;bye&#x27;) # TypeError except suite</code></pre>
+
+<p>In the example above, adding <code>1</code> and <code>&#x27;hello&#x27;</code> will raise a <code>TypeError</code>. Python
+will look for an except suite that handles <code>TypeError</code>s -- the second except
+suite. Generally, we want to specify exactly which exceptions we want to handle,
+such as <code>OverflowError</code> or <code>ZeroDivisionError</code> (or both!), rather than handling
+all exceptions.</p>
+
+<p>Notice that we can define the exception <code>as e</code>. This assigns the exception
+object to the variable <code>e</code>. This can be helpful when we want to use information
+about the exception that was raised.</p>
+
+<pre><code>&gt;&gt;&gt; try:
+...     x = int(&quot;cs61a rocks!&quot;)
+... except ValueError as e:
+...     print(&#x27;Oops! That was no valid number.&#x27;)
+...     print(&#x27;Error message:&#x27;, e)</code></pre>
+
+<p>You can see how we handle exceptions in your interpreter in <code>repl.py</code>. Modify this code to handle ill-defined arithmetic errors, as well as type errors. Go ahead and try it out!</p>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#interpreters">Interpreters</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#pycombinator-interpreter">PyCombinator Interpreter</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Prologue</a></li>
+      <li><a href="#q2">Q2: Evaluating Names</a></li>
+      <li><a href="#q3">Q3: Evaluating Call Expressions</a></li>
+    </ul>
+  </ul>
+  <li><a href="#optional-questions">Optional Questions</a></li>
+  <ul>
+    <li><a href="#q4">Q4: Applying Lambda Functions</a></li>
+    <li><a href="#q5">Q5: Handling Exceptions</a></li>
+  </ul>
+  <ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 10: Scheme | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 10: Scheme
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab10.zip" class="label label-outline">lab10.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Wednesday, November 4.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab10.zip">lab10.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h1 id="topics">Topics</h1>
+
+
+<p>Consult this section if you need a refresher on the material for this lab. It's
+okay to skip directly to <a href="#required-questions">the questions</a> and refer back
+here should you get stuck.</p>
+
+
+<h2 id="scheme">Scheme</h2>
+
+
+<p>Scheme is a famous functional programming language from the 1970s.  It is a
+dialect of Lisp (which stands for LISt Processing).  The first observation most
+people make is the unique syntax, which uses a prefix notation and (often many)
+nested parentheses (see <a href="http://xkcd.com/297/">http://xkcd.com/297/</a>).  Scheme
+features first-class functions and optimized tail-recursion, which were
+relatively new features at the time.</p>
+
+<blockquote><p>Our course uses a custom version of Scheme (which you will build for Project
+4) included in the starter ZIP archive. To start the interpreter, type
+<code>python3 scheme</code>. To run a Scheme program interactively, type <code>python3 scheme
+&#x2d;i &lt;file.scm&gt;</code>. To exit the Scheme interpreter, type <code>(exit)</code>.</p></blockquote>
+
+<p>You may find it useful to try <a href="https://code.cs61a.org/scheme">code.cs61a.org/scheme</a> when
+working through problems, as it can draw environment and box-and-pointer
+diagrams and it lets you walk your code step-by-step (similar to Python Tutor).
+Don't forget to submit your code through Ok though!</p>
+
+
+<h3 id="scheme-editor">Scheme Editor</h3>
+
+
+<p>As you're writing your code, you can debug using the Scheme Editor. In your <code>scheme</code> folder you will find a new editor. To run this editor, run <code>python3 editor</code>. This should pop up a window in your browser; if it does not, please navigate to <a href="localhost:31415">localhost:31415</a> and you should see it.</p>
+
+<p>Make sure to run <code>python3 ok</code> in a separate tab or window so that the editor keeps running.</p>
+
+<p>If you find that your code works in the online editor but not in your own interpreter, it's possible you have a bug in code from an earlier part that you'll have to track down. Every once in a while there's a bug that our tests don't catch, and if you find one you should let us know!</p>
+
+
+<h2 id="expressions">Expressions</h2>
+
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Atomic Expressions<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h3 id="atomic-expressions">Atomic Expressions</h3>
+
+
+<p>Just like in Python, atomic, or primitive, expressions in Scheme take a single
+step to evaluate. These include numbers, booleans, symbols.</p>
+
+<pre><code class="scheme">scm&gt; 1234    ; integer
+1234
+scm&gt; 123.4   ; real number
+123.4</code></pre>
+
+
+
+
+<h3 id="symbols">Symbols</h3>
+
+
+<p>Out of these, the symbol type is the only one we didn't encounter in Python. A
+<strong>symbol</strong> acts a lot like a Python name, but not exactly. Specifically, a
+symbol in Scheme is also a type of value. On the other hand, in Python, names
+only serve as expressions; a Python expression can never evaluate to a name.</p>
+
+<pre><code class="scheme">scm&gt; quotient      ; A name bound to a built&#x2d;in procedure
+#[quotient]
+scm&gt; &#x27;quotient     ; An expression that evaluates to a symbol
+quotient
+scm&gt; &#x27;hello&#x2d;world!
+hello&#x2d;world!</code></pre>
+
+
+
+
+<h3 id="booleans">Booleans</h3>
+
+
+<p>In Scheme, <em>all</em> values except the special boolean value <code>#f</code> are interpreted
+as true values (unlike Python, where there are some false-y values like <code>0</code>).
+Our particular version of the Scheme interpreter allows you to write <code>True</code> and
+<code>False</code> in place of <code>#t</code> and <code>#f</code>. This is not standard.</p>
+
+<pre><code class="scheme">scm&gt; #t
+#t
+scm&gt; #f
+#f</code></pre>
+
+
+</div>
+<br>
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Call Expressions<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+<h3 id="call-expressions">Call expressions</h3>
+
+
+<p>Like Python, the operator in a Scheme call expression comes before all the
+operands. Unlike Python, the operator is included within the parentheses and
+the operands are separated by spaces rather than with commas. However,
+evaluation of a Scheme call expression follows the exact same rules as in
+Python:</p>
+
+<ol>
+  <li>Evaluate the operator. It should evaluate to a procedure.</li>
+  <li>Evaluate the operands, left to right.</li>
+  <li>Apply the procedure to the evaluated operands.</li>
+</ol>
+
+<p>Here are some examples using built-in procedures:</p>
+
+<pre><code class="scheme">scm&gt; (+ 1 2)
+3
+scm&gt; (&#x2d; 10 (/ 6 2))
+7
+scm&gt; (modulo 35 4)
+3
+scm&gt; (even? (quotient 45 2))
+#t</code></pre>
+
+
+</div>
+<br>
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Special Forms<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+
+<h3 id="special-forms">Special forms</h3>
+
+
+<p>The operator of a special form expression is a special form. What makes a
+special form "special" is that they do not follow the three rules of evaluation
+stated in the previous section. Instead, each special form follows its own
+special rules for execution, such as short-circuiting before evaluating all the
+operands.</p>
+
+<p>Some examples of special forms that we'll study today are the <code>if</code>, <code>cond</code>,
+<code>define</code>, and <code>lambda</code> forms. Read their corresponding sections below to find
+out what their rules of evaluation are!
+</div></p>
+
+
+<h2 id="control-structures">Control Structures</h2>
+
+
+
+        <button id='toggle-4' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        If Expressions<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-4">
+
+<h3 id="if-expressions"><code>if</code> Expressions</h3>
+
+
+<p>The <code>if</code> special form allows us to evaluate one of two expressions based on a
+predicate. It takes in two required arguments and an optional third argument:</p>
+
+<pre><code>(if &lt;predicate&gt; &lt;if&#x2d;true&gt; [if&#x2d;false])</code></pre>
+
+<p>The first operand is what's known as a <strong>predicate</strong> expression in Scheme, an
+expression whose value is interpreted as either <code>#t</code> or <code>#f</code>.</p>
+
+<p>The rules for evaluating an <code>if</code> special form expression are as follows:</p>
+
+<ol>
+  <li>Evaluate <code>&lt;predicate&gt;</code>.</li>
+  <li>If <code>&lt;predicate&gt;</code> evaluates to a truth-y value, evaluate and return the value
+  if the expression <code>&lt;if&#x2d;true&gt;</code>. Otherwise, evaluate and return the value of
+  <code>[if&#x2d;false]</code> if it is provided.</li>
+</ol>
+
+<p>Can you see why this expression is a special form? Compare the rules between a
+regular call expression and an <code>if</code> expression. What is the difference?</p>
+
+<solution>
+
+<blockquote><p>Step 2 of evaluating call expressions requires evaluating all of the operands
+in order. However, an <code>if</code> expression will only evaluate two of its operands,
+the conditional expression and either <code>&lt;true&#x2d;result&gt;</code> or <code>&lt;false&#x2d;result&gt;</code>.
+Because we don't evaluate all the operands in an <code>if</code> expression, it is a
+special form.  </solution></p></blockquote>
+
+<p>Let's compare a Scheme <code>if</code> expression with a Python <code>if</code> statement:</p>
+
+<table class='table table-bordered'>
+  <tr>
+    <th>Scheme</th>
+    <th>Python</th>
+  </tr>
+  <tr>
+    <td>
+<pre><code>scm> (if (> x 3)
+         1
+         2)</code></pre>
+    </td><td>
+<pre><code>>>> if x > 3:
+...     1
+... else:
+...     2</code></pre>
+    </td>
+  </tr>
+</table>
+
+<p>Although the code may look the same, what happens when each block of code is
+evaluated is actually very different. Specifically, the Scheme expression,
+given that it is an expression, evaluates to some value. However, the Python
+<code>if</code> statement simply directs the flow of the program.</p>
+
+<p>Another difference between the two is that it's possible to add more lines of
+code into the suites of the Python <code>if</code> statement, while a Scheme <code>if</code>
+expression expects just a single expression for each of the true result and the
+false result.</p>
+
+<p>One final difference is that in Scheme, you cannot write <code>elif</code> cases. If you
+want to have multiple cases using the <code>if</code> expression, you would need multiple
+branched <code>if</code> expressions:</p>
+
+<table class='table table-bordered'>
+  <tr>
+    <th>Scheme</th>
+    <th>Python</th>
+  </tr>
+  <tr>
+    <td>
+<pre><code>scm> (if (< x 0)
+         'negative
+         (if (= x 0)
+             'zero
+             'positive
+         )
+ )</code></pre>
+    </td><td>
+<pre><code>>>> if x < 0:
+...     'negative'
+... else:
+...     if x == 0:
+...         'zero'
+...     else:
+...         'positive'</code></pre>
+  </tr>
+</table>
+
+</div>
+<br>
+
+        <button id='toggle-5' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Cond Expressions<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-5">
+
+<h3 id="cond-expressions"><code>cond</code> Expressions</h3>
+
+
+<p>Using nested <code>if</code> expressions doesn't seem like a very practical way to take
+care of multiple cases. Instead, we can use the <code>cond</code> special form, a general
+conditional expression similar to a multi-clause if/elif/else conditional
+expression in Python. <code>cond</code> takes in an arbitrary number of arguments known as
+<em>clauses</em>.  A clause is written as a list containing two expressions: <code>(&lt;p&gt;
+&lt;e&gt;)</code>.</p>
+
+<pre><code>(cond
+    (&lt;p1&gt; &lt;e1&gt;)
+    (&lt;p2&gt; &lt;e2&gt;)
+    ...
+    (&lt;pn&gt; &lt;en&gt;)
+    [(else &lt;else&#x2d;expression&gt;)])</code></pre>
+
+<p>The first expression in each clause is a predicate.  The second expression in
+the clause is the return expression corresponding to its predicate. The
+optional <code>else</code> clause has no predicate.</p>
+
+<p>The rules of evaluation are as follows:</p>
+
+<ol>
+  <li>Evaluate the predicates <code>&lt;p1&gt;</code>, <code>&lt;p2&gt;</code>, ..., <code>&lt;pn&gt;</code> in order until you reach
+  one that evaluates to a truth-y value.</li>
+  <li>If you reach a predicate that evaluates to a truth-y value, evaluate and return
+  the corresponding expression in the clause.</li>
+  <li>If none of the predicates are truth-y and there is an <code>else</code> clause,
+  evaluate and return <code>&lt;else&#x2d;expression&gt;</code>.</li>
+</ol>
+
+<p>As you can see, <code>cond</code> is a special form because it does not evaluate its
+operands in their entirety; the predicates are evaluated separately from their
+corresponding return expression. In addition, the expression short circuits
+upon reaching the first predicate that evaluates to a truth-y value, leaving
+the remaining predicates unevaluated.</p>
+
+<p>The following code is roughly equivalent (see the explanation in the <a href="#if-expressions">if
+expression section</a>):</p>
+
+<table class='table table-bordered'>
+  <tr>
+    <th>Scheme</th>
+    <th>Python</th>
+  </tr>
+  <tr>
+    <td>
+<pre><code>scm> (cond
+        ((> x 0) 'positive)
+        ((< x 0) 'negative)
+        (else 'zero))</code></pre>
+    </td><td>
+<pre><code>>>> if x > 0:
+...     'positive'
+... elif x < 0:
+...     'negative'
+... else:
+...     'zero'</code></pre>
+  </tr>
+</table>
+
+</div>
+
+
+<h2 id="lists">Lists</h2>
+
+
+
+        <button id='toggle-6' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Lists<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-6">
+
+<blockquote><p>As you read through this section, it may be difficult to understand the
+differences between the various representations of Scheme containers. We
+recommend that you use <a href="http://scheme.cs61a.org">our online Scheme interpreter</a>
+to see the box-and-pointer diagrams of pairs and lists that you're having a
+hard time visualizing! (Use the command <code>(autodraw)</code> to toggle the automatic
+drawing of diagrams.)</p></blockquote>
+
+
+<h3 id="lists">Lists</h3>
+
+
+<p>Scheme lists are very similar to the linked lists we've been working with in
+Python. Just like how a linked list is constructed of a series of <code>Link</code>
+objects, a Scheme list is constructed with a series of pairs, which are created
+with the constructor <code>cons</code>.</p>
+
+<p>Scheme lists require that the <code>cdr</code> is either another list or <code>nil</code>, an empty list.
+A list is displayed in the interpreter as a sequence of values (similar to the
+<code>__str__</code> representation of a <code>Link</code> object). For example,</p>
+
+<pre><code class="scheme">scm&gt; (cons 1 (cons 2 (cons 3 nil)))
+(1 2 3)</code></pre>
+
+
+
+<p>Here, we've ensured that the second argument of each <code>cons</code> expression is
+another <code>cons</code> expression or <code>nil</code>.</p>
+
+<p><img class="img-responsive center-block" src="assets/list1.png" alt="list"></p>
+
+<p>We can retrieve values from our list with the <code>car</code> and <code>cdr</code> procedures, which
+now work similarly to the Python <code>Link</code>'s <code>first</code> and <code>rest</code> attributes.
+(Curious about where these weird names come from?  <a href="https://en.wikipedia.org/wiki/CAR_and_CDR">Check out their
+etymology.</a>)</p>
+
+<pre><code class="scheme">scm&gt; (define a (cons 1 (cons 2 (cons 3 nil))))  ; Assign the list to the name a
+a
+scm&gt; a
+(1 2 3)
+scm&gt; (car a)
+1
+scm&gt; (cdr a)
+(2 3)
+scm&gt; (car (cdr (cdr a)))
+3</code></pre>
+
+
+
+<p>If you do not pass in a pair or nil as the second argument to <code>cons</code>, it will
+error:</p>
+
+<pre><code class="scheme">scm&gt; (cons 1 2)
+Error</code></pre>
+
+
+
+
+<h3 id="list-procedure"><code>list</code> Procedure</h3>
+
+
+<p>There are a few other ways to create lists. The <code>list</code> procedure takes in an
+arbitrary number of arguments and constructs a list with the values of these
+arguments:</p>
+
+<pre><code class="scheme">scm&gt; (list 1 2 3)
+(1 2 3)
+scm&gt; (list 1 (list 2 3) 4)
+(1 (2 3) 4)
+scm&gt; (list (cons 1 (cons 2 nil)) 3 4)
+((1 2) 3 4)</code></pre>
+
+
+
+<p>Note that all of the operands in this expression are evaluated before being put
+into the resulting list.</p>
+
+
+<h3 id="quote-form">Quote Form</h3>
+
+
+<p>We can also use the quote form to create a list, which will construct the exact
+list that is given. Unlike with the <code>list</code> procedure, the argument to <code>&#x27;</code> is
+<em>not</em> evaluated.</p>
+
+<pre><code class="scheme">scm&gt; &#x27;(1 2 3)
+(1 2 3)
+scm&gt; &#x27;(cons 1 2)           ; Argument to quote is not evaluated
+(cons 1 2)
+scm&gt; &#x27;(1 (2 3 4))
+(1 (2 3 4))</code></pre>
+
+
+
+
+<h3 id="built-in-procedures-for-lists">Built-In Procedures for Lists</h3>
+
+<p>There are a few other built-in procedures in Scheme that are used for lists.
+Try them out in the interpreter!</p>
+
+<prompt>
+
+<pre><code class="scheme">scm&gt; (null? nil)                ; Checks if a value is the empty list
+True
+scm&gt; (append &#x27;(1 2 3) &#x27;(4 5 6)) ; Concatenates two lists
+(1 2 3 4 5 6)
+scm&gt; (length &#x27;(1 2 3 4 5))      ; Returns the number of elements in a list
+5</code></pre>
+
+
+</prompt>
+</div>
+
+<h2 id="defining-procedures">Defining procedures</h2>
+
+
+
+        <button id='toggle-7' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Defining Procedures<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-7">
+The special form <code>define</code> is used to define variables and functions in Scheme.
+There are two versions of the <code>define</code> special form.  To define variables, we
+use the <code>define</code> form with the following syntax:
+
+<pre><code>(define &lt;name&gt; &lt;expression&gt;)</code></pre>
+
+<p>The rules to evaluate this expression are</p>
+
+<ol>
+  <li>Evaluate the <code>&lt;expression&gt;</code>.</li>
+  <li>Bind its value to the <code>&lt;name&gt;</code> in the current frame.</li>
+  <li>Return <code>&lt;name&gt;</code>.</li>
+</ol>
+
+<p>The second version of <code>define</code> is used to define procedures:</p>
+
+<pre><code>(define (&lt;name&gt; &lt;param1&gt; &lt;param2&gt; ...) &lt;body&gt; )</code></pre>
+
+<p>To evaluate this expression:</p>
+
+<ol>
+  <li>Create a lambda procedure with the given parameters and <code>&lt;body&gt;</code>.</li>
+  <li>Bind the procedure to the <code>&lt;name&gt;</code> in the current frame.</li>
+  <li>Return <code>&lt;name&gt;</code>.</li>
+</ol>
+
+<p>The following two expressions are equivalent:</p>
+
+<pre><code class="scheme">scm&gt; (define foo (lambda (x y) (+ x y)))
+foo
+scm&gt; (define (foo x y) (+ x y))
+foo</code></pre>
+
+
+
+<p><code>define</code> is a special form because its operands are not evaluated at all!  For
+example, <code>&lt;body&gt;</code> is not evaluated when a procedure is defined, but rather when
+it is called. <code>&lt;name&gt;</code> and the parameter names are all names that should not be
+evaluated when executing this <code>define</code> expression.
+</div></p>
+
+
+<h2 id="lambdas">Lambdas</h2>
+
+
+
+        <button id='toggle-8' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Lambdas<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-8">
+All Scheme procedures are lambda procedures. To create a lambda procedure, we
+can use the <code>lambda</code> special form:
+
+<pre><code class="scheme">(lambda (&lt;param1&gt; &lt;param2&gt; ...) &lt;body&gt;)</code></pre>
+
+
+
+<p>This expression will create and return a function with the given parameters and
+body, but it will not alter the current environment. This is very similar to a
+<code>lambda</code> expression in Python!</p>
+
+<pre><code class="scheme">scm&gt; (lambda (x y) (+ x y))        ; Returns a lambda function, but doesn&#x27;t assign it to a name
+(lambda (x y) (+ x y))
+scm&gt; ((lambda (x y) (+ x y)) 3 4)  ; Create and call a lambda function in one line
+7</code></pre>
+
+
+
+<p>A procedure may take in any number of parameters. The <code>&lt;body&gt;</code> may contain
+multiple expressions. There is not an equivalent version of a Python <code>return</code>
+statement in Scheme. The function will simply return the value of the last
+expression in the body.
+</div></p>
+
+
+<h1 id="required-questions">Required Questions</h1>
+
+
+
+<h2 id="what-would-scheme-display">What Would Scheme Display?</h2>
+
+
+<h3 class="question" id="q1">Q1: Combinations</h3>
+
+<p>Let's familiarize ourselves with some built-in Scheme procedures and special
+forms!</p>
+
+<blockquote><p>Use Ok to unlock the following "What would Scheme print?" questions:</p>
+
+<pre><code>python3 ok &#x2d;q combinations &#x2d;u</code></pre></blockquote>
+
+<prompt>
+
+<pre><code class="scheme">scm&gt; (&#x2d; 10 4)
+
+scm&gt; (* 7 6)
+
+scm&gt; (+ 1 2 3 4)
+
+scm&gt; (/ 8 2 2)
+
+scm&gt; (quotient 29 5)
+
+scm&gt; (modulo 29 5)</code></pre>
+
+
+</prompt>
+
+<prompt>
+
+<pre><code class="scheme">scm&gt; (= 1 3)                    ; Scheme uses &#x27;=&#x27; instead of &#x27;==&#x27; for comparison
+
+scm&gt; (&lt; 1 3)
+
+scm&gt; (or #t #f)                 ; or special form short circuits
+
+scm&gt; (and #t #f (/ 1 0))
+
+scm&gt; (not #t)</code></pre>
+
+
+</prompt>
+
+<prompt>
+
+<pre><code class="scheme">scm&gt; (define x 3)
+
+scm&gt; x
+
+scm&gt; (define y (+ x 4))
+
+scm&gt; y
+
+scm&gt; (define x (lambda (y) (* y 2)))
+
+scm&gt; (x y)</code></pre>
+
+
+</prompt>
+
+<prompt>
+
+<pre><code class="scheme">scm&gt; (if (print 1) (print 2) (print 3))
+
+scm&gt; (* (if (&gt; 3 2) 1 2) (+ 4 5))
+
+scm&gt; (define foo (lambda (x y z) (if x y z)))
+
+scm&gt; (foo 1 2 (print &#x27;hi))
+
+scm&gt; ((lambda (a) (print &#x27;a)) 100)</code></pre>
+
+
+</prompt>
+
+
+<h2 id="coding-questions">Coding Questions</h2>
+
+
+<h3 class="question" id="q2">Q2: Over or Under</h3>
+
+<p>Define a procedure <code>over&#x2d;or&#x2d;under</code> which takes in a number <code>num1</code> and a number <code>num2</code>
+and returns the following:</p>
+
+<ul>
+  <li>-1 if <code>num1</code> is less than <code>num2</code></li>
+  <li>0 if <code>num1</code> is equal to <code>num2</code></li>
+  <li>1 if <code>num1</code> is greater than <code>num2</code></li>
+</ul>
+
+<solution>
+
+<pre><code class="scheme">(define (over&#x2d;or&#x2d;under num1 num2)
+  'YOUR-CODE-HERE
+)
+
+;;; Tests
+(over&#x2d;or&#x2d;under 1 2)
+; expect &#x2d;1
+(over&#x2d;or&#x2d;under 2 1)
+; expect 1
+(over&#x2d;or&#x2d;under 1 1)
+; expect 0</code></pre>
+
+
+<p>
+</solution></p>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q over_or_under -u
+python3 ok -q over_or_under</code></pre>
+
+<h3 class="question" id="q3">Q3: Make Adder</h3>
+
+<p>Write the procedure <code>make&#x2d;adder</code> which takes in an initial number,
+<code>num</code>, and then returns a procedure. This returned procedure takes in a
+number <code>inc</code> and returns the result of <code>num + inc</code>.</p>
+
+<p><em>Hint</em>: To return a procedure, you can either return a <code>lambda</code> expression or <code>define</code> another nested procedure. Remember that Scheme will automatically return the last clause in your procedure.</p>
+
+<solution>
+
+<pre><code class="scheme">(define (make&#x2d;adder num)
+  'YOUR-CODE-HERE
+)
+
+;;; Tests
+(define adder (make&#x2d;adder 5))
+(adder 8)
+; expect 13</code></pre>
+
+
+
+</solution>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q make_adder -u
+python3 ok -q make_adder</code></pre>
+
+<h3 class="question" id="q4">Q4: Compose</h3>
+
+<p>Write the procedure <code>composed</code>, which takes in procedures <code>f</code> and <code>g</code>
+and outputs a new procedure. This new procedure takes in a number <code>x</code>
+and outputs the result of calling <code>f</code> on <code>g</code> of <code>x</code>.</p>
+
+<solution>
+
+<pre><code class="scheme">(define (composed f g)
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+</solution>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q composed -u
+python3 ok -q composed</code></pre>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+
+<h1 id="optional-questions">Optional Questions</h1>
+
+
+<blockquote><p>The following questions are for <strong>extra practice</strong>. However, they are in scope
+and we recommend you do them if you have time.</p></blockquote>
+
+<h3 class="question" id="q5">Q5: Make a List</h3>
+
+<p>Create the list with the following box-and-pointer diagram:</p>
+
+<p><img class="img-responsive center-block" src="assets/list2.png" alt="linked list"></p>
+
+<solution>
+
+<pre><code class="scheme">(define lst
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+</solution>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q make_structure -u
+python3 ok -q make_structure</code></pre>
+
+<h3 class="question" id="q6">Q6: Remove</h3>
+
+<p>Implement a procedure <code>remove</code> that takes in a list and returns a new list with
+<em>all</em> instances of <code>item</code> removed from <code>lst</code>. You may assume the list will only
+consist of numbers and will not have nested lists.</p>
+
+<p><em>Hint</em>: You might find the <code>filter&#x2d;lst</code> procedure useful.</p>
+
+<solution>
+
+<pre><code class="scheme">(define (remove item lst)
+  'YOUR-CODE-HERE
+)
+
+
+;;; Tests
+(remove 3 nil)
+; expect ()
+(remove 3 &#x27;(1 3 5))
+; expect (1 5)
+(remove 5 &#x27;(5 3 5 5 1 4 5 4))
+; expect (3 1 4 4)</code></pre>
+
+
+</solution>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q remove -u
+python3 ok -q remove</code></pre>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#scheme">Scheme</a></li>
+    <ul>
+      <li><a href="#scheme-editor">Scheme Editor</a></li>
+    </ul>
+    <li><a href="#expressions">Expressions</a></li>
+    <ul>
+      <li><a href="#atomic-expressions">Atomic Expressions</a></li>
+      <li><a href="#symbols">Symbols</a></li>
+      <li><a href="#booleans">Booleans</a></li>
+      <li><a href="#call-expressions">Call expressions</a></li>
+      <li><a href="#special-forms">Special forms</a></li>
+    </ul>
+    <li><a href="#control-structures">Control Structures</a></li>
+    <ul>
+      <li><a href="#if-expressions"><code>if</code> Expressions</a></li>
+      <li><a href="#cond-expressions"><code>cond</code> Expressions</a></li>
+    </ul>
+    <li><a href="#lists">Lists</a></li>
+    <ul>
+      <li><a href="#lists">Lists</a></li>
+      <li><a href="#list-procedure"><code>list</code> Procedure</a></li>
+      <li><a href="#quote-form">Quote Form</a></li>
+      <li><a href="#built-in-procedures-for-lists">Built-In Procedures for Lists</a></li>
+    </ul>
+    <li><a href="#defining-procedures">Defining procedures</a></li>
+    <li><a href="#lambdas">Lambdas</a></li>
+  </ul>
+  <li><a href="#required-questions">Required Questions</a></li>
+  <ul>
+    <li><a href="#what-would-scheme-display">What Would Scheme Display?</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Combinations</a></li>
+    </ul>
+    <li><a href="#coding-questions">Coding Questions</a></li>
+    <ul>
+      <li><a href="#q2">Q2: Over or Under</a></li>
+      <li><a href="#q3">Q3: Make Adder</a></li>
+      <li><a href="#q4">Q4: Compose</a></li>
+    </ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+  <li><a href="#optional-questions">Optional Questions</a></li>
+  <ul>
+    <li><a href="#q5">Q5: Make a List</a></li>
+    <li><a href="#q6">Q6: Remove</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

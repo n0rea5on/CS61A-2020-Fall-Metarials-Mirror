@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 14: Final Review | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 14: Final Review
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab14.zip" class="label label-outline">lab14.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, December 1.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab14.zip">lab14.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h1 id="required-questions">Required  Questions</h1>
+
+
+
+<h2 id="trees">Trees</h2>
+
+
+<h3 class="question" id="q1">Q1: Prune Min</h3>
+
+<p>Write a function that prunes a <code>Tree</code> <code>t</code> mutatively. <code>t</code> and its branches
+always have zero or two branches. For the trees with two branches, reduce the
+number of branches from two to one by keeping the branch that has the smaller
+label value. Do nothing with trees with zero branches.</p>
+
+<p>Prune the tree in a direction of your choosing (top down or bottom up).
+The result should be a linear tree.</p>
+
+<solution>
+
+<pre><code>def prune_min(t):
+    &quot;&quot;&quot;Prune the tree mutatively from the bottom up.
+
+    &gt;&gt;&gt; t1 = Tree(6)
+    &gt;&gt;&gt; prune_min(t1)
+    &gt;&gt;&gt; t1
+    Tree(6)
+    &gt;&gt;&gt; t2 = Tree(6, [Tree(3), Tree(4)])
+    &gt;&gt;&gt; prune_min(t2)
+    &gt;&gt;&gt; t2
+    Tree(6, [Tree(3)])
+    &gt;&gt;&gt; t3 = Tree(6, [Tree(3, [Tree(1), Tree(2)]), Tree(5, [Tree(3), Tree(4)])])
+    &gt;&gt;&gt; prune_min(t3)
+    &gt;&gt;&gt; t3
+    Tree(6, [Tree(3, [Tree(1)])])
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q prune_min</code></pre>
+
+
+<h2 id="scheme">Scheme</h2>
+
+
+<h3 class="question" id="q2">Q2: Split</h3>
+
+<p>Implement <code>split&#x2d;at</code>, which takes a list <code>lst</code> and a positive number <code>n</code> as
+input and returns a pair <code>new</code> such that <code>(car new)</code> is the first <code>n</code>
+elements of <code>lst</code> and <code>(cdr new)</code> is the remaining elements of <code>lst</code>. If <code>n</code> is
+greater than the length of <code>lst</code>, <code>(car new)</code> should be <code>lst</code> and <code>(cdr new)</code>
+should be <code>nil</code>.</p>
+
+<solution>
+
+<pre><code class="scheme">(define (split&#x2d;at lst n)
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q split-at</code></pre>
+
+<h3 class="question" id="q3">Q3: Compose All</h3>
+
+<p>Implement <code>compose&#x2d;all</code>, which takes a list of one-argument functions and
+returns a one-argument function that applies each function in that list in turn
+to its argument. For example, if <code>func</code> is the result of calling <code>compose&#x2d;all</code>
+on a list of functions <code>(f g h)</code>, then <code>(func x)</code> should be equivalent to the
+result of calling <code>(h (g (f x)))</code>.</p>
+
+<pre><code class="scheme">scm&gt; (define (square x) (* x x))
+square
+scm&gt; (define (add&#x2d;one x) (+ x 1))
+add&#x2d;one
+scm&gt; (define (double x) (* x 2))
+double
+scm&gt; (define composed (compose&#x2d;all (list double square add&#x2d;one)))
+composed
+scm&gt; (composed 1)
+5
+scm&gt; (composed 2)
+17</code></pre>
+
+
+
+<solution>
+
+<pre><code class="scheme">(define (compose&#x2d;all funcs)
+  'YOUR-CODE-HERE
+)</code></pre>
+
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q compose-all</code></pre>
+
+
+<h2 id="tree-recursion">Tree Recursion</h2>
+
+
+<h3 class="question" id="q4">Q4: Num Splits</h3>
+
+<p>Given a list of numbers <code>s</code> and a target difference <code>d</code>, how many
+different ways are there to split <code>s</code> into two subsets such that the
+sum of the first is within <code>d</code> of the sum of the second? The number of
+elements in each subset can differ.</p>
+
+<p>You may assume that the elements in <code>s</code> are distinct and that <code>d</code> is always non-negative.</p>
+
+<p>Note that the order of the elements within each subset does not matter, nor does
+the order of the subsets themselves. For example, given the list <code>[1, 2, 3]</code>,
+you should not count <code>[1, 2], [3]</code> and <code>[3], [1, 2]</code> as distinct splits.</p>
+
+<blockquote><p>Hint: If the number you return is too large, you may be double-counting somewhere.
+If the result you return is off by some constant factor, it will likely be easiest
+to simply divide/subtract away that factor.</p></blockquote>
+
+<solution>
+
+<pre><code>def num_splits(s, d):
+    &quot;&quot;&quot;Return the number of ways in which s can be partitioned into two
+    sublists that have sums within d of each other.
+
+    &gt;&gt;&gt; num_splits([1, 5, 4], 0)  # splits to [1, 4] and [5]
+    1
+    &gt;&gt;&gt; num_splits([6, 1, 3], 1)  # no split possible
+    0
+    &gt;&gt;&gt; num_splits([&#x2d;2, 1, 3], 2) # [&#x2d;2, 3], [1] and [&#x2d;2, 1, 3], []
+    2
+    &gt;&gt;&gt; num_splits([1, 4, 6, 8, 2, 9, 5], 3)
+    12
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q num_splits</code></pre>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+
+<h1 id="optional-questions">Optional Questions</h1>
+
+
+
+<h2 id="objects">Objects</h2>
+
+
+<h3 class="question" id="q5">Q5: Checking account</h3>
+
+<p>We'd like to be able to cash checks, so let's add a <code>deposit_check</code>
+method to our <code>CheckingAccount</code> class. It will take a <code>Check</code> object
+as an argument, and check to see if the <code>payable_to</code> attribute matches
+the <code>CheckingAccount</code>'s holder. If so, it marks the <code>Check</code> as
+deposited, and adds the amount specified to the <code>CheckingAccount</code>'s
+total.</p>
+
+<p>Write an appropriate <code>Check</code> class, and add the <code>deposit_check</code> method
+to the <code>CheckingAccount</code> class. Make sure not to copy and paste code!
+Use inheritance whenever possible.</p>
+
+<p>See the doctests for examples of how this code should work.</p>
+
+<solution>
+
+<pre><code>class CheckingAccount(Account):
+    &quot;&quot;&quot;A bank account that charges for withdrawals.
+
+    &gt;&gt;&gt; check = Check(&quot;Steven&quot;, 42)  # 42 dollars, payable to Steven
+    &gt;&gt;&gt; steven_account = CheckingAccount(&quot;Steven&quot;)
+    &gt;&gt;&gt; eric_account = CheckingAccount(&quot;Eric&quot;)
+    &gt;&gt;&gt; eric_account.deposit_check(check)  # trying to steal steven&#x27;s money
+    The police have been notified.
+    &gt;&gt;&gt; eric_account.balance
+    0
+    &gt;&gt;&gt; check.deposited
+    False
+    &gt;&gt;&gt; steven_account.balance
+    0
+    &gt;&gt;&gt; steven_account.deposit_check(check)
+    42
+    &gt;&gt;&gt; check.deposited
+    True
+    &gt;&gt;&gt; steven_account.deposit_check(check)  # can&#x27;t cash check twice
+    The police have been notified.
+    &quot;&quot;&quot;
+    withdraw_fee = 1
+    interest = 0.01
+
+    def withdraw(self, amount):
+        return Account.withdraw(self, amount + self.withdraw_fee)
+
+    "*** YOUR CODE HERE ***"
+
+class Check(object):
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q CheckingAccount</code></pre>
+
+
+<h2 id="tree-recursion">Tree Recursion</h2>
+
+
+<p><h3 class="question" id="q6">Q6: Align Skeleton</h3></p>
+
+<p>Have you wondered how your CS61A exams are graded online? To see how your submission differs from the solution skeleton code,
+<code>okpy</code> uses an algorithm very similar to the one below which shows us the minimum number of edit operations needed to
+transform the the skeleton code into your submission.</p>
+
+<p>Similar to <code>pawssible_patches</code> in Cats, we consider two different edit operations:</p>
+
+<ol>
+  <li>Insert a letter to the skeleton code</li>
+  <li>Delete a letter from the skeleton code</li>
+</ol>
+
+<p>Given two strings, <code>skeleton</code> and <code>code</code>, implement <code>align_skeleton</code>, a function that minimizes the edit distance between
+the two strings and returns a string of all the edits. Each addition is
+represented with <code>+[]</code>, and each deletion is represented with <code>&#x2d;[]</code>. For example:</p>
+
+<pre><code>&gt;&gt;&gt; align_skeleton(skeleton = &quot;x=5&quot;, code = &quot;x=6&quot;)
+&#x27;x=+[6]&#x2d;[5]&#x27;
+&gt;&gt;&gt; align_skeleton(skeleton = &quot;while x&lt;y&quot;, code = &quot;for x&lt;y&quot;)
+&#x27;+[f]+[o]+[r]&#x2d;[w]&#x2d;[h]&#x2d;[i]&#x2d;[l]&#x2d;[e]x&lt;y&#x27;</code></pre>
+
+<p>In the first example, the <code>+[6]</code> represents adding a "6" to the skeleton code, while the <code>&#x2d;[5]</code> represents removing a "5" to the skeleton code.
+In the second example, we add in the letters "f", "o", and "r" and remove the letters "w", "h", "i", "l", and "e" from the skeleton code to
+transform it to the submitted code.</p>
+
+<blockquote><p>Note: For simplicity, all whitespaces are stripped from both the skeleton and submitted code, so you don't have to consider whitespaces in your logic.</p></blockquote>
+
+<p><code>align_skeleton</code> uses a recursive helper function, <code>helper_align</code>, which takes in <code>skeleton_idx</code> and <code>code_idx</code>, the indices of the letters
+from <code>skeleton</code> and <code>code</code> which we are comparing. It returns two things: match, the sequence of edit corrections, and cost, the numer of edit
+operations made. First, you should define your three base cases:</p>
+
+<ul>
+  <li>If both <code>skeleton_idx</code> and <code>code_idx</code> are at the end of their respective strings, then there are no more operations to be made.</li>
+  <li>If we have not finished considering all letters in <code>skeleton</code> but we have considered all letters in <code>code</code>, then
+  we simply need to delete all the remaining letters in <code>skeleton</code> to match it to <code>code</code>.</li>
+  <li>If we have not finished considering all letters in <code>code</code> but we have considered all letters in <code>skeleton</code> , then
+  we simply need to add all the remaining letters in <code>code</code> to <code>skeleton</code>.</li>
+</ul>
+
+<p>Next, you should implement the rest of the edit operations for <code>align_skeleton</code> and <code>helper_align</code>. You may not need all the lines provided.</p>
+
+<solution>
+
+<pre><code class="python">def align_skeleton(skeleton, code):
+    &quot;&quot;&quot;
+    Aligns the given skeleton with the given code, minimizing the edit distance between
+    the two. Both skeleton and code are assumed to be valid one&#x2d;line strings of code. 
+
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;&quot;, code=&quot;&quot;)
+    &#x27;&#x27;
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;&quot;, code=&quot;i&quot;)
+    &#x27;+[i]&#x27;
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;i&quot;, code=&quot;&quot;)
+    &#x27;&#x2d;[i]&#x27;
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;i&quot;, code=&quot;i&quot;)
+    &#x27;i&#x27;
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;i&quot;, code=&quot;j&quot;)
+    &#x27;+[j]&#x2d;[i]&#x27;
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;x=5&quot;, code=&quot;x=6&quot;)
+    &#x27;x=+[6]&#x2d;[5]&#x27;
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;return x&quot;, code=&quot;return x+1&quot;)
+    &#x27;returnx+[+]+[1]&#x27;
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;while x&lt;y&quot;, code=&quot;for x&lt;y&quot;)
+    &#x27;+[f]+[o]+[r]&#x2d;[w]&#x2d;[h]&#x2d;[i]&#x2d;[l]&#x2d;[e]x&lt;y&#x27;
+    &gt;&gt;&gt; align_skeleton(skeleton=&quot;def f(x):&quot;, code=&quot;def g(x):&quot;)
+    &#x27;def+[g]&#x2d;[f](x):&#x27;
+    &quot;&quot;&quot;
+    skeleton, code = skeleton.replace(&quot; &quot;, &quot;&quot;), code.replace(&quot; &quot;, &quot;&quot;)
+
+    def helper_align(skeleton_idx, code_idx):
+        &quot;&quot;&quot;
+        Aligns the given skeletal segment with the code.
+        Returns (match, cost)
+            match: the sequence of corrections as a string
+            cost: the cost of the corrections, in edits
+        &quot;&quot;&quot;
+        if skeleton_idx == len(skeleton) and code_idx == len(code):
+            return _________, ______________
+        if skeleton_idx &lt; len(skeleton) and code_idx == len(code):
+            edits = &quot;&quot;.join([&quot;&#x2d;[&quot; + c + &quot;]&quot; for c in skeleton[skeleton_idx:]])
+            return _________, ______________
+        if skeleton_idx == len(skeleton) and code_idx &lt; len(code):
+            edits = &quot;&quot;.join([&quot;+[&quot; + c + &quot;]&quot; for c in code[code_idx:]])
+            return _________, ______________
+
+        possibilities = []
+        skel_char, code_char = skeleton[skeleton_idx], code[code_idx]
+        # Match
+        if skel_char == code_char:
+            _________________________________________
+            _________________________________________
+            possibilities.append((_______, ______))
+        # Insert
+        _________________________________________
+        _________________________________________
+        possibilities.append((_______, ______))
+        # Delete
+        _________________________________________
+        _________________________________________
+        possibilities.append((_______, ______))
+        return min(possibilities, key=lambda x: x[1])
+    result, cost = ________________________
+    return result</code></pre>
+
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q align_skeleton</code></pre>
+
+
+<h2 id="linked-lists">Linked Lists</h2>
+
+
+<h3 class="question" id="q7">Q7: Fold Left</h3>
+
+<p>Write the left fold function by filling in the blanks.</p>
+
+<solution>
+
+<pre><code>def foldl(link, fn, z):
+    &quot;&quot;&quot; Left fold
+    &gt;&gt;&gt; lst = Link(3, Link(2, Link(1)))
+    &gt;&gt;&gt; foldl(lst, sub, 0) # (((0 &#x2d; 3) &#x2d; 2) &#x2d; 1)
+    &#x2d;6
+    &gt;&gt;&gt; foldl(lst, add, 0) # (((0 + 3) + 2) + 1)
+    6
+    &gt;&gt;&gt; foldl(lst, mul, 1) # (((1 * 3) * 2) * 1)
+    6
+    &quot;&quot;&quot;
+    if link is Link.empty:
+        return z
+    "*** YOUR CODE HERE ***"
+    return foldl(______, ______, ______)
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q foldl</code></pre>
+
+<h3 class="question" id="q8">Q8: Filter With Fold</h3>
+
+<p>Write the <code>filterl</code> function, using either <code>foldl</code> or <code>foldr</code>.</p>
+
+<solution>
+
+<pre><code>def filterl(lst, pred):
+    &quot;&quot;&quot; Filters LST based on PRED
+    &gt;&gt;&gt; lst = Link(4, Link(3, Link(2, Link(1))))
+    &gt;&gt;&gt; filterl(lst, lambda x: x % 2 == 0)
+    Link(4, Link(2))
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q filterl</code></pre>
+
+<h3 class="question" id="q9">Q9: Reverse With Fold</h3>
+
+<p>Notice that <code>mapl</code> and <code>filterl</code> are not recursive anymore! We used the
+implementation of <code>foldl</code> and <code>foldr</code> to implement the actual
+recursion: we only need to provide the recursive step and the base case
+to <code>fold</code>.</p>
+
+<p>Use <code>foldl</code> to write <code>reverse</code>, which takes in a recursive list and
+reverses it. <em>Hint</em>: It only takes one line!</p>
+
+<p><strong>Extra for experience</strong>: Write a version of <code>reverse</code> that do not use the
+<code>Link</code> constructor. You do not have to use <code>foldl</code> or <code>foldr</code>.</p>
+
+<solution>
+
+<pre><code>def reverse(lst):
+    &quot;&quot;&quot; Reverses LST with foldl
+    &gt;&gt;&gt; reverse(Link(3, Link(2, Link(1))))
+    Link(1, Link(2, Link(3)))
+    &gt;&gt;&gt; reverse(Link(1))
+    Link(1)
+    &gt;&gt;&gt; reversed = reverse(Link.empty)
+    &gt;&gt;&gt; reversed is Link.empty
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q reverse</code></pre>
+
+<h3 class="question" id="q10">Q10: Fold With Fold</h3>
+
+<p>Write <code>foldl</code> using <code>foldr</code>! You only need to fill in the <code>step</code>
+function.</p>
+
+<solution>
+
+<pre><code>identity = lambda x: x
+
+def foldl2(link, fn, z):
+    &quot;&quot;&quot; Write foldl using foldr
+    &gt;&gt;&gt; list = Link(3, Link(2, Link(1)))
+    &gt;&gt;&gt; foldl2(list, sub, 0) # (((0 &#x2d; 3) &#x2d; 2) &#x2d; 1)
+    &#x2d;6
+    &gt;&gt;&gt; foldl2(list, add, 0) # (((0 + 3) + 2) + 1)
+    6
+    &gt;&gt;&gt; foldl2(list, mul, 1) # (((1 * 3) * 2) * 1)
+    6
+    &quot;&quot;&quot;
+    def step(x, g):
+        "*** YOUR CODE HERE ***"
+    return foldr(link, step, identity)(z)</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q foldl2</code></pre>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#required-questions">Required  Questions</a></li>
+  <ul>
+    <li><a href="#trees">Trees</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Prune Min</a></li>
+    </ul>
+    <li><a href="#scheme">Scheme</a></li>
+    <ul>
+      <li><a href="#q2">Q2: Split</a></li>
+      <li><a href="#q3">Q3: Compose All</a></li>
+    </ul>
+    <li><a href="#tree-recursion">Tree Recursion</a></li>
+    <ul>
+      <li><a href="#q4">Q4: Num Splits</a></li>
+    </ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+  <li><a href="#optional-questions">Optional Questions</a></li>
+  <ul>
+    <li><a href="#objects">Objects</a></li>
+    <ul>
+      <li><a href="#q5">Q5: Checking account</a></li>
+    </ul>
+    <li><a href="#tree-recursion">Tree Recursion</a></li>
+    <ul>
+      <li><a href="#q6">Q6: Align Skeleton</a></li>
+    </ul>
+    <li><a href="#linked-lists">Linked Lists</a></li>
+    <ul>
+      <li><a href="#q7">Q7: Fold Left</a></li>
+      <li><a href="#q8">Q8: Filter With Fold</a></li>
+      <li><a href="#q9">Q9: Reverse With Fold</a></li>
+      <li><a href="#q10">Q10: Fold With Fold</a></li>
+    </ul>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

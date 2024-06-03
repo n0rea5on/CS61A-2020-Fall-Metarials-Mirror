@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+Lab 13: SQL (Optional) | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Lab 13: SQL (Optional)
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="lab13.zip" class="label label-outline">lab13.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><i>Due by 11:59pm on Tuesday, November 24.</i></p>
+
+
+
+
+<h2 id='starter-files'>Starter Files</h2>
+
+<p>Download <a href="lab13.zip">lab13.zip</a>.
+Inside the archive, you will find starter files for the questions in this lab,
+  along with a copy of the <a href="ok">Ok</a> autograder.</p>
+
+
+
+
+
+
+    
+<h2 id="submission">Submission</h2>
+
+
+<p><strong>THIS LAB IS OPTIONAL!!</strong> We encourage you to do it if you have time, but you will receive credit whether or not you submit the lab.</p>
+
+
+<h1 id="topics">Topics</h1>
+
+
+
+        <button id='toggle-1' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        SQLite<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-1">
+
+<h2 id="sqlite">SQLite</h2>
+
+
+<h2 id="usage">Usage</h2>
+
+
+<p>First, check that a file named <code>sqlite_shell.py</code> exists alongside the assignment files.
+If you don't see it, or if you encounter problems with it, scroll down to the Troubleshooting
+section to see how to download an official precompiled SQLite binary before proceeding.</p>
+
+<p>You can start an interactive SQLite session in your Terminal or Git Bash with
+the following command:</p>
+
+<pre><code>python3 sqlite_shell.py</code></pre>
+
+<p>While the interpreter is running, you can type <code>.help</code> to see some of the
+commands you can run.</p>
+
+<p>To exit out of the SQLite interpreter, type <code>.exit</code> or <code>.quit</code> or press
+<code>Ctrl&#x2d;C</code>.  Remember that if you see <code>...&gt;</code> after pressing enter, you probably
+forgot a <code>;</code>.</p>
+
+<p>You can also run all the statements in a <code>.sql</code> file by doing the following:</p>
+
+<ol>
+  <li><p>Runs your code and then exits SQLite immediately afterwards.</p>
+
+<pre><code>python3 sqlite_shell.py &lt; lab12.sql</code></pre></li>
+  <li><p>Runs your code and then opens an interactive SQLite session, which is
+  similar to running Python code with the interactive <code>&#x2d;i</code> flag.</p>
+
+<pre><code>python3 sqlite_shell.py &#x2d;&#x2d;init lab12.sql</code></pre>
+
+  </div>
+  <br></li>
+</ol>
+
+
+        <button id='toggle-2' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Aggregation<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-2">
+
+<h2 id="sql-aggregation">SQL Aggregation</h2>
+
+
+<p>Previously, we have been dealing with queries that process one row at a time.
+When we join, we make pairwise combinations of all of the rows. When we use
+<code>WHERE</code>, we filter out certain rows based on the condition. Alternatively,
+applying an <a href="http://www.sqlite.org/lang_aggfunc.html">aggregate function</a>
+such as <code>MAX(column)</code> combines the values in multiple rows.</p>
+
+<p>By default, we combine the values of the <em>entire</em> table. For example, if we
+wanted to count the number of flights from our <code>flights</code> table, we could use:</p>
+
+<pre><code>sqlite&gt; SELECT COUNT(*) from FLIGHTS;
+13</code></pre>
+
+<p>What if we wanted to group together the values in similar rows and perform the
+aggregation operations within those groups? We use a <code>GROUP BY</code> clause.</p>
+
+<p>Here's another example. For each unique departure, collect all the rows having
+the same departure airport into a group. Then, select the <code>price</code> column and
+apply the <code>MIN</code> aggregation to recover the price of the cheapest departure from
+that group. The end result is a table of departure airports and the cheapest
+departing flight.</p>
+
+<pre><code>sqlite&gt; SELECT departure, MIN(price) FROM flights GROUP BY departure;
+AUH|932
+LAS|50
+LAX|89
+SEA|32
+SFO|40
+SLC|42</code></pre>
+
+<p>Just like how we can filter out rows with <code>WHERE</code>, we can also filter out
+groups with <code>HAVING</code>. Typically, a <code>HAVING</code> clause should use an aggregation
+function. Suppose we want to see all airports with at least two departures:</p>
+
+<pre><code>sqlite&gt; SELECT departure FROM flights GROUP BY departure HAVING COUNT(*) &gt;= 2;
+LAX
+SFO
+SLC</code></pre>
+
+<p>Note that the <code>COUNT(*)</code> aggregate just counts the number of rows in each group.
+Say we want to count the number of <em>distinct</em> airports instead. Then, we could
+use the following query:</p>
+
+<pre><code>sqlite&gt; SELECT COUNT(DISTINCT departure) FROM flights;
+6</code></pre>
+
+<p>This enumerates all the different departure airports available in our <code>flights</code>
+table (in this case: SFO, LAX, AUH, SLC, SEA, and LAS).
+</div></p>
+
+
+<h1 id="suggested-questions">Suggested Questions</h1>
+
+
+
+<h2 id="cyber-monday">Cyber Monday</h2>
+
+
+<h3 class="question" id="q1">Q1: Price Check</h3>
+
+<p>After you are full from your Thanksgiving dinner, you realize that you still
+need to buy gifts for all your loved ones over the holidays. However, you also
+want to spend as little money as possible (you're not cheap, just looking for a
+great sale!).</p>
+
+<p>Let's start off by surveying our options. Using the <code>products</code> table, write a
+query that creates a table <code>average_prices</code> that lists categories and the
+average price of items in the category
+(using <a href="https://en.wikipedia.org/wiki/List_price">MSRP</a> as the price).</p>
+
+<p>You should get the following output:</p>
+
+<pre><code>sqlite&gt; SELECT category, ROUND(average_price) FROM average_prices;
+computer|109.0
+games|350.0
+phone|90.0</code></pre>
+
+<solution>
+
+<pre><code>CREATE TABLE average_prices AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q cyber-monday-part1</code></pre>
+
+
+
+<h3 class="question" id="q2">Q2: The Price is Right</h3>
+
+<p>Now, you want to figure out which stores sell each item in products for the
+lowest price. Write a SQL query that uses the <code>inventory</code> table to create a
+table <code>lowest_prices</code> that lists items, the stores that sells that item for the
+lowest price, and the price that the store sells that item for.</p>
+
+<p>You should expect the following output:</p>
+
+<pre><code>sqlite&gt; SELECT * FROM lowest_prices;
+Hallmart|GameStation|298.98
+Targive|QBox|390.98
+Targive|iBook|110.99
+RestBuy|kBook|94.99
+Hallmart|qPhone|85.99
+Hallmart|rPhone|69.99
+RestBuy|uPhone|89.99
+RestBuy|wBook|114.29</code></pre>
+
+<solution>
+
+<pre><code>CREATE TABLE lowest_prices AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q cyber-monday-part2</code></pre>
+
+
+
+<h3 class="question" id="q3">Q3: Bang for your Buck</h3>
+
+<p>You want to make a shopping list by choosing the item that is the best deal
+possible for every category. For example, for the "phone" category, the uPhone
+is the best deal because the MSRP price of a uPhone divided by its ratings
+yields the lowest cost. That means that uPhones cost the lowest money per rating
+point out of all of the phones. Note that the item with the lowest MSRP price may not
+necessarily be the best deal.</p>
+
+<p>Write a query to create a table <code>shopping_list</code> that lists the items that you
+want to buy from each category.</p>
+
+<p>After you've figured out which item you want to buy for each category, add
+another column that lists the store that sells that item for the lowest price.</p>
+
+<p>You should expect the following output:</p>
+
+<pre><code>sqlite&gt; SELECT * FROM shopping_list;
+GameStation|Hallmart
+uPhone|RestBuy
+wBook|RestBuy</code></pre>
+
+<solution>
+
+<pre><code>CREATE TABLE shopping_list AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+
+
+<blockquote><p><strong>Hint</strong>: You should use the <code>lowest_prices</code> table you created in the previous
+question.</p>
+
+<p><strong>Hint 2</strong>: One approach to this problem is to create another table, then create shopping_list by selecting
+from that table.</p></blockquote>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q cyber-monday-part3</code></pre>
+
+<h3 class="question" id="q4">Q4: Driving the Cyber Highways</h3>
+
+<p>Using the Mb (megabits) column from the <code>stores</code> table, write a query to
+calculate the total amount of bandwidth needed to get everything in your
+shopping list.</p>
+
+<solution>
+
+<pre><code>CREATE TABLE total_bandwidth AS
+  SELECT "REPLACE THIS LINE WITH YOUR SOLUTION";
+</code></pre>
+
+</solution>
+
+<blockquote><p><strong>Hint</strong>: You should use the <code>shopping_list</code> table you created in the
+previous question.</p></blockquote>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q cyber-monday-part4</code></pre>
+
+
+
+
+<h1 id="troubleshooting-advanced-sqlite">Troubleshooting/Advanced SQLite</h1>
+
+
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+
+<p>Python already comes with a built-in SQLite database engine to process SQL.
+However, it doesn't come with a "shell" to let you interact with it from the terminal.
+Because of this, until now, you have been using a simplified SQLite shell written by us.
+However, you may find the shell is old, buggy, or lacking in features.
+In that case, you may want to download and use the official SQLite executable.</p>
+
+<p>If running <code>python3 sqlite_shell.py</code> didn't work, you can download a precompiled sqlite directly by following the following instructions and then use <code>sqlite3</code> and <code>./sqlite3</code> instead of <code>python3 sqlite_shell.py</code> based on which is specified for your platform.</p>
+
+
+        <button id='toggle-3' class='btn btn-outline btn-lg alwaystoggle toggle'>
+        Setup<noscript> (enable JavaScript)</noscript>
+        </button>
+        <div class="solution toggle-3">
+Another way to start using SQLite is to download a precompiled
+binary from the <a href="http://www.sqlite.org/download.html">SQLite website</a>.
+The latest version of SQLite at the time of writing is 3.28.0, but you
+can check for additional updates on the website.
+
+<p>However, before proceeding, please remove (or rename) any SQLite executables
+(<code>sqlite3</code>, <code>sqlite_shell.py</code>, and the like)
+from the current folder, or they may conflict with the official one you download below.
+Similarly, if you wish to switch back later,
+please remove or rename the one you downloaded and restore the files you removed.</p>
+
+
+<h3 id="windows">Windows</h3>
+
+
+<ol>
+  <li>Visit the download page linked above and navigate to the section
+  Precompiled Binaries for Windows. Click on the link
+  <strong>sqlite-tools-win32-x86-*.zip</strong> to download the binary.</li>
+  <li>Unzip the file. There should be a <code>sqlite3.exe</code> file in the
+  directory after extraction.</li>
+  <li><p>Navigate to the folder containing the <code>sqlite3.exe</code> file and check
+  that the version is at least 3.8.3:</p>
+
+<pre><code>$ cd path/to/sqlite
+$ ./sqlite3 &#x2d;&#x2d;version
+3.12.1 2016&#x2d;04&#x2d;08 15:09:49 fe7d3b75fe1bde41511b323925af8ae1b910bc4d</code></pre></li>
+</ol>
+
+
+<h3 id="macos-yosemite-10-10-or-newer">macOS Yosemite (10.10) or newer</h3>
+
+
+<p>SQLite comes pre-installed. Check that you have a version that's greater than 3.8.3:</p>
+
+<pre><code>    $ sqlite3
+    SQLite version 3.8.10.2</code></pre>
+
+
+<h3 id="mac-os-x-mavericks-10-9-or-older">Mac OS X Mavericks (10.9) or older</h3>
+
+
+<p>SQLite comes pre-installed, but it is the wrong version.</p>
+
+<ol>
+  <li>Visit the download page linked above and navigate to the section
+  <strong>Precompiled Binaries for Mac OS X (x86)</strong>. Click on
+  the link <strong>sqlite-tools-osx-x86-*.zip</strong> to download the
+  binary.</li>
+  <li>Unzip the file. There should be a <code>sqlite3</code> file in the directory
+  after extraction.</li>
+  <li><p>Navigate to the folder containing the <code>sqlite3</code> file and check that
+  the version is at least 3.8.3:</p>
+
+<pre><code>$ cd path/to/sqlite
+$ ./sqlite3 &#x2d;&#x2d;version
+3.12.1 2016&#x2d;04&#x2d;08 15:09:49 fe7d3b75fe1bde41511b323925af8ae1b910bc4d</code></pre></li>
+</ol>
+
+
+<h3 id="ubuntu">Ubuntu</h3>
+
+
+<p>The easiest way to use SQLite on Ubuntu is to install it straight from
+the native repositories (the version will be slightly behind the most
+recent release):</p>
+
+<pre><code>$ sudo apt install sqlite3
+$ sqlite3 &#x2d;&#x2d;version
+3.8.6 2014&#x2d;08&#x2d;15 11:46:33 9491ba7d738528f168657adb43a198238abde19e</code></pre>
+
+</div>
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#submission">Submission</a></li>
+  <li><a href="#topics">Topics</a></li>
+  <ul>
+    <li><a href="#sqlite">SQLite</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#sql-aggregation">SQL Aggregation</a></li>
+  </ul>
+  <li><a href="#suggested-questions">Suggested Questions</a></li>
+  <ul>
+    <li><a href="#cyber-monday">Cyber Monday</a></li>
+    <ul>
+      <li><a href="#q1">Q1: Price Check</a></li>
+      <li><a href="#q2">Q2: The Price is Right</a></li>
+      <li><a href="#q3">Q3: Bang for your Buck</a></li>
+      <li><a href="#q4">Q4: Driving the Cyber Highways</a></li>
+    </ul>
+  </ul>
+  <li><a href="#troubleshooting-advanced-sqlite">Troubleshooting/Advanced SQLite</a></li>
+  <ul>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+    <ul>
+      <li><a href="#windows">Windows</a></li>
+      <li><a href="#macos-yosemite-10-10-or-newer">macOS Yosemite (10.10) or newer</a></li>
+      <li><a href="#mac-os-x-mavericks-10-9-or-older">Mac OS X Mavericks (10.9) or older</a></li>
+      <li><a href="#ubuntu">Ubuntu</a></li>
+    </ul>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

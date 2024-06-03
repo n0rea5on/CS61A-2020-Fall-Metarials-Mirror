@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+UNIX tutorial | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>UNIX tutorial</h1>
+    </header>
+     <h2 id="meet-the-terminal">Meet the Terminal</h2>
+
+
+<p>The terminal is a program that allows you to talk to your computer by
+entering commands. No matter what operating system you use (Windows,
+MacOS, Linux), the terminal will be an essential tool for CS 61A.</p>
+
+<p>Go ahead and open up a terminal. The terminal lets you give commands to your
+computer. Try this command:</p>
+
+<pre><code>echo &quot;Hello world&quot;</code></pre>
+
+<p>Your terminal will repeat "Hello world" back to the screen. The <code>echo</code>
+command just tells your terminal to repeat the words you typed. Not too
+impressive just yet, but it turns out the terminal can do a lot more!</p>
+
+
+<h2 id="the-filesystem">The Filesystem</h2>
+
+
+<p>On Windows or MacOS, you are probably familiar with folders and files,
+with which you can interact by dragging and dropping icons. Today, we
+are getting rid of the icons and using just the terminal to manage our
+files and folders!</p>
+
+<p>With the terminal, you can do everything that a graphical filesystem
+can do -- and more!</p>
+
+
+<h3 id="directories">Directories</h3>
+
+
+<p>The first command we'll use is <code>ls</code> (the letter <code>l</code> and the letter
+<code>s</code>). Try typing it into the terminal!</p>
+
+<pre><code>user@computer:~$ ls
+Desktop/  Documents/  Downloads/   ...</code></pre>
+
+<blockquote><p>Depending on what computer you are using, the output that you see
+after typing <code>ls</code> might be different.</p></blockquote>
+
+<p>The <code>ls</code> command <strong>l</strong>i<strong>s</strong>ts all the files and folders in the current
+directory.  A <strong>directory</strong> is another name for a folder (such as the
+<code>Documents</code> folder).</p>
+
+<p>When you open a terminal, you will start from the <strong>home directory</strong>.
+Notice that your prompt (e.g. <code>user@computer:~$</code>) has a tilde <code>~</code> in it. Your
+prompt helpfully tells you your current directory -- in this case, your
+current directory is <code>~</code>, which stands for the home directory.</p>
+
+
+<h3 id="making-new-directories">Making New Directories</h3>
+
+
+<p>Our next command is called <code>mkdir</code>. Try typing the following command
+into your terminal:</p>
+
+<pre><code>mkdir example</code></pre>
+
+<p>The <code>mkdir</code> command <strong>m</strong>a<strong>k</strong>es a new <strong>dir</strong>ectory (i.e. makes a new
+folder). Notice that, unlike <code>ls</code>, we don't just type <code>mkdir</code>
+and press enter. We also need to specify an <strong>argument</strong> to the command
+(the argument is <code>example</code> in this example). For <code>mkdir</code>, the argument is
+the name of the directory we want to create.</p>
+
+<blockquote><p>Some commands always require arguments to work, like <code>mkdir</code>. Other
+commands can work just fine without supplying any arguments, like
+<code>ls</code>.</p></blockquote>
+
+<p>Now that we've made our <code>example</code> directory, let's make sure it is
+actually there. Use the <code>ls</code> command to verify that <code>example</code> shows up in
+our list of directories.</p>
+
+
+<h3 id="moving-to-other-directories">Moving to other directories</h3>
+
+
+<p>To move into another directory, we use the <code>cd</code> command. Try typing the
+following command into your terminal:</p>
+
+<pre><code>cd example</code></pre>
+
+<p>The <code>cd</code> command will <strong>c</strong>hange <strong>d</strong>irectories -- in other words, it
+moves you into the specified folder. In the example above, we chose to
+move into the <code>example</code> directory.</p>
+
+<p>Notice that the <code>~</code> in your prompt turned into <code>~/example</code>. Again, the
+prompt will tell you what your current directory is. In this case, we
+are in the <code>example</code> directory, which is located within the home directory
+(the <code>~</code>).</p>
+
+<p>If you use the <code>ls</code> command now, you'll notice that no output shows up.
+This makes sense, since we just created the <code>example</code> directory and we
+haven't added any files to it. We'll come back to this later.</p>
+
+<p>For now, let's get back to our home directory. There are a few ways to
+do this:</p>
+
+<ul>
+  <li>Type <code>cd ..</code> (two dots). The <code>..</code> means "the parent directory". In
+  this case, the parent directory of <code>example</code> happens to be our home
+  directory, so we can use <code>cd ..</code> to go up one directory.</li>
+  <li>Type <code>cd ~</code> (the tilde). Remember that <code>~</code> means home directory, so
+  this command tells your terminal to change to the home directory,
+  no matter where you currently are.</li>
+  <li>Type <code>cd</code> (that is, the <code>cd</code> command with no arguments). In UNIX,
+  typing just <code>cd</code> is a shortcut for typing <code>cd ~</code>.</li>
+</ul>
+
+
+<h3 id="removing-directories">Removing Directories</h3>
+
+
+<p>We now know how to see, create, and move to directories. Our last
+command involving directories will be to delete them using the <code>rm</code>
+command.</p>
+
+<p>First, let's create a exampleorary directory:</p>
+
+<pre><code>mkdir tmp</code></pre>
+
+<p>If you use the <code>ls</code> command, you should now see <code>tmp</code> listed as a
+directory.</p>
+
+<p>Next, let's delete the <code>tmp</code> directory:</p>
+
+<pre><code>rm &#x2d;r tmp</code></pre>
+
+<p>The <code>rm</code> command will <strong>r</strong>e<strong>m</strong>ove files and directories from your
+filesystem. By itself (that is, without the <code>&#x2d;r</code>) the <code>rm</code> command
+only removes files. However, since we are removing a directory, we need
+to specify <code>&#x2d;r</code> to <strong>r</strong>ecursively remove the <code>tmp</code> directory and any
+files that <code>tmp</code> might contain (the process is called "recursive"
+because, in order to remove <code>tmp</code>, we have to remove everything inside
+of <code>tmp</code>).</p>
+
+<blockquote><p>As you've seen, some commands require arguments, like <code>mkdir</code>. Other
+commands do not require any arguments in order to work, like <code>ls</code>.
+In addition, most commands can also be given <strong>flags</strong>, like the <code>&#x2d;r</code>
+for <code>rm</code>. Flags are ways to specify modified behavior for commands --
+for example, <code>rm</code> by itself only removes files; using <code>&#x2d;r</code> tells <code>rm</code>
+to remove directories.</p></blockquote>
+
+
+<h3 id="summary-of-directories">Summary of directories</h3>
+
+
+<p>So far, we have learned how to do the following with directories
+(folders):</p>
+
+<ul>
+  <li><code>ls</code>: <strong>l</strong>i<strong>s</strong>t the files and folders inside of the current
+  directory</li>
+  <li><code>mkdir</code>: <strong>m</strong>a<strong>k</strong>e a new <strong>dir</strong>ectory</li>
+  <li><code>cd</code>: <em>c</em>hange <em>d</em>irectories</li>
+  <li><code>rm &#x2d;r</code>: <strong>r</strong>e<strong>m</strong>ove a specified directory</li>
+</ul>
+
+
+<h2 id="files">Files</h2>
+
+
+<p>Directories are not very useful if they don't contain any files. In
+this section, we walk through some more commands that allow you to
+interact with files.</p>
+
+<p>For this section, let's start back in our home directory. Recall that
+we can do this by simply typing</p>
+
+<pre><code>cd</code></pre>
+
+<p>into our terminal. Your prompt should now say <code>~</code>.</p>
+
+
+<h3 id="creating-files">Creating files</h3>
+
+
+<p>There are many different ways to create files. For this class, you
+will usually be using a text editor to directly write the file, much
+like how you would edit a Word document in Microsoft Word.</p>
+
+<p>For now, we'll just download a file called <code>unix.txt</code>, which can be
+found <a href="assets/unix.txt">here</a>. In this class, you will start most
+homeworks and projects by downloading a file.</p>
+
+<p>The default location for downloads on the school computers is in the
+<code>Downloads</code> directory. Let's change into that directory using our <code>cd</code>
+command.</p>
+
+<pre><code>cd ~/Downloads</code></pre>
+
+<p>You can use the <code>ls</code> command to verify your <code>unix.txt</code> is in this
+directory.</p>
+
+
+<h3 id="moving-files">Moving files</h3>
+
+
+<p>On Windows and Mac, much of your interaction with files is likely spent
+dragging them from folder to folder. UNIX provides a way to move files
+with the <code>mv</code> command.</p>
+
+<p>Remember that we <a href="#making-new-directories">created a directory</a> called
+<code>example</code>. Let's move <code>unix.txt</code> into <code>example</code>:</p>
+
+<pre><code>mv unix.txt ~/example</code></pre>
+
+<p>The <code>mv</code> command <strong>m</strong>o<strong>v</strong>es one file/directory into another
+file/directory. Here, we are moving the <code>unix.txt</code> file into the
+<code>example</code> directory, which is inside the home directory.</p>
+
+<p>To verify that the <code>mv</code> command work, do the following:</p>
+
+<ol>
+  <li>Use <code>ls</code> to check that <code>unix.txt</code> is no longer in our current
+  directory (which is the Downloads directory).</li>
+  <li>Change into the <code>example</code> directory. Your prompt should now show
+  <code>~/example</code>.</li>
+  <li>Use <code>ls</code> to verify that <code>unix.txt</code> shows up in <code>example</code>.</li>
+</ol>
+
+
+<h3 id="reading-a-file-the-quick-and-easy-way">Reading a file: the quick and easy way</h3>
+
+
+<p>Files are useful because they contain information. Let's see what
+<code>unix.txt</code> contains. Type in the following command:</p>
+
+<pre><code>cat unix.txt</code></pre>
+
+<p>This prints out a list of all the useful UNIX commands we've seen so far. The
+<code>cat</code> command prints the contents of a file to the screen.  This is a fast way
+to verify that a file is correct or to read what a file contains. For example,
+if you forget any UNIX commands in in this article, you can quickly <code>cat
+unix.txt</code> to read about them.</p>
+
+
+<h3 id="renaming-files">Renaming files</h3>
+
+
+<p>To rename files on Windows or MacOS, you would click on the name of the
+file and type in the new name.</p>
+
+<p>Renaming files with the terminal can be a little confusing at first.
+Try the following command in the terminal (from the <code>example</code> directory)</p>
+
+<pre><code>mv unix.txt unix_commands.txt</code></pre>
+
+<p>Using <code>ls</code>, you'll see that <code>unix.txt</code> is gone -- in its place is a
+file called <code>unix_commands.txt</code>. Furthermore, typing <code>cat
+unix_commands.txt</code> will print out the same list of UNIX commands.</p>
+
+<p>It appears that we renamed <code>unix.txt</code> to <code>unix_commands.txt</code> by using
+the <code>mv</code> command! Here's how to think about it:</p>
+
+<ul>
+  <li><code>mv</code> will move the contents of a file/directory into another
+  file/directory. In the <a href="#moving-files">previous section</a>, we moved a
+  file into a directory.</li>
+  <li>This time, we are moving the contents of a file (<code>unix.txt</code>) into
+  another file (<code>unix_commands.txt</code>). While we are <em>technically</em> moving
+  file contents, this is <em>effectively</em> the same thing as renaming a
+  file!</li>
+</ul>
+
+<p>This can be a bit confusing if you're seeing it for the first time, so
+make sure you understand it before you move onto the next section.</p>
+
+<blockquote><p><strong>Note</strong>: Suppose you already have two files, <code>alice.txt</code> and
+<code>bob.txt</code>, and you issue the command:</p>
+
+<pre><code>mv alice.txt bob.txt</code></pre>
+
+<p>This will overwrite the old contents of <code>bob.txt</code> with the contents
+of <code>alice.txt</code>! UNIX won't warn you about overwriting, so be careful
+when using the <code>mv</code> command!</p></blockquote>
+
+
+<h3 id="copying-files">Copying files</h3>
+
+
+<p>Sometimes, it is useful to have multiple copies of a file. Try the
+following command:</p>
+
+<pre><code>cp unix_commands.txt new_file.txt</code></pre>
+
+<p>The <code>cp</code> command <strong>c</strong>o<strong>p</strong>ies the contents of one file into another
+file. Using <code>ls</code>, you will see that the <code>example</code> directory now contains
+two files, <code>unix_commands.txt</code> and <code>new_file.txt</code>. Using <code>cat</code> will verify
+that both files have the same contents.</p>
+
+<p>Suppose we also wanted to copy the <code>unix_commands.txt</code> file to our home
+directory. Here's one way to do it:</p>
+
+<ol>
+  <li>Change <a href="#moving-to-other-directories">back to the home directory</a>.
+  (challenge: try doing this without looking up the command!)</li>
+  <li><p>Next, use the following command:</p>
+
+<pre><code>cp example/unix_commands.txt .</code></pre>
+
+  <p>Don't forget the dot at the end!</p></li>
+</ol>
+
+<p>The first argument (<code>example/unix_commands.txt</code>) tells the terminal to
+look in the <code>example</code> directory to find <code>unix_commands.txt</code>.</p>
+
+<p>The second argument <code>.</code> tells the terminal to copy <code>unix_commands.txt</code>
+to the directory <code>.</code>. Just as two dots (<code>..</code>) represents the parent
+directory, a single dot (<code>.</code>) represents the <em>current</em> directory (the
+directory we're in right now).</p>
+
+<p>Now that we're in the home directory, we can use <code>ls</code> to verify
+that there is a copy of <code>unix_commands.txt</code>:</p>
+
+<pre><code>user@computer:~$ ls
+Desktop/ ... unix_commands.txt ...</code></pre>
+
+<p>Using <code>cat unix_commands.txt</code> will show the same output of UNIX
+commands.</p>
+
+<blockquote><p><strong>Recap</strong>: we've seen two special directories: two dots <code>..</code>
+represents the parent directory (one directory up), while a single
+dot <code>.</code> represents the current directory. You can use these special
+expressions with any command that deals with directories. For
+example, you can <code>mv</code> a file to the current directory with the
+command</p>
+
+<pre><code>mv some_file .</code></pre></blockquote>
+
+
+<h3 id="removing-files">Removing files</h3>
+
+
+<p>Recall the <code>rm</code> command we
+<a href="#removing-directories">introduced earlier</a>. We originally used the
+<code>&#x2d;r</code> flag to remove directories. Now we will use <code>rm</code> without the <code>&#x2d;r</code>
+to remove a file. Type this into your terminal:</p>
+
+<pre><code>rm unix_commands.txt</code></pre>
+
+<p>This will delete the copy of <code>unix_commands.txt</code> that is in our current
+directory (which is the home directory). A quick <code>ls</code> will show you
+that <code>unix_commands.txt</code> is gone.</p>
+
+<blockquote><p><strong>Warning</strong>: Unlike on Windows and MacOS, there is no friendly
+Recycle Bin or Trash from which you can restore deleted files. In
+UNIX, when you <code>rm</code> a file, it's gone. You can't "undo" <code>rm</code>, so
+think twice (and thrice!) before using the <code>rm</code> command!.</p></blockquote>
+
+
+<h3 id="summary-of-files">Summary of files</h3>
+
+
+<p>In this section, we learned the basics of manipulating files:</p>
+
+<ul>
+  <li><code>cat</code>: displays the contents of a file on the screen</li>
+  <li><code>mv</code>: <strong>m</strong>o<strong>v</strong>es a file/directory to another file/directory. When
+  moving one file to another, we are effectively renaming the file!</li>
+  <li><code>cp</code>: <strong>c</strong>o<strong>p</strong>ies a file to another file/directory.</li>
+  <li><code>rm</code>: <strong>r</strong>e<strong>m</strong>oves a file. When using the <code>&#x2d;r</code> flag, <code>rm</code> will
+  delete directories.</li>
+</ul>
+
+<p>In addition, we learned about two special directories: <code>..</code> (the parent
+directory) and <code>.</code> (the current directory).</p>
+
+
+<h2 id="getting-help">Getting Help</h2>
+
+
+<p>If you ever come across a terminal command with which you are
+unfamiliar, you can use a command called <code>man</code>:</p>
+
+<pre><code>man ls</code></pre>
+
+<p>The <code>man</code> command will show the <strong>man</strong>ual pages (reference pages) for
+another command. In the example above, we ask the terminal to show the
+manual pages for the <code>ls</code> command. As you skim through the manual
+pages, you'll notice that <code>ls</code> can do a lot more than just list the
+contents of a directory! <code>man</code> is a great way to learn more about new
+commands and even commands that you think you already know.</p>
+
+<blockquote><p><strong>Note</strong>: Some school computers do not have the <code>man</code> command
+installed, so you might get an error. That's okay -- if <code>man</code> ever
+fails, Google is your friend!</p></blockquote>
+
+
+<h2 id="conclusion">Conclusion</h2>
+
+
+<p>While the primary programming language in CS 61A is Python, it is
+important to know how to navigate through the UNIX filesystem to manage
+your class assignments. You will also be interacting with the Python
+interpreter from your terminal, whether you are using a school computer
+or your home computer.</p>
+
+<p>In addition, if you continue with computer science after 61A, you will
+definitely interact more with UNIX and the terminal.</p>
+
+
+<h2 id="appendix">Appendix</h2>
+
+
+
+<h3 id="terminology">Terminology</h3>
+
+
+<ul>
+  <li><strong>Terminal</strong>: a program that allows users to enter commands to
+  control the computer</li>
+  <li><p><strong>Prompt</strong>: displays certain information every time the terminal is
+  ready to receive new commands. For example, your prompt might look
+  something like this:</p>
+
+<pre><code>user@computer~$</code></pre>
+
+  <p>Usually, prompts will tell you your current directory (in the example
+  above, the current directory is <code>~</code>)</p></li>
+  <li><strong>Directory</strong>: the same thing as a folder. Directories can contain
+  files as well as other directories</li>
+  <li><strong>Parent directory</strong>: the directory that is immediately above the
+  current directory (i.e. one directory up). This is represented in
+  UNIX as two dots, <code>..</code></li>
+  <li><strong>Current directory</strong>: the directory that we are currently looking
+  at. This is represented in UNIX as a single dot, <code>.</code></li>
+  <li><strong>Home directory</strong>: the top-level directory that contains all of your
+  files and sub-directories. This is represented in UNIX as a tilde,
+  <code>~</code>.</li>
+</ul>
+
+
+<h3 id="unix-commands">UNIX commands</h3>
+
+
+<ul>
+  <li><p>Directories:</p>
+
+  <ul>
+    <li><code>ls</code>: <strong>l</strong>i<strong>s</strong>t the files and folders inside of the current
+    directory</li>
+    <li><code>mkdir</code>: <strong>m</strong>a<strong>k</strong>e a new <strong>dir</strong>ectory. For example, <code>mkdir
+    example</code> creates a directory called <code>example</code></li>
+    <li><code>cd</code>: <em>c</em>hange <em>d</em>irectories. For example, <code>cd example</code> changes
+    directories to <code>example</code></li>
+    <li><code>rm &#x2d;r</code>: recursively <strong>r</strong>e<strong>m</strong>ove a specified directory. For
+    example, <code>rm &#x2d;r example</code> removes the <code>example</code> directory and all files
+    and subdirectories inside it.</li>
+  </ul></li>
+  <li><p>Files:</p>
+
+  <ul>
+    <li><code>cat</code>: displays the contents of a file on the screen. For
+    example, <code>cat unix.txt</code> shows the contents of the file <code>unix.txt</code></li>
+    <li><code>mv</code>: <strong>m</strong>o<strong>v</strong>es a file/directory to another file/directory.
+    For example, <code>mv file1 file2</code> moves the contents of <code>file1</code> into
+    a (possibly new) file called <code>file2</code>.  When moving one file to
+    another, we are effectively renaming the file!</li>
+    <li><code>cp</code>: <strong>c</strong>o<strong>p</strong>ies a file to another file/directory. For
+    example, <code>cp file1 file2</code> copies the contents of <code>file1</code> into a
+    file named <code>file2</code>.</li>
+    <li><code>rm</code>: <strong>r</strong>e<strong>m</strong>oves a file. For example, <code>rm file1</code> deletes the
+    file called <code>file1</code>.</li>
+  </ul></li>
+  <li><p>Miscellaneous:</p>
+
+  <ul>
+    <li><code>echo</code>: displays words on the screen</li>
+    <li><code>man</code>: displays <strong>man</strong>ual pages for a specified command</li>
+  </ul></li>
+</ul>
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#meet-the-terminal">Meet the Terminal</a></li>
+  <li><a href="#the-filesystem">The Filesystem</a></li>
+  <ul>
+    <li><a href="#directories">Directories</a></li>
+    <li><a href="#making-new-directories">Making New Directories</a></li>
+    <li><a href="#moving-to-other-directories">Moving to other directories</a></li>
+    <li><a href="#removing-directories">Removing Directories</a></li>
+    <li><a href="#summary-of-directories">Summary of directories</a></li>
+  </ul>
+  <li><a href="#files">Files</a></li>
+  <ul>
+    <li><a href="#creating-files">Creating files</a></li>
+    <li><a href="#moving-files">Moving files</a></li>
+    <li><a href="#reading-a-file-the-quick-and-easy-way">Reading a file: the quick and easy way</a></li>
+    <li><a href="#renaming-files">Renaming files</a></li>
+    <li><a href="#copying-files">Copying files</a></li>
+    <li><a href="#removing-files">Removing files</a></li>
+    <li><a href="#summary-of-files">Summary of files</a></li>
+  </ul>
+  <li><a href="#getting-help">Getting Help</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#appendix">Appendix</a></li>
+  <ul>
+    <li><a href="#terminology">Terminology</a></li>
+    <li><a href="#unix-commands">UNIX commands</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+</script>
+
+  </body>
+</html>

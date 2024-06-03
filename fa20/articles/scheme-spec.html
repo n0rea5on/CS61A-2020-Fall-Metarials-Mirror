@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+    <title>
+CS 61A Scheme Specification | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>CS 61A Scheme Specification</h1>
+    </header>
+     <blockquote><p>Last Updated: Spring 2019</p></blockquote>
+
+
+<h2 id="about-this-specification">About This Specification</h2>
+
+
+<p>The version of Scheme used in this course is not perfectly true to any official
+specification of the language, though it is perhaps closest to <a href="http://www.schemers.org/Documents/Standards/R5RS/">R5RS</a>, with
+some features and terminology from other versions, both older and newer. We
+deviate from the official specifications for several reasons, including ease of
+implementation (both for the staff in reference implementations and for students
+in completing the Scheme project) and ease of instruction.</p>
+
+<p>This document and the linked built-in procedure reference are very long and
+are an attempt to formalize the variant of Scheme used in 61A. Lectures, labs,
+and discussion are probably better resources for first learning the language.
+However, the <a href="#overview-and-terminology">Overview and Terminology</a> section may
+be useful if you wish to read a more formal description of the language.</p>
+
+<p>You should not find it necessary to read the full references of
+<a href="#special-forms">special forms</a> and <a href="scheme-builtins.html">built-in procedures</a>,
+but specific sections may be helpful to reference when working on Scheme
+assignments and the project (the relevant sections will typically be linked
+in the assignment itself).</p>
+
+<p>There are, in effect, two different reference implementations of 61A Scheme: the
+Python-based <a href="https://cs61a.org/assets/interpreter/scheme">staff interpreter</a>, provided in Scheme labs and homeworks, and
+the Dart-based web interpreter (<a href="https://scheme.cs61a.org">interpreter</a>, <a href="https://github.com/Cal-CS-61A-Staff/dart_scheme">source code</a>).
+A completed and correct implementation of the Scheme project, including all
+extra credit problems, should match the functionality of the staff interpreter,
+excluding error tracing.</p>
+
+<p>This document primarily focuses on the Python-based interpreter. The web
+interpreter should largely match its behavior, but due to the different host
+language and restraints of the web platform, some inconstencies may exist, for
+which you can <a href="https://github.com/Cal-CS-61A-Staff/dart_scheme/issues">file issues</a>. Additionally, the web interpreter contains
+several extra features, such as a diagrammer and JS interopability that are not
+documented here.</p>
+
+
+<h2 id="overview-and-terminology">Overview and Terminology</h2>
+
+
+
+<h3 id="expressions-and-environments">Expressions and Environments</h3>
+
+
+<p>Scheme works by evaluating <strong>expressions</strong> in <strong>environments</strong>. Every expression
+evaluates to a <strong>value</strong>. Some expressions are <strong>self-evaluating</strong>, which means
+they are both an expression and a value, and that it evaluates to itself.</p>
+
+<p>A <strong>frame</strong> is a mapping from symbols (names) to values, as well as an optional
+parent frame. The current environment refers to the current frame, as well as a
+chain of parent frames up to the <strong>global frame</strong> (which has no parent). When
+looking up a symbol in an environment, Scheme first checks the current frame and
+returns the corresponding value if it exists. If it doesn't, it repeats this
+process on each subsequent parent frame, until either the symbol is found, or
+there are no more parent frames to check.</p>
+
+
+<h3 id="atomic-expressions">Atomic Expressions</h3>
+
+
+<p>There are several <strong>atomic</strong> or <strong>primitive</strong> expressions. Numbers, booleans,
+strings, and the empty list (<code>nil</code>) are all both atomic and self-evaluating.
+Symbols are atomic, but are not self-evaluating (they instead evaluate to a
+value that was previously bound to it in the environment).</p>
+
+
+<h3 id="call-expressions">Call Expressions</h3>
+
+
+<p>The Scheme expressions that are not atomic are called <strong>combinations</strong>, and
+consist of one or more <strong>subexpressions</strong> between parentheses. Most forms are
+evaluated as <strong>call expressions</strong>, which has three evaluation steps:</p>
+
+<ol>
+  <li>Evaluate the first subexpression (the operator), which must evaluate to a
+  <strong>procedure</strong> (see below).</li>
+  <li>Evaluate the remaining subexpressions (the operands) in order.</li>
+  <li>Apply the procedure from step 1 to the evaluated operands (<strong>arguments</strong>) from
+  step 2.</li>
+</ol>
+
+<p>These steps mirror those in Python and other languages.</p>
+
+
+<h3 id="special-forms">Special Forms</h3>
+
+
+<p>However, not all combinations are call expressions. Some are <strong>special forms</strong>.
+The interpreter maintains a set of particular symbols (sometimes called
+<strong>keywords</strong>) that signal that a combination is a special form when they are the
+first subexpression. Each special form has it's own procedure for which operands
+to evaluate and how (described below). The interpreter always checks the first
+subexpression of a combination first. If it matches one of the keywords, the
+corresponding special form is used. Otherwise, the combination is evaluated as a
+call expression.</p>
+
+
+<h3 id="symbolic-programming">Symbolic Programming</h3>
+
+
+<p>Scheme's core data type is the <strong>list</strong>, built out of pairs as described below.
+Scheme code is actually built out of these lists. This means that the code
+<code>(+ 1 2)</code> is constructed as a list of the <code>+</code> symbol, the number 1, and the
+number 2, which is then evaluated as a call expression.</p>
+
+<p>Since lists are normally evaluated as combinations, we need a special form to
+get the actual, unevaluated list. <code>quote</code> is a special form that takes a single
+operand expression and returns it, unevaluated. Therefore, <code>(quote (+ 1 2))</code>
+returns the actual list of the symbol <code>+</code>, the number 1, and the number 2,
+rather than evaluating the expression to get the number 3. This also works for
+symbols. <code>a</code> is looked up in the current environment to get the corresponding
+value, while <code>(quote a)</code> evaluates to the literal symbol <code>a</code>.</p>
+
+<p>Because <code>quote</code> is so commonly used in Scheme, the language has a shorthand way
+of writing it: just put a single quote in front of the expression you want to
+leave unevaluated. <code>&#x27;(+ 1 2)</code> and <code>&#x27;a</code> are equivalent to <code>(quote (+ 1 2))</code> and
+<code>(quote a)</code>, respectively.</p>
+
+
+<h3 id="miscellaneous">Miscellaneous</h3>
+
+
+<p>Like R5RS, 61A Scheme is entirely case-insensitive (aside from strings). This
+specification will use lowercase characters in symbols, but the corresponding
+uppercase characters may be used interchangeably.</p>
+
+
+<h2 id="types-of-values">Types of Values</h2>
+
+
+
+<h3 id="numbers">Numbers</h3>
+
+
+<p>Numbers are built on top of Python's number types and can thus support a
+combination of arbitrarily-large integers and double-precision floating points.</p>
+
+<p>The web interpreter attempts to replicate this when possible, though may deviate
+from Python-based versions due to the different host language and the need to
+work-around the quirks of JavaScript when running in a browser.</p>
+
+<p>Any valid real number literal in the interpreter's host language should be
+properly read. You should not count on consistent results when floating point
+numbers are involved in any calculation or on any numbers with true division.</p>
+
+
+<h3 id="booleans">Booleans</h3>
+
+
+<p>There are two boolean values: <code>#t</code> and <code>#f</code>. Scheme booleans may be input either
+as their canonical <code>#t</code> or <code>#f</code> or as the words <code>true</code> or <code>false</code>.</p>
+
+<p>Any expression may be evaluated in a boolean context, but <code>#f</code> is the only value
+that is false. All other values are treated as true in a boolean context.</p>
+
+<p>Some interpreters prior to Spring 2018 displayed the words <code>true</code> and <code>false</code>
+when booleans were output, but this should not longer be the case in any
+interpreter released/updated since then.</p>
+
+
+<h3 id="symbols">Symbols</h3>
+
+
+<p>Symbols are used as identifiers in Scheme. Valid symbols consist of some
+combination of alphanumeric characters and/or the following special characters:</p>
+
+<pre><code>!$%&amp;*/:&lt;=&gt;?@^_~+&#x2d;.</code></pre>
+
+<p>All symbols should be internally stored with lowercase letters. Symbols must not
+form a valid integer or floating-point number.</p>
+
+
+<h3 id="strings">Strings</h3>
+
+
+<p>Unlike other implementations, 61A Scheme has no concept of individual
+characters. Strings are considered atomic data types in their own right. Strings
+can be entered into the intepreter as a sequence of characters inside double
+quotes, with certain characters, such as line breaks and double quotes escaped.
+As a general rule, if a piece of text would be valid as a JSON key, it should
+work as a string in 61A Scheme. Strings in 61A Scheme are immutable, in contrast
+to most other Scheme implementations.</p>
+
+<p>These differences in how strings behave are due to the status of strings in the
+host languages: Python and Dart both have immutable strings with no concept of
+individual characters.</p>
+
+<p>Because the Python-based interpreter has little use for strings, it lacks proper
+support for their manipulation. The web interpreter, which requires strings for
+JS interop (among other things), it supports a <code>string&#x2d;append</code> built-in, which
+takes in an arbitrary number of values or any type and combines them into a
+string. Additional string manipulation can be done through JS interop.</p>
+
+
+<h3 id="pairs-and-lists">Pairs and Lists</h3>
+
+
+<p>Pairs are a built-in data structure consisting of two fields, a <code>car</code> and a
+<code>cdr</code> (also sometimes called first and second, or first and rest). The first
+value can contain any scheme datatype. However, the second value must contain
+nil, a pair, or a stream promise.</p>
+
+<p><code>nil</code> is a special value in Scheme which represents the empty list. It can be
+inputted by typing <code>nil</code> or <code>()</code> into the interpreter.</p>
+
+<p>A <strong>list</strong> is defined as either <code>nil</code> or a pair whose <code>cdr</code> is another list.
+Pairs are displayed as a parenthesized, space separated, sequence of the elements
+in the sequence they represent. For example, <code>(cons (cons 1 nil) (cons 2 nil))</code>
+is displayed as <code>((1) 2)</code>. Note that this means that <code>cons</code> is asymmetric.</p>
+
+<blockquote><p>There is one exception to the above rule in the case of streams. Streams are
+represented as the <code>car</code> of the stream, followed by a dot, followed by the
+promise that makes up its cdr. For example</p>
+
+<pre><code class="scheme">scm&gt; (cons&#x2d;stream 1 nil)
+(1 . #[promise (not forced)])</code></pre></blockquote>
+
+<p>List literals can be constructed through the quote special form, so
+<code>(cons 1 (cons &#x27;a nil))</code> and <code>&#x27;(1 a)</code> are equivalent.</p>
+
+
+<h3 id="procedures">Procedures</h3>
+
+
+<p>Procedures represent some subroutine within a Scheme program. Procedures are
+first-class in Scheme, meaning that they can be bound to names and passed
+around just like any other Scheme value. Procedures are equivalent to functions
+in most other languages, and the two terms are sometimes used interchangeably.</p>
+
+<p>Procedures can be called on some number of arguments, performing some number
+of actions and then returning some Scheme value.</p>
+
+<p>A procedure call can be performed with the syntax <code>(&lt;operator&gt; &lt;operand&gt; ...)</code>,
+where <code>&lt;operator&gt;</code> is some expression that evaluates to a procedure and each
+<code>&lt;operand&gt;</code> (of which there can be any number, including 0) evaluates to one of
+the procedure's arguments. The term "procedure call" is used interchangeably
+with the term "call expression."</p>
+
+<p>There are several types of procedures. Built-in procedures (or just built-ins)
+are built-in to the interpreter and already bound to names when it is started
+(though it is still possible for you to rebind these names). A list of all the
+built-in procedures in the Python-based interpreter is available in the
+<a href="scheme-builtins.html">Scheme built-ins</a> document.</p>
+
+<p>Lambda procedures are defined using the <code>lambda</code> or <code>define</code> special forms (see
+below) and create a new frame whose parent is the frame in which the lambda was
+defined in when called. The expressions in the lambda's body are than evaluated
+in this new environment. Mu procedures are similar, but the new frame's parent
+is the frame in which the <code>mu</code> is called, not the frame in which it was created.</p>
+
+<p>61A Scheme also has macro procedures, which must be defined with the
+<code>define&#x2d;macro</code> special form. Macros work similarly to lambdas, except that they
+pass the argument expressions in the call expression into the macro instead of
+the evaluated arguments and they then evaluate the expression the macro returns
+in the calling environment afterwards. The modified process for evaluating
+macro call expressions is:</p>
+
+<ol>
+  <li>Evaluate the operator. If it is not a macro procedure, follow the normal call
+  expression steps.</li>
+  <li>Apply the macro procedure from step 1 to the unevaluated operands.</li>
+  <li>Once the macro returns, evaluate that value in the calling environment.</li>
+</ol>
+
+<p>Macros effectively let the user define new special forms. Macro procedures take
+in unevaluated operand expressions and should generally return a piece of Scheme
+code that the macro is equivalent to.</p>
+
+
+<h3 id="promises-and-streams">Promises and Streams</h3>
+
+
+<p>Promises represent the delayed evaluation of an expression in an environment.
+They can be constructed by passing an expression into the <code>delay</code> special form.
+The evaluation of a promise can be forced by passing it into the <code>force</code>
+built-in. The expression of a promise will only ever be evaluated once. The
+first call of <code>force</code> will store the result, which will be immediately returned
+on subsequent calls of <code>force</code> on the same promise.</p>
+
+<p>A promise must contain a pair or nil since it is used as the <code>cdr</code> of a stream. If
+it is found to contain something else when forced, <code>force</code> will error. If <code>force</code>
+errors for any reason, the promise remains unforced.</p>
+
+<p>For example</p>
+
+<pre><code class="scheme">scm&gt; (define p (delay (begin (print &quot;hi&quot;) (/ 1 0))))
+p
+scm&gt; p
+#[promise (unforced)]
+scm&gt; (force p)
+hi
+Error
+scm&gt; p
+#[promise (unforced)]
+scm&gt; (force p)
+hi
+Error</code></pre>
+
+
+
+<p>Or, for an example with type errors:</p>
+
+<pre><code class="scheme">scm&gt; (define p (delay (begin (print &quot;hi&quot;) 2)))
+p
+scm&gt; p
+#[promise (unforced)]
+scm&gt; (force p)
+hi
+Error
+scm&gt; p
+#[promise (unforced)]
+scm&gt; (force p)
+hi
+Error</code></pre>
+
+
+
+<p>Promises are used to define <strong>streams</strong>, which are to lists what promises are to
+regular values. A stream is defined as a pair where the cdr is a promise that
+evaluates to another stream or <code>nil</code>. The <code>cons&#x2d;stream</code> special form and the
+<code>cdr&#x2d;stream</code> built-in are provided make the construction and manipulation of
+streams easier. <code>(cons&#x2d;stream a b)</code> is equivalent to <code>(cons a (delay b))</code>
+while <code>(cdr&#x2d;stream x)</code> is equivalent to <code>(force (cdr x))</code>.</p>
+
+<blockquote><p>A note for those familiar with promises in languages like JavaScript: although
+Scheme promises and JS-style promises originate from the
+<a href="https://en.wikipedia.org/wiki/Futures_and_promises">same general concept</a>, JS promises are best described as a
+placeholder for a value that is computed asynchronously. The Python-based 61A
+Scheme interpreter has no concept of asynchrony, so its promises only represent
+delayed evaluation. The web interpreter continues to use promises in this way,
+but adds a "future" type to stand in place for JS promises.</p></blockquote>
+
+
+<h2 id="special-forms">Special Forms</h2>
+
+
+<p>In all of the syntax definitions below, <code>&lt;x&gt;</code> refers to a required element <code>x</code>
+that can vary, while <code>[x]</code> refers to an optional element <code>x</code>. Ellipses
+indicate that there can be more than one of the preceding element.</p>
+
+<p>The following special forms are included in all versions of 61A Scheme.</p>
+
+
+<h3 id="define"><strong><code>define</code></strong></h3>
+
+
+<pre><code>(define &lt;name&gt; &lt;expression&gt;)</code></pre>
+
+<p>Evaluates <code>&lt;expression&gt;</code> and binds the value to <code>&lt;name&gt;</code> in the current
+environment. <code>&lt;name&gt;</code> must be a valid Scheme symbol.</p>
+
+<pre><code>(define (&lt;name&gt; [param] ...) &lt;body&gt; ...)</code></pre>
+
+<p>Constructs a new lambda procedure with <code>param</code>s as its parameters and the <code>body</code>
+expressions as its body and binds it to <code>name</code> in the current environment.
+<code>name</code> must be a valid Scheme symbol. Each <code>param</code> must be a unique valid Scheme
+symbol. This shortcut is equivalent to:</p>
+
+<pre><code>(define &lt;name&gt; (lambda ([param] ...) &lt;body&gt; ...))</code></pre>
+
+<p>However, some interpreters may give lambdas created using the shortcut an
+intrinsic name of <code>name</code> for the purpose of visualization or debugging.</p>
+
+<p>In either case, the return value is the symbol <code>&lt;name&gt;</code>.</p>
+
+<pre><code class="scheme">scm&gt; (define x 2)
+x
+scm&gt; (define (f x) x)
+f</code></pre>
+
+
+
+
+<h4 id="variadic-functions">Variadic functions</h4>
+
+
+<p>In staff implementations of the scheme language, you can define a function that takes a variable number of arguments by using the <code>variadic</code> special form. The construct <code>variadic</code> constructs a "variadic symbol" that is bound to multiple rather than a single variable. This is only allowed at the end of an arguments list</p>
+
+<pre><code class="scheme">scm&gt; (define (f x (variadic y)) (append y (list x)))
+f
+scm&gt; (f 1 2 3)
+(2 3 1)
+scm&gt; (define (f (variadic y) x) (append y (list x)))
+Error</code></pre>
+
+
+
+<p>This is also possible in lambdas:</p>
+
+<pre><code class="scheme">scm&gt; (define f (lambda (x (variadic y)) (append y (list x))))
+f
+scm&gt; (f 1 2 3)
+(2 3 1)
+scm&gt; (define my&#x2d;list (lambda ((variadic x)) x))
+my&#x2d;list
+scm&gt; (my&#x2d;list 2 3 4)
+(2 3 4)</code></pre>
+
+
+
+<p>You can use the special symbol <code>.</code> to construct the <code>variadic</code> special form:</p>
+
+<pre><code class="scheme">scm&gt; (define (f x . y) (append y (list x)))
+f
+scm&gt; (f 1 2 3)
+(2 3 1)
+scm&gt; &#x27;. x
+(variadic x)</code></pre>
+
+
+
+<p>This is analogous to <code>,</code> for <code>unquote</code>.</p>
+
+<blockquote><p>Note: this is pretty much the same as <code>*args</code> in python, except that you can't call a function using <code>variadic</code>, you instead have to use the <code>#[apply]</code> built-in function.</p></blockquote>
+
+
+<h3 id="if"><strong><code>if</code></strong></h3>
+
+
+<pre><code>(if &lt;predicate&gt; &lt;consequent&gt; [alternative])</code></pre>
+
+<p>Evaluates <code>predicate</code>. If true, the <code>consequent</code> is evaluated and returned.
+Otherwise, the <code>alternative</code>, if it exists, is evaluated and returned (if no
+<code>alternative</code> is present in this case, the return value is undefined).</p>
+
+
+<h3 id="cond"><strong><code>cond</code></strong></h3>
+
+
+<pre><code>(cond &lt;clause&gt; ...)</code></pre>
+
+<p>Each <code>clause</code> may be of the following form:</p>
+
+<pre><code>(&lt;test&gt; [expression] ...)</code></pre>
+
+<p>The last <code>clause</code> may instead be of the form <code>(else [expression] ...)</code>, which
+is equivalent to <code>(#t [expression] ...)</code>.</p>
+
+<p>Starts with the first <code>clause</code>. Evaluates <code>test</code>. If true, evaluate the
+<code>expression</code>s in order, returning the last one. If there are none, return what
+<code>test</code> evaluated to instead. If <code>test</code> is false, proceed to the next <code>clause</code>.
+If there are no more <code>clause</code>s, the return value is undefined.</p>
+
+
+<h3 id="and"><strong><code>and</code></strong></h3>
+
+
+<pre><code>(and [test] ...)</code></pre>
+
+<p>Evaluate the <code>test</code>s in order, returning the first false value. If no <code>test</code>
+is false, return the last <code>test</code>. If no arguments are provided, return <code>#t</code>.</p>
+
+
+<h3 id="or"><strong><code>or</code></strong></h3>
+
+
+<pre><code>(or [test] ...)</code></pre>
+
+<p>Evaluate the <code>test</code>s in order, returning the first true value. If no <code>test</code>
+is true and there are no more <code>test</code>s left, return <code>#f</code>.</p>
+
+
+<h3 id="let"><strong><code>let</code></strong></h3>
+
+
+<pre><code>(let ([binding] ...) &lt;body&gt; ...)</code></pre>
+
+<p>Each <code>binding</code> is of the following form:</p>
+
+<pre><code>(&lt;name&gt; &lt;expression&gt;)</code></pre>
+
+<p>First, the <code>expression</code> of each <code>binding</code> is evaluated in the current frame.
+Next, a new frame that extends the current environment is created and each
+<code>name</code> is bound to its corresponding evaluated <code>expression</code> in it.</p>
+
+<p>Finally the <code>body</code> expressions are evaluated in order, returning the evaluated
+last one.</p>
+
+
+<h3 id="begin"><strong><code>begin</code></strong></h3>
+
+
+<pre><code>(begin &lt;expression&gt; ...)</code></pre>
+
+<p>Evaluates each <code>expression</code> in order in the current environment, returning the
+evaluated last one.</p>
+
+
+<h3 id="lambda"><strong><code>lambda</code></strong></h3>
+
+
+<pre><code>(lambda ([param] ...) &lt;body&gt; ...)</code></pre>
+
+<p>Creates a new lambda with <code>param</code>s as its parameters and the <code>body</code> expressions
+as its body. When the procedure this form creates is called, the call frame
+will extend the environment this lambda was defined in.</p>
+
+
+<h3 id="mu"><strong><code>mu</code></strong></h3>
+
+
+<pre><code>(mu ([param] ...) &lt;body&gt; ...)</code></pre>
+
+<p>Creates a new mu procedure with <code>param</code>s as its parameters and the <code>body</code>
+expressions as its body. When the procedure this form creates is called, the
+call frame will extend the environment the mu is called in.</p>
+
+
+<h3 id="quote"><strong><code>quote</code></strong></h3>
+
+
+<pre><code>(quote &lt;expression&gt;)</code></pre>
+
+<p>Returns the literal <code>expression</code> without evaluating it.</p>
+
+<p><code>&#x27;&lt;expression&gt;</code> is equivalent to the above form.</p>
+
+
+<h3 id="delay"><strong><code>delay</code></strong></h3>
+
+
+<pre><code>(delay &lt;expression&gt;)</code></pre>
+
+<p>Returns a promise of <code>expression</code> to be evaluated in the current environment.</p>
+
+
+<h3 id="cons-x2d-stream"><strong><code>cons&#x2d;stream</code></strong></h3>
+
+
+<pre><code>(cons&#x2d;stream &lt;first&gt; &lt;rest&gt;)</code></pre>
+
+<p>Shorthand for <code>(cons &lt;first&gt; (delay &lt;rest&gt;))</code>.</p>
+
+
+<h3 id="set"><strong><code>set!</code></strong></h3>
+
+
+<pre><code>(set! &lt;name&gt; &lt;expression&gt;)</code></pre>
+
+<p>Evaluates <code>expression</code> and binds the result to <code>name</code> in the first frame it can
+be found in from the current environment. If <code>name</code> is not bound in the current
+environment, this causes an error.</p>
+
+<p>The return value is undefined.</p>
+
+
+<h3 id="quasiquote"><strong><code>quasiquote</code></strong></h3>
+
+
+<pre><code>(quasiquote &lt;expression&gt;)</code></pre>
+
+<p>Returns the literal <code>expression</code> without evaluating it, unless a subexpression
+of <code>expression</code> is of the form:</p>
+
+<pre><code>(unquote &lt;expr2&gt;)</code></pre>
+
+<p>in which case that <code>expr2</code> is evaluated and replaces the above form in the
+otherwise unevaluated <code>expression</code>.</p>
+
+<p><code>`&lt;expression&gt;</code> is equivalent to the above form.</p>
+
+
+<h3 id="unquote"><strong><code>unquote</code></strong></h3>
+
+
+<p>See above. <code>,&lt;expr2&gt;</code> is equivalent to the form mentioned above.</p>
+
+
+<h3 id="unquote-x2d-splicing"><strong><code>unquote&#x2d;splicing</code></strong></h3>
+
+
+<pre><code>(unquote&#x2d;splicing &lt;expr2&gt;)</code></pre>
+
+<blockquote><p>Note: This special form is included in the staff interpreter and the web
+interpreter, but it is not in scope for the course and is not included in the
+project.</p></blockquote>
+
+<p>Similar to <code>unquote</code>, except that <code>expr2</code> must evaluate to a list, which is
+then spliced into the structure containing it in <code>expression</code>.</p>
+
+<p><code>,@&lt;expr2&gt;</code> is equivalent to the above form.</p>
+
+
+<h3 id="define-x2d-macro"><strong><code>define&#x2d;macro</code></strong></h3>
+
+
+<pre><code>(define&#x2d;macro (&lt;name&gt; [param] ...) &lt;body&gt; ...)</code></pre>
+
+<blockquote><p>Note: This special form is implemented as part of an extra credit problem.</p></blockquote>
+
+<p>Constructs a new macro procedure with <code>param</code>s as its parameters and the <code>body</code>
+expressions as its body and binds it to <code>name</code> in the current environment.
+<code>name</code> must be a valid Scheme symbol. Each <code>param</code> must be a unique valid Scheme
+symbol. <code>(&lt;name&gt; [param] ...)</code> can be <a href="#variadic-functions">variadic</a>.</p>
+
+<p>Macro procedures should be lexically scoped, like lambda procedures.</p>
+
+
+<h2 id="additional-reading">Additional Reading</h2>
+
+
+<ul>
+  <li><a href="scheme-builtins.html">Scheme built-ins</a> - covers the built-in procedures of the Python-based
+  interpreter.</li>
+  <li><a href="http://www.schemers.org/Documents/Standards/R5RS/">R5RS Specification</a> - the full Scheme specificaton that 61A Scheme
+  most closely resembles.</li>
+</ul>
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#about-this-specification">About This Specification</a></li>
+  <li><a href="#overview-and-terminology">Overview and Terminology</a></li>
+  <ul>
+    <li><a href="#expressions-and-environments">Expressions and Environments</a></li>
+    <li><a href="#atomic-expressions">Atomic Expressions</a></li>
+    <li><a href="#call-expressions">Call Expressions</a></li>
+    <li><a href="#special-forms">Special Forms</a></li>
+    <li><a href="#symbolic-programming">Symbolic Programming</a></li>
+    <li><a href="#miscellaneous">Miscellaneous</a></li>
+  </ul>
+  <li><a href="#types-of-values">Types of Values</a></li>
+  <ul>
+    <li><a href="#numbers">Numbers</a></li>
+    <li><a href="#booleans">Booleans</a></li>
+    <li><a href="#symbols">Symbols</a></li>
+    <li><a href="#strings">Strings</a></li>
+    <li><a href="#pairs-and-lists">Pairs and Lists</a></li>
+    <li><a href="#procedures">Procedures</a></li>
+    <li><a href="#promises-and-streams">Promises and Streams</a></li>
+  </ul>
+  <li><a href="#special-forms">Special Forms</a></li>
+  <ul>
+    <li><a href="#define"><strong><code>define</code></strong></a></li>
+    <ul>
+      <li><a href="#variadic-functions">Variadic functions</a></li>
+    </ul>
+    <li><a href="#if"><strong><code>if</code></strong></a></li>
+    <li><a href="#cond"><strong><code>cond</code></strong></a></li>
+    <li><a href="#and"><strong><code>and</code></strong></a></li>
+    <li><a href="#or"><strong><code>or</code></strong></a></li>
+    <li><a href="#let"><strong><code>let</code></strong></a></li>
+    <li><a href="#begin"><strong><code>begin</code></strong></a></li>
+    <li><a href="#lambda"><strong><code>lambda</code></strong></a></li>
+    <li><a href="#mu"><strong><code>mu</code></strong></a></li>
+    <li><a href="#quote"><strong><code>quote</code></strong></a></li>
+    <li><a href="#delay"><strong><code>delay</code></strong></a></li>
+    <li><a href="#cons-x2d-stream"><strong><code>cons&#x2d;stream</code></strong></a></li>
+    <li><a href="#set"><strong><code>set!</code></strong></a></li>
+    <li><a href="#quasiquote"><strong><code>quasiquote</code></strong></a></li>
+    <li><a href="#unquote"><strong><code>unquote</code></strong></a></li>
+    <li><a href="#unquote-x2d-splicing"><strong><code>unquote&#x2d;splicing</code></strong></a></li>
+    <li><a href="#define-x2d-macro"><strong><code>define&#x2d;macro</code></strong></a></li>
+  </ul>
+  <li><a href="#additional-reading">Additional Reading</a></li>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+</script>
+
+  </body>
+</html>

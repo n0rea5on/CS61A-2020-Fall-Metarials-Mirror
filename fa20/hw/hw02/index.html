@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link rel="stylesheet" type="text/css" href="/~cs61a/fa20/assets/css/hw.css">
+
+
+    <title>
+Homework 2 | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Homework 2: Recursion
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hw02.zip" class="label label-outline">hw02.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><em>Due by 11:59pm on Thursday, September 24</em></p>
+
+
+
+
+
+<h2>Instructions</h2>
+
+<p>Download <a href="hw02.zip">hw02.zip</a>. Inside the archive, you will find a file called
+<a href="hw02.py">hw02.py</a>, along with a copy of the <code>ok</code> autograder.</p>
+
+<p><strong>Submission:</strong> When you are done, submit with <code>python3 ok
+  --submit</code>.  You may submit more than once before the deadline; only the
+final submission will be scored. Check that you have successfully submitted
+your code on <a href="https://okpy.org/">okpy.org</a>.  See <a
+  href="/~cs61a/fa20/lab/lab00#submitting-the-assignment">Lab 0</a> for more instructions on
+submitting assignments.</p>
+
+<p><strong>Using Ok:</strong> If you have any questions about using Ok, please
+refer to <a href="/~cs61a/fa20/articles/using-ok.html">this guide.</a>
+
+
+  <p><strong>Readings:</strong> You might find the following references
+  useful:</p>
+  <ul>
+  <li><a href="http://composingprograms.com/pages/17-recursive-functions.html">Section 1.7</a></li>
+  <li><a href="http://composingprograms.com/pages/23-sequences.html">Section 2.3</a></li>
+</ul>
+  
+
+<p><strong>Grading:</strong> Homework is graded based on
+correctness. Each incorrect problem will decrease the total score by one point. There is a homework recovery policy as stated in the syllabus.
+<strong>This homework is out of 2 points.</strong>
+
+
+
+
+    
+<h1 id="required-questions">Required questions</h1>
+
+
+<h3 class="question" id="q1">Q1: Num eights</h3>
+
+<p>Write a recursive function <code>num_eights</code> that takes a positive integer <code>x</code> and
+returns the number of times the digit 8 appears in <code>x</code>.
+<em>Use recursion - the tests will fail if you use any assignment statements.</em></p>
+
+<solution>
+
+<pre><code>def num_eights(x):
+    &quot;&quot;&quot;Returns the number of times 8 appears as a digit of x.
+
+    &gt;&gt;&gt; num_eights(3)
+    0
+    &gt;&gt;&gt; num_eights(8)
+    1
+    &gt;&gt;&gt; num_eights(88888888)
+    8
+    &gt;&gt;&gt; num_eights(2638)
+    1
+    &gt;&gt;&gt; num_eights(86380)
+    2
+    &gt;&gt;&gt; num_eights(12345)
+    0
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # ban all assignment statements
+    &gt;&gt;&gt; check(HW_SOURCE_FILE, &#x27;num_eights&#x27;,
+    ...       [&#x27;Assign&#x27;, &#x27;AugAssign&#x27;])
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/j34yCDO1ASQ"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q num_eights</code></pre>
+
+
+
+<h3 class="question" id="q2">Q2: Ping-pong</h3>
+
+<p>The ping-pong sequence counts up starting from 1 and is always either counting
+up or counting down.  At element <code>k</code>, the direction switches if <code>k</code> is a
+multiple of 8 or contains the digit 8.  The first 30 elements of the ping-pong
+sequence are listed below, with direction swaps marked using brackets at the
+8th, 16th, 18th, 24th, and 28th elements:</p>
+
+
+
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+          
+  <tr>
+    <th>Index</th>
+    <th>1</th>
+    <th>2</th>
+    <th>3</th>
+    <th>4</th>
+    <th>5</th>
+    <th>6</th>
+    <th>7</th>
+    <th>[8]</th>
+    <th>9</th>
+    <th>10</th>
+    <th>11</th>
+    <th>12</th>
+    <th>13</th>
+    <th>14</th>
+    <th>15</th>
+    <th>[16]</th>
+    <th>17</th>
+    <th>[18]</th>
+    <th>19</th>
+    <th>20</th>
+    <th>21</th>
+    <th>22</th>
+    <th>23</th>
+  </tr>
+  <tr>
+    <td>PingPong Value</td>
+    <td>1</td>
+    <td>2</td>
+    <td>3</td>
+    <td>4</td>
+    <td>5</td>
+    <td>6</td>
+    <td>7</td>
+    <td>[8]</td>
+    <td>7</td>
+    <td>6</td>
+    <td>5</td>
+    <td>4</td>
+    <td>3</td>
+    <td>2</td>
+    <td>1</td>
+    <td>[0]</td>
+    <td>1</td>
+    <td>[2]</td>
+    <td>1</td>
+    <td>0</td>
+    <td>-1</td>
+    <td>-2</td>
+    <td>-3</td>
+  </tr>
+
+          </table>
+        </div>
+        
+
+
+
+
+
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+          
+  <tr>
+    <th>Index (cont.)</th>
+    <th>[24]</th>
+    <th>25</th>
+    <th>26</th>
+    <th>27</th>
+    <th>[28]</th>
+    <th>29</th>
+    <th>30</th>
+  </tr>
+  <tr>
+    <td>PingPong Value</td>
+    <td>[-4]</td>
+    <td>-3</td>
+    <td>-2</td>
+    <td>-1</td>
+    <td>[0]</td>
+    <td>-1</td>
+    <td>-2</td>
+  </tr>
+
+          </table>
+        </div>
+        
+
+
+
+<p>Implement a function <code>pingpong</code> that returns the nth element of the ping-pong
+sequence <em>without using any assignment statements</em>.</p>
+
+<p>You may use the function <code>num_eights</code>, which you defined in the previous question.</p>
+
+<p><em>Use recursion - the tests will fail if you use any assignment statements.</em></p>
+
+<blockquote><p><em>Hint</em>: If you're stuck, first try implementing <code>pingpong</code> using assignment
+statements and a <code>while</code> statement. Then, to convert this into a recursive
+solution, write a helper function that has a parameter for each variable that
+changes values in the body of the while loop.</p></blockquote>
+
+<solution>
+
+<pre><code>def pingpong(n):
+    &quot;&quot;&quot;Return the nth element of the ping&#x2d;pong sequence.
+
+    &gt;&gt;&gt; pingpong(8)
+    8
+    &gt;&gt;&gt; pingpong(10)
+    6
+    &gt;&gt;&gt; pingpong(15)
+    1
+    &gt;&gt;&gt; pingpong(21)
+    &#x2d;1
+    &gt;&gt;&gt; pingpong(22)
+    &#x2d;2
+    &gt;&gt;&gt; pingpong(30)
+    &#x2d;2
+    &gt;&gt;&gt; pingpong(68)
+    0
+    &gt;&gt;&gt; pingpong(69)
+    &#x2d;1
+    &gt;&gt;&gt; pingpong(80)
+    0
+    &gt;&gt;&gt; pingpong(81)
+    1
+    &gt;&gt;&gt; pingpong(82)
+    0
+    &gt;&gt;&gt; pingpong(100)
+    &#x2d;6
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # ban assignment statements
+    &gt;&gt;&gt; check(HW_SOURCE_FILE, &#x27;pingpong&#x27;, [&#x27;Assign&#x27;, &#x27;AugAssign&#x27;])
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/5PAfXcB_EoU"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+
+<!--
+
+<pre><code>def has_eight(k):
+    &quot;&quot;&quot;Returns True if at least one of the digits of k is a 8, False otherwise.
+
+    &gt;&gt;&gt; has_eight(3)
+    False
+    &gt;&gt;&gt; has_eight(8)
+    True
+    &gt;&gt;&gt; has_eight(2834)
+    True
+    &gt;&gt;&gt; has_eight(2634)
+    False
+    &gt;&gt;&gt; has_eight(834)
+    True
+    &gt;&gt;&gt; has_eight(8888)
+    True
+    &quot;&quot;&quot;
+    if k % 10 == 8:
+        return True
+    elif k &lt; 10:
+        return False
+    else:
+        return has_eight(k // 10)</code></pre>
+
+-->
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q pingpong</code></pre>
+
+
+
+<h3 class="question" id="q3">Q3: Missing Digits</h3>
+
+<p>Write the recursive function <code>missing_digits</code> that takes a number <code>n</code> that is sorted in increasing order (for example, <code>12289</code> is valid but <code>15362</code> and <code>98764</code> are not). It returns the number of missing digits in <code>n</code>. A missing digit is a number between the first and last digit of <code>n</code> of a that is not in <code>n</code>.
+<em>Use recursion - the tests will fail if you use while or for loops.</em></p>
+
+<solution>
+
+<pre><code>def missing_digits(n):
+    &quot;&quot;&quot;Given a number a that is in sorted, increasing order,
+    return the number of missing digits in n. A missing digit is
+    a number between the first and last digit of a that is not in n.
+    &gt;&gt;&gt; missing_digits(1248) # 3, 5, 6, 7
+    4
+    &gt;&gt;&gt; missing_digits(1122) # No missing numbers
+    0
+    &gt;&gt;&gt; missing_digits(123456) # No missing numbers
+    0
+    &gt;&gt;&gt; missing_digits(3558) # 4, 6, 7
+    3
+    &gt;&gt;&gt; missing_digits(35578) # 4, 6
+    2
+    &gt;&gt;&gt; missing_digits(12456) # 3
+    1
+    &gt;&gt;&gt; missing_digits(16789) # 2, 3, 4, 5
+    4
+    &gt;&gt;&gt; missing_digits(19) # 2, 3, 4, 5, 6, 7, 8
+    7
+    &gt;&gt;&gt; missing_digits(4) # No missing numbers between 4 and 4
+    0
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # ban while or for loops
+    &gt;&gt;&gt; check(HW_SOURCE_FILE, &#x27;missing_digits&#x27;, [&#x27;While&#x27;, &#x27;For&#x27;])
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/xcd2jTROLSs"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q missing_digits</code></pre>
+
+
+
+<h3 class="question" id="q4">Q4: Count coins</h3>
+
+<p>Given a positive integer <code>total</code>, a set of coins makes change for <code>total</code> if
+the sum of the values of the coins is <code>total</code>. Here we will use standard US Coin values: 1, 5, 10, 25 For example, the following
+sets make change for <code>15</code>:</p>
+
+<ul>
+  <li>15 1-cent coins</li>
+  <li>10 1-cent, 1 5-cent coins</li>
+  <li>5 1-cent, 2 5-cent coins</li>
+  <li>5 1-cent, 1 10-cent coins</li>
+  <li>3 5-cent coins</li>
+  <li>1 5-cent, 1 10-cent coin</li>
+</ul>
+
+<p>Thus, there are 6 ways to make change for <code>15</code>.  Write a recursive function
+<code>count_coins</code> that takes a positive integer <code>total</code> and returns the number of
+ways to make change for <code>total</code> using coins. Use the <code>next_largest_coin</code> function given to you to calculate the next largest coin denomination given your current coin. I.e. <code>next_largest_coin(5)</code> = <code>10</code>.</p>
+
+<blockquote><p><em>Hint:</em> Refer the <a href="http://composingprograms.com/pages/17-recursive-functions.html#example-partitions">implementation</a> of <code>count_partitions</code> for an
+example of how to count the ways to sum up to a total with smaller parts.
+If you need to keep track of more than one value across recursive calls,
+consider writing a helper function.</p></blockquote>
+
+<solution>
+
+<pre><code>def next_largest_coin(coin):
+    &quot;&quot;&quot;Return the next coin. 
+    &gt;&gt;&gt; next_largest_coin(1)
+    5
+    &gt;&gt;&gt; next_largest_coin(5)
+    10
+    &gt;&gt;&gt; next_largest_coin(10)
+    25
+    &gt;&gt;&gt; next_largest_coin(2) # Other values return None
+    &quot;&quot;&quot;
+    if coin == 1:
+        return 5
+    elif coin == 5:
+        return 10
+    elif coin == 10:
+        return 25
+
+def count_coins(total):
+    &quot;&quot;&quot;Return the number of ways to make change for total using coins of value of 1, 5, 10, 25.
+    &gt;&gt;&gt; count_coins(15)
+    6
+    &gt;&gt;&gt; count_coins(10)
+    4
+    &gt;&gt;&gt; count_coins(20)
+    9
+    &gt;&gt;&gt; count_coins(100) # How many ways to make change for a dollar?
+    242
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # ban iteration
+    &gt;&gt;&gt; check(HW_SOURCE_FILE, &#x27;count_coins&#x27;, [&#x27;While&#x27;, &#x27;For&#x27;])                                          
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/QUeWZaDM-XA"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q count_coins</code></pre>
+
+
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+<!-- # Optional List Question -->
+
+<!-- <include topics/lists/immutable/medium/flatten.md> -->
+
+
+<h1 id="just-for-fun-questions">Just for Fun Questions</h1>
+
+
+<blockquote><p>This question demonstrates that it's possible to write recursive functions without assigning them a name in the global frame.</p></blockquote>
+
+<!--<include topics/recursion/medium/towers-of-hanoi.md>-->
+<h3 class="question" id="q5">Q5: Anonymous factorial</h3>
+
+<p>The recursive factorial function can be written as a single expression
+by using a <a href="http://docs.python.org/py3k/reference/expressions.html#conditional-expressions">conditional expression</a>.</p>
+
+<pre><code>&gt;&gt;&gt; fact = lambda n: 1 if n == 1 else mul(n, fact(sub(n, 1)))
+&gt;&gt;&gt; fact(5)
+120</code></pre>
+
+<p>However, this implementation relies on the fact (no pun intended) that
+<code>fact</code> has a name, to which we refer in the body of <code>fact</code>.  To write a
+recursive function, we have always given it a name using a <code>def</code> or
+assignment statement so that we can refer to the function within its
+own body.  In this question, your job is to define fact recursively
+without giving it a name!</p>
+
+<p>Write an expression that computes <code>n</code> factorial using only call
+expressions, conditional expressions, and lambda expressions (no
+assignment or def statements).  <em>Note in particular that you are not
+allowed to use <code>make_anonymous_factorial</code> in your return expression.</em>
+The <code>sub</code> and <code>mul</code> functions from the <code>operator</code> module are the only
+built-in functions required to solve this problem:</p>
+
+<solution>
+
+<pre><code>from operator import sub, mul
+
+def make_anonymous_factorial():
+    &quot;&quot;&quot;Return the value of an expression that computes factorial.
+
+    &gt;&gt;&gt; make_anonymous_factorial()(5)
+    120
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # ban any assignments or recursion
+    &gt;&gt;&gt; check(HW_SOURCE_FILE, &#x27;make_anonymous_factorial&#x27;, [&#x27;Assign&#x27;, &#x27;AugAssign&#x27;, &#x27;FunctionDef&#x27;, &#x27;Recursion&#x27;])
+    True
+    &quot;&quot;&quot;
+    return &#x27;YOUR_EXPRESSION_HERE&#x27;
+</code></pre>
+
+</solution>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q make_anonymous_factorial</code></pre>
+
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#required-questions">Required questions</a></li>
+  <ul>
+    <li><a href="#q1">Q1: Num eights</a></li>
+    <li><a href="#q2">Q2: Ping-pong</a></li>
+    <li><a href="#q3">Q3: Missing Digits</a></li>
+    <li><a href="#q4">Q4: Count coins</a></li>
+  </ul>
+  <ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+  <li><a href="#just-for-fun-questions">Just for Fun Questions</a></li>
+  <ul>
+    <li><a href="#q5">Q5: Anonymous factorial</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="description" content ="CS 61A: Structure and Interpretation of Computer Programs" />
+    <meta name="keywords" content ="CS 61A, Computer Science, CS, 61A, Programming, John DeNero, Berkeley, EECS" />
+    <meta name="author" content ="Hany Farid, John DeNero" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/~cs61a/fa20/assets/js/hl.js"></script>
+    <script>
+        // we aren't registering builtins since
+        //      (1) they don't render differently in the current CSS from other names
+        //      (2) it's a mess to list all of them. You can extract from the site but that takes effort
+        // if (1) ceases to be true, (2) might be worth the effort. For now, we're leaving as is
+        hljsRegister({
+            'keyword': "define if cond and or let begin lambda mu quote delay cons-stream set! quasiquote unquote unquote-splicing define-macro"
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="/~cs61a/fa20/assets/js/dark-mode.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto:300,400,500|Work+Sans:400,700">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/style.css">
+    <link rel="stylesheet" href="/~cs61a/fa20/assets/css/mono-blue.css">
+    <link rel="icon" href="/~cs61a/fa20/assets/images/favicon.ico">
+
+    
+
+<link rel="stylesheet" type="text/css" href="/~cs61a/fa20/assets/css/hw.css">
+
+
+    <title>
+Homework 3 | CS 61A Fall 2020
+</title>
+  </head>
+
+  <body id="index" class="home">
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container noselect">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-section">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/~cs61a/fa20/">
+            <img style="max-width:60px; margin-top: -20px;" class="logo" src="/~cs61a/fa20/assets/images/logo.png"/>
+          </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-collapse-section">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Staff
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a href="/~cs61a/fa20/instructor.html">Instructors</a></li>
+                <li><a href="/~cs61a/fa20/TAs.html">TAs</a></li>
+                <li><a href="/~cs61a/fa20/tutors.html">Tutors</a></li>
+                <!-- <li><a href="/~cs61a/fa20/academic-interns.html">Academic Interns</a></li> -->
+              </ul>
+            </li>
+            <li><a href="/~cs61a/fa20/resources.html">Resources</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html">Syllabus</a></li>
+            <li><a href="https://piazza.com/berkeley/fall2020/cs61a" target="_blank">Piazza</a></li>
+            <li><a href="https://denero.org/feedback.html" target="_blank">Feedback</a></li>
+<!--             <li><a href="https://edge.edx.org/courses/course-v1:BerkeleyX+CSW61A+2020_SP">EdX</a></li> -->
+            <!-- <li><a href="https://scheme.cs61a.org">Scheme</a></li> -->
+            <!-- <li><a href="https://sql.cs61a.org">SQL</a></li> -->
+            <li><a href="https://code.cs61a.org">Code</a></li>
+            <li><a href="http://tutor.cs61a.org">Tutor</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main id="content" class="container">
+      
+<div class='row'>
+  <div class='col-md-9'>
+    <header>
+      <h1>
+        
+Homework 3: Trees, Data Abstraction
+
+        
+        
+        <ul class="inline-block list-inline">
+          <li><a href="hw03.zip" class="label label-outline">hw03.zip</a></li>
+        </ul>
+        
+        
+      </h1>
+    </header>
+    
+
+<p><em>Due by 11:59pm on Thursday, October 8</em></p>
+
+
+
+
+
+<h2>Instructions</h2>
+
+<p>Download <a href="hw03.zip">hw03.zip</a>. Inside the archive, you will find a file called
+<a href="hw03.py">hw03.py</a>, along with a copy of the <code>ok</code> autograder.</p>
+
+<p><strong>Submission:</strong> When you are done, submit with <code>python3 ok
+  --submit</code>.  You may submit more than once before the deadline; only the
+final submission will be scored. Check that you have successfully submitted
+your code on <a href="https://okpy.org/">okpy.org</a>.  See <a
+  href="/~cs61a/fa20/lab/lab00#submitting-the-assignment">Lab 0</a> for more instructions on
+submitting assignments.</p>
+
+<p><strong>Using Ok:</strong> If you have any questions about using Ok, please
+refer to <a href="/~cs61a/fa20/articles/using-ok.html">this guide.</a>
+
+
+  <p><strong>Readings:</strong> You might find the following references
+  useful:</p>
+  <ul>
+  <li><a href="http://composingprograms.com/pages/22-data-abstraction.html">Section 2.2</a></li>
+  <li><a href="http://composingprograms.com/pages/23-sequences.html">Section 2.3</a></li>
+</ul>
+  
+
+<p><strong>Grading:</strong> Homework is graded based on
+correctness. Each incorrect problem will decrease the total score by one point. There is a homework recovery policy as stated in the syllabus.
+<strong>This homework is out of 2 points.</strong>
+
+
+
+
+    
+<h1 id="required-questions">Required questions</h1>
+
+
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/uEbwMToQ45M"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+
+
+<h2 id="abstraction">Abstraction</h2>
+
+
+<h2 id="mobiles">Mobiles</h2>
+
+
+<p><strong>Acknowledgements.</strong> This mobile example is based on
+a classic problem from MIT Structure and Interpretation of Computer Programs,
+<a href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-15.html#%_sec_2.2.2">Section 2.2.2</a>.</p>
+
+<!-- > <strong>Hint:</strong> for more information on this problem (with more pictures!) please refer to <a href="assets/mobiles.pdf">this document</a> -->
+
+<p><img class="img-responsive center-block" src="assets/mobile-planet.png" alt="Mobile example"></p>
+
+<p>We are making a planetarium mobile. A <a href="https://images.zanui.com.au/unsafe/1600x/filters:sharpen(1,0.2,1):quality(80)/production-static.aws.zanui.com.au/p/authentic-models-0459-1.jpg">mobile</a> is a type of hanging sculpture. A binary mobile consists of two
+arms. Each arm is a rod of a certain length, from which hangs either a planet
+or another mobile. For example, the below diagram shows the left and right arms of Mobile A,
+and what hangs at the ends of each of those arms.</p>
+
+<p><img class="img-responsive center-block" src="assets/mobile-planet-labeled.png" alt="Labeled Mobile example"></p>
+
+<p>We will represent a binary mobile using the data abstractions below.</p>
+
+<ul>
+  <li>A <code>mobile</code> must have both a left <code>arm</code> and a right <code>arm</code>.</li>
+  <li>An <code>arm</code> has a positive length and must have something hanging at the end, either a <code>mobile</code> or <code>planet</code>.</li>
+  <li>A <code>planet</code> has a positive size, and nothing hanging from it.</li>
+</ul>
+
+
+<h3 id="arms-length-recursion-sidenote">Arms-length recursion (sidenote)</h3>
+
+
+<p>Before we get started, a quick comment on recursion with tree data structures. Consider the following function.</p>
+
+<pre><code>def min_depth(t):
+    &quot;&quot;&quot;A simple function to return the distance between t&#x27;s root and its closest leaf&quot;&quot;&quot;
+    if is_leaf(t):
+        return 0 # Base case&#x2d;&#x2d;&#x2d;the distance between a node and itself is zero
+    h = float(&#x27;inf&#x27;) # Python&#x27;s version of infinity
+    for b in branches(t):
+        if is_leaf(b): return 1 # !!!
+        h = min(h, 1 + min_depth(b))
+    return h</code></pre>
+
+<p>The line flagged with <code>!!!</code> is an "arms-length" recursion violation. Although our code works correctly when it is present, by performing this check we are doing work that should be done by the next level of recursion—we already have an if-statement that handles any inputs to <code>min_depth</code> that are leaves, so we should not include this line to eliminate redundancy in our code.</p>
+
+<pre><code>def min_depth(t):
+    &quot;&quot;&quot;A simple function to return the distance between t&#x27;s root and its closest leaf&quot;&quot;&quot;
+    if is_leaf(t):
+        return 0
+    h = float(&#x27;inf&#x27;)
+    for b in branches(t):
+        # Still works fine!
+        h = min(h, 1 + min_depth(b))
+    return h</code></pre>
+
+<p>Arms-length recursion is not only redundant but often complicates our code and obscures the functionality of recursive functions, making writing recursive functions much more difficult. We always want our recursive case to be handling one and only one recursive level. We may or may not be checking your code periodically for things like this.</p>
+
+<h3 class="question" id="q1">Q1: Weights</h3>
+
+<p>Implement the <code>planet</code> data abstraction by completing the <code>planet</code> constructor
+and the <code>size</code> selector so that a planet is represented using a two-element list
+where the first element is the string <code>&#x27;planet&#x27;</code> and the second element is its size.
+The <code>total_weight</code> example is provided to demonstrate use of the mobile, arm,
+and planet abstractions.</p>
+
+<pre><code>def mobile(left, right):
+    &quot;&quot;&quot;Construct a mobile from a left arm and a right arm.&quot;&quot;&quot;
+    assert is_arm(left), &quot;left must be a arm&quot;
+    assert is_arm(right), &quot;right must be a arm&quot;
+    return [&#x27;mobile&#x27;, left, right]
+
+def is_mobile(m):
+    &quot;&quot;&quot;Return whether m is a mobile.&quot;&quot;&quot;
+    return type(m) == list and len(m) == 3 and m[0] == &#x27;mobile&#x27;
+
+def left(m):
+    &quot;&quot;&quot;Select the left arm of a mobile.&quot;&quot;&quot;
+    assert is_mobile(m), &quot;must call left on a mobile&quot;
+    return m[1]
+
+def right(m):
+    &quot;&quot;&quot;Select the right arm of a mobile.&quot;&quot;&quot;
+    assert is_mobile(m), &quot;must call right on a mobile&quot;
+    return m[2]</code></pre>
+
+<!-- hack -->
+
+<pre><code>def arm(length, mobile_or_planet):
+    &quot;&quot;&quot;Construct a arm: a length of rod with a mobile or planet at the end.&quot;&quot;&quot;
+    assert is_mobile(mobile_or_planet) or is_planet(mobile_or_planet)
+    return [&#x27;arm&#x27;, length, mobile_or_planet]
+
+def is_arm(s):
+    &quot;&quot;&quot;Return whether s is a arm.&quot;&quot;&quot;
+    return type(s) == list and len(s) == 3 and s[0] == &#x27;arm&#x27;
+
+def length(s):
+    &quot;&quot;&quot;Select the length of a arm.&quot;&quot;&quot;
+    assert is_arm(s), &quot;must call length on a arm&quot;
+    return s[1]
+
+def end(s):
+    &quot;&quot;&quot;Select the mobile or planet hanging at the end of a arm.&quot;&quot;&quot;
+    assert is_arm(s), &quot;must call end on a arm&quot;
+    return s[2]</code></pre>
+
+<!-- hack -->
+
+<pre><code>def planet(size):
+    &quot;&quot;&quot;Construct a planet of some size.&quot;&quot;&quot;
+    assert size &gt; 0
+    "*** YOUR CODE HERE ***"
+
+def size(w):
+    &quot;&quot;&quot;Select the size of a planet.&quot;&quot;&quot;
+    assert is_planet(w), &#x27;must call size on a planet&#x27;
+    "*** YOUR CODE HERE ***"
+
+def is_planet(w):
+    &quot;&quot;&quot;Whether w is a planet.&quot;&quot;&quot;
+    return type(w) == list and len(w) == 2 and w[0] == &#x27;planet&#x27;</code></pre>
+
+<!-- hack -->
+
+<pre><code>def total_weight(m):
+    &quot;&quot;&quot;Return the total weight of m, a planet or mobile.
+
+    &gt;&gt;&gt; t, u, v = examples()
+    &gt;&gt;&gt; total_weight(t)
+    3
+    &gt;&gt;&gt; total_weight(u)
+    6
+    &gt;&gt;&gt; total_weight(v)
+    9
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # checking for abstraction barrier violations by banning indexing
+    &gt;&gt;&gt; check(HW_SOURCE_FILE, &#x27;total_weight&#x27;, [&#x27;Index&#x27;])
+    True
+    &quot;&quot;&quot;
+    if is_planet(m):
+        return size(m)
+    else:
+        assert is_mobile(m), &quot;must get total weight of a mobile or a planet&quot;
+        return total_weight(end(left(m))) + total_weight(end(right(m)))</code></pre>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q total_weight</code></pre>
+
+<h3 class="question" id="q2">Q2: Balanced</h3>
+
+<!-- > <strong>Hint:</strong> for more information on this problem (with more pictures!) please refer to <a href="assets/mobiles.pdf#page=3">this document</a>. -->
+
+<p>Implement the <code>balanced</code> function, which returns whether <code>m</code> is a balanced
+mobile. A mobile is balanced if two conditions are met:</p>
+
+<ol>
+  <li>The torque applied by its left arm is equal to that applied by its right
+  arm. The torque of the left arm is the length of the left rod multiplied by the
+  total weight hanging from that rod. Likewise for the right. For example,
+  if the left arm has a length of <code>5</code>, and there is a <code>mobile</code> hanging at the end
+  of the left arm of weight <code>10</code>, the torque on the left side of our mobile is <code>50</code>.</li>
+  <li>Each of the mobiles hanging at the end of its arms is balanced.</li>
+</ol>
+
+<p>Planets themselves are balanced, as there is nothing hanging off of them.</p>
+
+<pre><code>def balanced(m):
+    &quot;&quot;&quot;Return whether m is balanced.
+
+    &gt;&gt;&gt; t, u, v = examples()
+    &gt;&gt;&gt; balanced(t)
+    True
+    &gt;&gt;&gt; balanced(v)
+    True
+    &gt;&gt;&gt; w = mobile(arm(3, t), arm(2, u))
+    &gt;&gt;&gt; balanced(w)
+    False
+    &gt;&gt;&gt; balanced(mobile(arm(1, v), arm(1, w)))
+    False
+    &gt;&gt;&gt; balanced(mobile(arm(1, w), arm(1, v)))
+    False
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # checking for abstraction barrier violations by banning indexing
+    &gt;&gt;&gt; check(HW_SOURCE_FILE, &#x27;balanced&#x27;, [&#x27;Index&#x27;])
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q balanced</code></pre>
+
+
+
+<h3 class="question" id="q3">Q3: Totals</h3>
+
+<p>Implement <code>totals_tree</code>, which takes a <code>mobile</code> (or <code>planet</code>) and returns a
+<code>tree</code> whose root is the total weight of the input. For a <code>planet</code>, <code>totals_tree</code>
+should return a leaf. For a <code>mobile</code>, <code>totals_tree</code> should return a tree whose
+label is that <code>mobile</code>'s total weight, and whose branches are <code>totals_tree</code>s for the
+ends of its arms.</p>
+
+<pre><code>def totals_tree(m):
+    &quot;&quot;&quot;Return a tree representing the mobile with its total weight at the root.
+
+    &gt;&gt;&gt; t, u, v = examples()
+    &gt;&gt;&gt; print_tree(totals_tree(t))
+    3
+      2
+      1
+    &gt;&gt;&gt; print_tree(totals_tree(u))
+    6
+      1
+      5
+        3
+        2
+    &gt;&gt;&gt; print_tree(totals_tree(v))
+    9
+      3
+        2
+        1
+      6
+        1
+        5
+          3
+          2
+    &gt;&gt;&gt; from construct_check import check
+    &gt;&gt;&gt; # checking for abstraction barrier violations by banning indexing
+    &gt;&gt;&gt; check(HW_SOURCE_FILE, &#x27;totals_tree&#x27;, [&#x27;Index&#x27;])
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q totals_tree</code></pre>
+
+
+<h2 id="trees">Trees</h2>
+
+<h3 class="question" id="q4">Q4: Replace Leaf</h3>
+
+<p>Define <code>replace_leaf</code>, which takes a tree <code>t</code>, a value <code>find_value</code>, and a value
+<code>replace_value</code>. <code>replace_leaf</code> returns a new tree that's the same as <code>t</code> except
+that every leaf label equal to <code>find_value</code> has been replaced with <code>replace_value</code>.</p>
+
+<solution>
+
+<pre><code>def replace_leaf(t, find_value, replace_value):
+    &quot;&quot;&quot;Returns a new tree where every leaf value equal to find_value has
+    been replaced with replace_value.
+
+    &gt;&gt;&gt; yggdrasil = tree(&#x27;odin&#x27;,
+    ...                  [tree(&#x27;balder&#x27;,
+    ...                        [tree(&#x27;thor&#x27;),
+    ...                         tree(&#x27;freya&#x27;)]),
+    ...                   tree(&#x27;frigg&#x27;,
+    ...                        [tree(&#x27;thor&#x27;)]),
+    ...                   tree(&#x27;thor&#x27;,
+    ...                        [tree(&#x27;sif&#x27;),
+    ...                         tree(&#x27;thor&#x27;)]),
+    ...                   tree(&#x27;thor&#x27;)])
+    &gt;&gt;&gt; laerad = copy_tree(yggdrasil) # copy yggdrasil for testing purposes
+    &gt;&gt;&gt; print_tree(replace_leaf(yggdrasil, &#x27;thor&#x27;, &#x27;freya&#x27;))
+    odin
+      balder
+        freya
+        freya
+      frigg
+        freya
+      thor
+        sif
+        freya
+      freya
+    &gt;&gt;&gt; laerad == yggdrasil # Make sure original tree is unmodified
+    True
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<!--
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/FUIXaJaReOA"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+-->
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q replace_leaf</code></pre>
+
+<!--
+
+-->
+
+<h3 class="question" id="q5">Q5: Preorder</h3>
+
+<p>Define the function <code>preorder</code>, which takes in a tree as an argument and
+returns a list of all the entries in the tree in the order that
+<code>print_tree</code> would print them.</p>
+
+<p>The following diagram shows the order that the nodes would get printed,
+with the arrows representing function calls.</p>
+
+<p><img class="img-responsive center-block" src="assets/preorder.png" alt="preorder"></p>
+
+<blockquote><p><em>Note</em>: This ordering of the nodes in a tree is called a preorder traversal.</p></blockquote>
+
+<solution>
+
+<pre><code>def preorder(t):
+    &quot;&quot;&quot;Return a list of the entries in this tree in the order that they
+    would be visited by a preorder traversal (see problem description).
+
+    &gt;&gt;&gt; numbers = tree(1, [tree(2), tree(3, [tree(4), tree(5)]), tree(6, [tree(7)])])
+    &gt;&gt;&gt; preorder(numbers)
+    [1, 2, 3, 4, 5, 6, 7]
+    &gt;&gt;&gt; preorder(tree(2, [tree(4, [tree(6)])]))
+    [2, 4, 6]
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<!--
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/4UHhxiynpmk"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+-->
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q preorder</code></pre>
+
+<h3 class="question" id="q6">Q6: Has Path</h3>
+
+<p>Write a function <code>has_path</code> that takes in a tree <code>t</code> and a string <code>word</code>. It
+returns <code>True</code> if there is a path that starts from the root where the entries
+along the path spell out the <code>word</code>, and <code>False</code> otherwise. (This data structure
+is called a trie, and it has a lot of cool applications!---think autocomplete). You
+may assume that every node's <code>label</code> is exactly one character.</p>
+
+<solution>
+
+<pre><code>def has_path(t, word):
+    &quot;&quot;&quot;Return whether there is a path in a tree where the entries along the path
+    spell out a particular word.
+
+    &gt;&gt;&gt; greetings = tree(&#x27;h&#x27;, [tree(&#x27;i&#x27;),
+    ...                        tree(&#x27;e&#x27;, [tree(&#x27;l&#x27;, [tree(&#x27;l&#x27;, [tree(&#x27;o&#x27;)])]),
+    ...                                   tree(&#x27;y&#x27;)])])
+    &gt;&gt;&gt; print_tree(greetings)
+    h
+      i
+      e
+        l
+          l
+            o
+        y
+    &gt;&gt;&gt; has_path(greetings, &#x27;h&#x27;)
+    True
+    &gt;&gt;&gt; has_path(greetings, &#x27;i&#x27;)
+    False
+    &gt;&gt;&gt; has_path(greetings, &#x27;hi&#x27;)
+    True
+    &gt;&gt;&gt; has_path(greetings, &#x27;hello&#x27;)
+    True
+    &gt;&gt;&gt; has_path(greetings, &#x27;hey&#x27;)
+    True
+    &gt;&gt;&gt; has_path(greetings, &#x27;bye&#x27;)
+    False
+    &quot;&quot;&quot;
+    assert len(word) &gt; 0, &#x27;no path for empty word.&#x27;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+</solution>
+
+<!--
+<br />
+
+<p>Watch the hints video below for somewhere to start:
+
+            <iframe width="560" height="315" src="https://youtube.com/embed/KBaK9EmWusc"
+                frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe></p>
+
+<br />
+-->
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q has_path</code></pre>
+
+
+<h2 id="submit">Submit</h2>
+
+
+<p>Make sure to submit this assignment by running:</p>
+
+<pre><code>python3 ok &#x2d;&#x2d;submit</code></pre>
+
+
+<h1 id="extra-questions">Extra Questions</h1>
+
+
+<h3 class="question" id="q7">Q7: Interval Abstraction</h3>
+
+<p>Alyssa's program is incomplete because she has not specified the implementation
+of the interval abstraction. She has implemented the constructor for you; fill
+in the implementation of the selectors.</p>
+
+<pre><code>def interval(a, b):
+    &quot;&quot;&quot;Construct an interval from a to b.&quot;&quot;&quot;
+    return [a, b]
+
+def lower_bound(x):
+    &quot;&quot;&quot;Return the lower bound of interval x.&quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+
+def upper_bound(x):
+    &quot;&quot;&quot;Return the upper bound of interval x.&quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q interval -u
+python3 ok -q interval</code></pre>
+
+<p>Louis Reasoner has also provided an implementation of interval
+multiplication. Beware: there are some data abstraction violations, so help him
+fix his code before someone sets it on fire: <a href='https://youtu.be/QwoghxwETng'> https://youtu.be/QwoghxwETng </a></p>
+
+<pre><code>def mul_interval(x, y):
+    &quot;&quot;&quot;Return the interval that contains the product of any value in x and any
+    value in y.&quot;&quot;&quot;
+    p1 = x[0] * y[0]
+    p2 = x[0] * y[1]
+    p3 = x[1] * y[0]
+    p4 = x[1] * y[1]
+    return [min(p1, p2, p3, p4), max(p1, p2, p3, p4)]</code></pre>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q mul_interval -u
+python3 ok -q mul_interval</code></pre>
+
+
+
+<h3 class="question" id="q8">Q8: Sub Interval</h3>
+
+<p>Using reasoning analogous to Alyssa's, define a subtraction function for
+intervals. Try to reuse functions that have already been implemented if you
+find yourself repeating code.</p>
+
+<pre><code>def sub_interval(x, y):
+    &quot;&quot;&quot;Return the interval that contains the difference between any value in x
+    and any value in y.&quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q sub_interval -u
+python3 ok -q sub_interval</code></pre>
+
+
+
+<h3 class="question" id="q9">Q9: Div Interval</h3>
+
+<p>Alyssa implements division below by multiplying by the reciprocal of
+<code>y</code>. Ben Bitdiddle, an expert systems programmer, looks over Alyssa's
+shoulder and comments that it is not clear what it means to divide by
+an interval that spans zero. Add an <code>assert</code> statement to Alyssa's code
+to ensure that no such interval is used as a divisor:</p>
+
+<pre><code>def div_interval(x, y):
+    &quot;&quot;&quot;Return the interval that contains the quotient of any value in x divided by
+    any value in y. Division is implemented as the multiplication of x by the
+    reciprocal of y.&quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+    reciprocal_y = interval(1/upper_bound(y), 1/lower_bound(y))
+    return mul_interval(x, reciprocal_y)</code></pre>
+
+<p>Use Ok to unlock and test your code:</p><pre><code class="nohighlight">python3 ok -q div_interval -u
+python3 ok -q div_interval</code></pre>
+
+
+
+<h3 class="question" id="q10">Q10: Par Diff</h3>
+
+<p>After considerable work, Alyssa P. Hacker delivers her finished system.  Several
+years later, after she has forgotten all about it, she gets a frenzied call from
+an irate user, Lem E. Tweakit. It seems that Lem has noticed that the
+<a href="https://en.wikipedia.org/wiki/Series_and_parallel_circuits#Resistors_2">formula for parallel resistors</a>
+can be written in two algebraically equivalent ways:</p>
+
+<pre><code>par1(r1, r2) = (r1 * r2) / (r1 + r2)</code></pre>
+
+<p>or</p>
+
+<pre><code>par2(r1, r2) = 1 / (1/r1 + 1/r2)</code></pre>
+
+<p>He has written the following two programs, each of which computes the
+<code>parallel_resistors</code> formula differently::</p>
+
+<pre><code>def par1(r1, r2):
+    return div_interval(mul_interval(r1, r2), add_interval(r1, r2))
+
+def par2(r1, r2):
+    one = interval(1, 1)
+    rep_r1 = div_interval(one, r1)
+    rep_r2 = div_interval(one, r2)
+    return div_interval(one, add_interval(rep_r1, rep_r2))</code></pre>
+
+<p>Lem complains that Alyssa's program gives different answers for the two
+ways of computing. This is a serious complaint.</p>
+
+<p>Demonstrate that Lem is right. Investigate the behavior of the system
+on a variety of arithmetic expressions. Make some intervals <code>r1</code> and
+<code>r2</code>, and show that <code>par1</code> and <code>par2</code> can give different results.</p>
+
+<pre><code>def check_par():
+    &quot;&quot;&quot;Return two intervals that give different results for parallel resistors.
+
+    &gt;&gt;&gt; r1, r2 = check_par()
+    &gt;&gt;&gt; x = par1(r1, r2)
+    &gt;&gt;&gt; y = par2(r1, r2)
+    &gt;&gt;&gt; lower_bound(x) != lower_bound(y) or upper_bound(x) != upper_bound(y)
+    True
+    &quot;&quot;&quot;
+    r1 = interval(1, 1) # Replace this line!
+    r2 = interval(1, 1) # Replace this line!
+    return r1, r2</code></pre>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q check_par</code></pre>
+
+
+
+<h3 class="question" id="q11">Q11: Multiple References</h3>
+
+<p>Eva Lu Ator, another user, has also noticed the different intervals
+computed by different but algebraically equivalent expressions. She
+says that the problem is multiple references to the same interval.</p>
+
+<p>The Multiple References Problem: a formula to compute with intervals
+using Alyssa's system will produce tighter error bounds if it can be
+written in such a form that no variable that represents an uncertain
+number is repeated.</p>
+
+<p>Thus, she says, <code>par2</code> is a better program for parallel resistances
+than <code>par1</code> (see Q10: Par Diff for these functions!). Is she right? Why? Write a function that returns a string
+containing a written explanation of your answer:</p>
+
+<p>Note: To make a multi-line string, you must use triple quotes <code>&quot;&quot;&quot; like this &quot;&quot;&quot;</code>.</p>
+
+<pre><code>def multiple_references_explanation():
+    return &quot;&quot;&quot;The multiple reference problem...&quot;&quot;&quot;
+</code></pre>
+
+
+
+<h3 class="question" id="q12">Q12: Quadratic</h3>
+
+<p>Write a function <code>quadratic</code> that returns the interval of all values
+<code>f(t)</code> such that <code>t</code> is in the argument interval <code>x</code> and <code>f(t)</code> is a
+<a href="http://en.wikipedia.org/wiki/Quadratic_function">quadratic function</a>:</p>
+
+<pre><code>f(t) = a*t*t + b*t + c</code></pre>
+
+<p>Make sure that your implementation returns the smallest such interval,
+one that does not suffer from the multiple references problem.</p>
+
+<p><em>Hint</em>: the derivative <code>f&#x27;(t) = 2*a*t + b</code>, and so the extreme
+point of the quadratic is <code>&#x2d;b/(2*a)</code>:</p>
+
+<pre><code>def quadratic(x, a, b, c):
+    &quot;&quot;&quot;Return the interval that is the range of the quadratic defined by
+    coefficients a, b, and c, for domain interval x.
+
+    &gt;&gt;&gt; str_interval(quadratic(interval(0, 2), &#x2d;2, 3, &#x2d;1))
+    &#x27;&#x2d;3 to 0.125&#x27;
+    &gt;&gt;&gt; str_interval(quadratic(interval(1, 3), 2, &#x2d;3, 1))
+    &#x27;0 to 10&#x27;
+    &quot;&quot;&quot;
+    "*** YOUR CODE HERE ***"
+</code></pre>
+
+<p>Use Ok to test your code:</p><pre><code class="nohighlight">python3 ok -q quadratic</code></pre>
+
+
+
+<script>
+    $('.alwaystoggle').css('display', 'inline-block');
+    $('.alwaystoggle').click(function() {
+      var solution_id = $(this).attr('id');
+      $('div.' + solution_id).slideToggle(600);
+    });
+</script>
+
+
+  </div>
+
+  <div class='col-md-3 sticky'>
+    <nav class='hidden-print hidden-sm hidden-xs sidebar'>
+      <ul>
+  <li><a href="#instructions">Instructions</a></li>
+  <li><a href="#required-questions">Required questions</a></li>
+  <ul>
+    <li><a href="#abstraction">Abstraction</a></li>
+    <li><a href="#mobiles">Mobiles</a></li>
+    <ul>
+      <li><a href="#arms-length-recursion-sidenote">Arms-length recursion (sidenote)</a></li>
+      <li><a href="#q1">Q1: Weights</a></li>
+      <li><a href="#q2">Q2: Balanced</a></li>
+      <li><a href="#q3">Q3: Totals</a></li>
+    </ul>
+    <li><a href="#trees">Trees</a></li>
+    <ul>
+      <li><a href="#q4">Q4: Replace Leaf</a></li>
+      <li><a href="#q5">Q5: Preorder</a></li>
+      <li><a href="#q6">Q6: Has Path</a></li>
+    </ul>
+    <li><a href="#submit">Submit</a></li>
+  </ul>
+  <li><a href="#extra-questions">Extra Questions</a></li>
+  <ul>
+    <li><a href="#q7">Q7: Interval Abstraction</a></li>
+    <li><a href="#q8">Q8: Sub Interval</a></li>
+    <li><a href="#q9">Q9: Div Interval</a></li>
+    <li><a href="#q10">Q10: Par Diff</a></li>
+    <li><a href="#q11">Q11: Multiple References</a></li>
+    <li><a href="#q12">Q12: Quadratic</a></li>
+  </ul>
+</ul>
+    </nav>
+  </div>
+</div>
+
+    </main>
+
+    <footer class="container">
+      <div class="row text-center">
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/">CS 61A</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/weekly.html">Weekly Schedule</a></li>
+            <li><a href="/~cs61a/fa20/office-hours.html">Office Hours</a></li>
+            <li><a href="/~cs61a/fa20/staff.html">Staff</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/resources.html">Resources</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/studying.html">Studying Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/debugging.html">Debugging Guide</a></li>
+            <li><a href="/~cs61a/fa20/articles/composition.html">Composition Guide</a></li>
+          </ul>
+        </div>
+        <div class="col col-sm-4">
+          <h3><a href="/~cs61a/fa20/articles/about.html">Policies</a></h3>
+          <ul class="nav nav-pills nav-stacked">
+            <li><a href="/~cs61a/fa20/articles/about.html#assignments">Assignments</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#exams">Exams</a></li>
+            <li><a href="/~cs61a/fa20/articles/about.html#grading">Grading</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+
+    
+
+<script src="/~cs61a/fa20/assets/js/sketchy.js"></script>
+<script>
+  $('.sidebar ul').addClass('nav nav-stacked noselect');
+  $('body').scrollspy({
+    target: '.sidebar',
+    offset: 40
+  });
+
+  function goToId(id) {
+    var target = $(id);
+    target.parent().show();
+    $('html,body').animate({
+      scrollTop: target.offset().top,
+    }, 100);
+    $("body").scrollspy('refresh');
+  }
+
+  if (location.hash) {
+    setTimeout(function() {
+      if (location.hash) {
+        goToId(location.hash);
+      }
+    }, 1);
+  }
+
+  $("a").click(function(event) {
+    var urlBeforeHashRegEx = new RegExp("^"+window.location.href.split("#")[0]);
+    if (/^#/.test(this.hash) && urlBeforeHashRegEx.test(this.href)) {
+      event.preventDefault();
+      goToId(this.hash);
+      document.location.hash = this.hash;
+    }
+  });
+</script>
+
+  </body>
+</html>
